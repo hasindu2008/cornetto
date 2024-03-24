@@ -54,6 +54,11 @@ static struct option long_options[] = {
     {"profile-cpu",required_argument, 0, 0},       //8 perform section by section (used for profiling - for CPU only)
     {"accel",required_argument, 0, 0},             //9 accelerator
     {"qual",required_argument, 0, 'q'},             //10 cov-mq20.bg
+    {"window-size",required_argument, 0, 'w'},     //11 window size
+    {"window-inc",required_argument, 0, 'i'},       //12 window increment
+    {"low-thresh",required_argument, 0, 'l'},       //13 lowt hreshold for depth
+    {"high-thresh",required_argument, 0, 'h'},      //14 high threshold for depth
+    {"low-mq-thresh",required_argument, 0, 'L'},    //15 lowthreshold for mapq depth
     {0, 0, 0, 0}};
 
 
@@ -81,6 +86,11 @@ static inline void print_help_msg(FILE *fp_help, optp_t opt){
     //fprintf(fp_help,"   -K INT                     batch size (max number of reads loaded at once) [%d]\n",opt.batch_size);
     //fprintf(fp_help,"   -B FLOAT[K/M/G]            max number of bytes loaded at once [%.1fM]\n",opt.batch_size_bytes/(float)(1000*1000));
     fprintf(fp_help,"   -q FILE                    depth file with high mapq read coverage\n");
+    fprintf(fp_help,"   -w INT                     window size [%d]\n",opt.window_size);
+    fprintf(fp_help,"   -i INT                     window increment [%d]\n",opt.window_inc);
+    fprintf(fp_help,"   -l FLOAT                   low coverage threshold factor [%.1f]\n",opt.low_cov_thresh);
+    fprintf(fp_help,"   -h FLOAT                   high coverage threshold factor [%.1f]\n",opt.high_cov_thresh);
+    fprintf(fp_help,"   -L FLOAT                   mapq low coverage threshold factor [%.1f]\n",opt.low_mq_cov_thresh);
 
     fprintf(fp_help,"   -h                         help\n");
     //fprintf(fp_help,"   -o FILE                    output to file [stdout]\n");
@@ -465,7 +475,7 @@ int boringbits_main(int argc, char* argv[]) {
 
     double realtime0 = realtime();
 
-    const char* optstring = "t:B:K:v:o:q:hV";
+    const char* optstring = "t:B:K:v:o:q:l:h:L:w:i:hV";
 
     int longindex = 0;
     int32_t c = -1;
@@ -510,6 +520,18 @@ int boringbits_main(int argc, char* argv[]) {
             fp_help = stdout;
         } else if (c=='q'){
             covmqfile = optarg;
+        } else if (c=='w'){
+            opt.window_size = atoi(optarg);
+        } else if (c=='i'){
+            opt.window_inc = atoi(optarg);
+        } else if (c=='l'){
+            opt.low_cov_thresh = atof(optarg);
+        } else if (c=='h'){
+            opt.high_cov_thresh = atof(optarg);
+        } else if (c=='L'){
+            opt.low_mq_cov_thresh = atof(optarg);
+        } else if(c == 0 && longindex == 6){ //output
+            //opt.output = optarg;
         } else if(c == 0 && longindex == 7){ //debug break
             opt.debug_break = atoi(optarg);
         } else if(c == 0 && longindex == 8){ //sectional benchmark todo : warning for gpu mode
