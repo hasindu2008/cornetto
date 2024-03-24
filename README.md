@@ -1,6 +1,6 @@
 # cornetto
 
-Building:
+## Building
 
 ```
 sudo apt-get install zlib1g-dev   #install zlib development libraries
