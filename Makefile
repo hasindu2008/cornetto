@@ -3,10 +3,11 @@ CFLAGS   += -g -Wall -O2  -std=c99
 LDFLAGS  += $(LIBS) -lz -lm -lpthread
 BUILD_DIR = build
 
-BINARY = invar
+BINARY = cornetto
 OBJ = $(BUILD_DIR)/main.o \
-      $(BUILD_DIR)/invar.o \
+      $(BUILD_DIR)/cornetto.o \
       $(BUILD_DIR)/depth_main.o \
+      $(BUILD_DIR)/boringbits_main.o \
       $(BUILD_DIR)/thread.o \
 	  $(BUILD_DIR)/misc.o \
 	  $(BUILD_DIR)/misc_p.o \
@@ -25,13 +26,16 @@ $(BINARY): htslib/libhts.a $(OBJ)
 $(BUILD_DIR)/main.o: src/main.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
-$(BUILD_DIR)/invar.o: src/invar.c src/misc.h src/error.h src/invar.h
+$(BUILD_DIR)/cornetto.o: src/cornetto.c src/misc.h src/error.h src/cornetto.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/depth_main.o: src/depth_main.c src/error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
-$(BUILD_DIR)/thread.o: src/thread.c src/invar.h
+$(BUILD_DIR)/boringbits_main.o: src/boringbits_main.c src/error.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/thread.o: src/thread.c src/cornetto.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/misc.o: src/misc.c src/misc.h

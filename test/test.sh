@@ -22,7 +22,7 @@ ex() {
 }
 
 echo "Test 1"
-ex  ./invar depth test/example.bam > test/tmp.txt  || die "Running the tool failed"
+ex  ./cornetto boringbits test/cov-total.bg -q test/cov-mq20.bg > test/tmp.txt  || die "Running the tool failed"
 # diff -q test/example.exp test/tmp.txt || die "diff failed"
 
 
