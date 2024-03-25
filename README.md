@@ -48,4 +48,16 @@ To merge the regions you may use bedtools as follows:
 ```
 ./cornetto boringbits test/cov-total.bg -q test/cov-mq20.bg  | cut -f 1,2,3 > all_regions.bed
 bedtools sort -i all_regions.bed | bedtools merge -d 500
+
+
+#### Can we please try this new merging strategy?
+
+## merge any overlapping or adjacent (within 500bp) instances of the sliding window, then:
+## remove any merged intervals that are < 10kb, then:
+## extend merged intervals by 10kb in either direction, in order to capture the surrounding 'boring' flanking regions
+bedtools sort -i all_regions.bed | bedtools merge -d 500 | awk '($3-$2)>=10000' | awk '{print $1"\t"$2-10000"\t"$3+10000}' > merged_windows1.bed
+
+## then perform second merging, to merge any overlapping or adjacent (within 10kb) windows
+bedtools sort -i merged_windows1.bed | bedtools merge -d 10000 > merged_windows2.bed
+
 ```
