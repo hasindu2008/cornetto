@@ -59,6 +59,8 @@ static struct option long_options[] = {
     {"low-thresh",required_argument, 0, 'l'},       //13 lowt hreshold for depth
     {"high-thresh",required_argument, 0, 'h'},      //14 high threshold for depth
     {"low-mq-thresh",required_argument, 0, 'L'},    //15 lowthreshold for mapq depth
+    {"min-ctg-len",required_argument, 0, 'm'},      //16 min contig length
+    {"edge-len",required_argument, 0, 'e'},         //17 edge length to ignore
     {0, 0, 0, 0}};
 
 
@@ -69,6 +71,8 @@ typedef struct {
     float low_cov_thresh;
     float high_cov_thresh;
     float low_mq_cov_thresh;
+    int min_ctg_len;
+    int edge_len;
 
     uint64_t flag;              //flags
     int32_t batch_size;         //max reads loaded at once: K
@@ -91,6 +95,8 @@ static inline void print_help_msg(FILE *fp_help, optp_t opt){
     fprintf(fp_help,"   -l FLOAT                   low coverage threshold factor [%.1f]\n",opt.low_cov_thresh);
     fprintf(fp_help,"   -h FLOAT                   high coverage threshold factor [%.1f]\n",opt.high_cov_thresh);
     fprintf(fp_help,"   -L FLOAT                   mapq low coverage threshold factor [%.1f]\n",opt.low_mq_cov_thresh);
+    fprintf(fp_help,"   -m INT                     minimum contig length [%d]\n",opt.min_ctg_len);
+    fprintf(fp_help,"   -e INT                     edge length to ignore [%d]\n",opt.edge_len);
 
     fprintf(fp_help,"   -h                         help\n");
     //fprintf(fp_help,"   -o FILE                    output to file [stdout]\n");
@@ -132,6 +138,7 @@ typedef struct {
 
 typedef struct {
     char *ctg_name;
+    int ctg_length;
     int n_reg;
     reg_t *reg;
 } ctg_reg_t;
@@ -325,6 +332,7 @@ asm_reg_t *get_regs(asm_depth_t *asm_depth, int window_size, int window_inc){
         ctg_reg_t *ctg_reg = &asm_reg->ctg_reg[i];
         ctg_reg->ctg_name = strdup(ctg_depth->ctg_name);
         int length = ctg_depth->ctg_length;
+        ctg_reg->ctg_length = length;
 
         ctg_reg->n_reg = (length - window_size + window_inc -1) / window_inc + 1;
         ctg_reg->reg = (reg_t*)malloc(ctg_reg->n_reg*sizeof(reg_t));
@@ -402,11 +410,24 @@ void print_reg_high_cov(asm_reg_t *asm_reg, int thresh){
     }
 }
 
-void print_reg_low_mq_cov(asm_reg_t *asm_reg, int thresh){
+void print_reg_low_mq_cov(asm_reg_t *asm_reg, float thresh_fac){
     for(int i=0;i<asm_reg->num_ctg;i++){
         ctg_reg_t *ctg_reg = &asm_reg->ctg_reg[i];
         for(int j=0;j<ctg_reg->n_reg;j++){
-            if(ctg_reg->reg[j].mq_depth>thresh) printf("depth_mq<%d\t%s\t%d\t%d\t%d\t%d\n",thresh,ctg_reg->ctg_name, ctg_reg->reg[j].st, ctg_reg->reg[j].end, ctg_reg->reg[j].depth, ctg_reg->reg[j].mq_depth);
+            if(ctg_reg->reg[j].mq_depth / (double)ctg_reg->reg[j].depth < thresh_fac) printf("depth_mq/depth<%.1f\t%s\t%d\t%d\t%d\t%d\n",thresh_fac,ctg_reg->ctg_name, ctg_reg->reg[j].st, ctg_reg->reg[j].end, ctg_reg->reg[j].depth, ctg_reg->reg[j].mq_depth);
+        }
+    }
+}
+
+void print_difficult_bits(asm_reg_t *asm_reg, int thresh_low_depth, int thresh_high_depth, float thresh_fac){
+    for(int i=0;i<asm_reg->num_ctg;i++){
+        ctg_reg_t *ctg_reg = &asm_reg->ctg_reg[i];
+        for(int j=0;j<ctg_reg->n_reg;j++){
+            int depth = ctg_reg->reg[j].depth;
+            int mq_depth = ctg_reg->reg[j].mq_depth;
+            if(depth<thresh_low_depth || depth>thresh_high_depth || (mq_depth /(double)depth) < thresh_fac ){
+                printf("%s\t%d\t%d\t%d\t%d\n",ctg_reg->ctg_name, ctg_reg->reg[j].st, ctg_reg->reg[j].end, ctg_reg->reg[j].depth, ctg_reg->reg[j].mq_depth);
+            }
         }
     }
 }
@@ -421,6 +442,8 @@ void the_boring_bits(const char* covtotalfile, const char *covmqfile, optp_t *op
     float low_cov_thresh = opt->low_cov_thresh;
     float high_cov_thresh = opt->high_cov_thresh;
     float low_mq_cov_thresh = opt->low_mq_cov_thresh;
+    int min_ctg_len = opt->min_ctg_len;
+    int edge_len = opt->edge_len;
 
     fprintf(stderr,"Number of contigs: %d\n",asm_depth->num_ctg);
     fprintf(stderr,"Average depth: %d\n",asm_depth->mean_depth);
@@ -429,7 +452,9 @@ void the_boring_bits(const char* covtotalfile, const char *covmqfile, optp_t *op
     fprintf(stderr, "Window increment: %d\n", window_inc);
     fprintf(stderr, "Low coverage threshold: %.1fx%d\n", low_cov_thresh, asm_depth->mean_depth);
     fprintf(stderr, "High coverage threshold: %.1fx%d\n", high_cov_thresh, asm_depth->mean_depth);
-    fprintf(stderr, "Low mapq coverage threshold: %.1fx%d\n", low_mq_cov_thresh, asm_depth->mean_mq_depth);
+    fprintf(stderr, "Low mapq coverage threshold: %.1f\n", low_mq_cov_thresh);
+    fprintf(stderr, "Min contig length: %d\n", min_ctg_len);
+    fprintf(stderr, "Edge length: %d\n", edge_len);
 
     //print_depth_mq(asm_depth);
 
@@ -439,14 +464,32 @@ void the_boring_bits(const char* covtotalfile, const char *covmqfile, optp_t *op
 
     //print_regs(asm_reg);
     int thresh_low_depth = round(low_cov_thresh * asm_reg->mean_depth);
-    print_reg_low_cov(asm_reg, thresh_low_depth);
+    //print_reg_low_cov(asm_reg, thresh_low_depth);
 
     int thresh_high_depth = round(high_cov_thresh * asm_reg->mean_depth);
-    print_reg_high_cov(asm_reg, thresh_high_depth);
+    //print_reg_high_cov(asm_reg, thresh_high_depth);
 
-    int thresh_low_mq_depth = round(low_mq_cov_thresh * asm_reg->mean_mq_depth);
-    print_reg_low_mq_cov(asm_reg, thresh_low_mq_depth);
+    //print_reg_low_mq_cov(asm_reg, low_mq_cov_thresh);
 
+    //print_difficult_bits(asm_reg, thresh_low_depth, thresh_high_depth, low_mq_cov_thresh);
+
+    for(int i=0;i<asm_reg->num_ctg;i++){
+        ctg_reg_t *ctg_reg = &asm_reg->ctg_reg[i];
+        int ctg_len = ctg_reg->ctg_length;
+        if(ctg_len > min_ctg_len){ //only large contigs can have boring bits
+            for(int j=0;j<ctg_reg->n_reg;j++){
+                int depth = ctg_reg->reg[j].depth;
+                int mq_depth = ctg_reg->reg[j].mq_depth;
+                int st = ctg_reg->reg[j].st;
+                int end = ctg_reg->reg[j].end;
+                if ( st > edge_len && end < ctg_len - edge_len) { // exclude edges
+                    if(!(depth<thresh_low_depth || depth>thresh_high_depth || (mq_depth /(double)depth) < low_mq_cov_thresh)){
+                        printf("%s\t%d\t%d\t%d\t%d\n",ctg_reg->ctg_name, st, end, depth, mq_depth);
+                    }
+                }
+            }
+        }
+    }
 
 
     free_asm_reg(asm_reg);
@@ -463,6 +506,8 @@ void init_optp(optp_t *opt){
     opt->low_cov_thresh = 0.6;
     opt->high_cov_thresh = 1.6;
     opt->low_mq_cov_thresh = 0.6;
+    opt->min_ctg_len = 1000000;
+    opt->edge_len = 100000;
 
     opt->batch_size = 512;
     opt->batch_size_bytes = 1000*1000*1000;
@@ -475,7 +520,7 @@ int boringbits_main(int argc, char* argv[]) {
 
     double realtime0 = realtime();
 
-    const char* optstring = "t:B:K:v:o:q:l:h:L:w:i:hV";
+    const char* optstring = "t:B:K:v:o:q:l:h:L:w:i:e:m:hV";
 
     int longindex = 0;
     int32_t c = -1;
@@ -530,6 +575,10 @@ int boringbits_main(int argc, char* argv[]) {
             opt.high_cov_thresh = atof(optarg);
         } else if (c=='L'){
             opt.low_mq_cov_thresh = atof(optarg);
+        } else if (c=='m'){
+            opt.min_ctg_len = atoi(optarg);
+        } else if (c=='e'){
+            opt.edge_len = atoi(optarg);
         } else if(c == 0 && longindex == 6){ //output
             //opt.output = optarg;
         } else if(c == 0 && longindex == 7){ //debug break
