@@ -18,7 +18,7 @@ On OS X : brew install zlib
 ## Usage
 
 ```
-Usage: cornetto boringbits [OPTIONS] cov-total.bg -q cov-mq20.bg
+Usage: cornetto boringbits cov-total.bg -q cov-mq20.bg
 
 basic options:
    -q FILE                    depth file with high mapq read coverage
@@ -27,15 +27,17 @@ basic options:
    -l FLOAT                   low coverage threshold factor [0.6]
    -h FLOAT                   high coverage threshold factor [1.6]
    -L FLOAT                   mapq low coverage threshold factor [0.6]
+   -m INT                     minimum contig length [1000000]
+   -e INT                     edge length to ignore [100000]
    -h                         help
    --verbose INT              verbosity level [4]
    --version                  print version
 ```
 
 Currently simply prints windows that meet 1, 2 and 2
-1 contigs must be > [1MBase] in size
-2 excluding [100kb] edge regions at each
-3 Does not fall into any of the below category
+1. contigs must be > [1MBase] in size
+2. excluding [100kb] edge regions at each
+3. Does not fall into any of the below category
    - windows with low coverage: [<0.6x] genome average
    - windows with high coverage: [>1.6x] genome average
    - windows with low mappability: [mean MQ20 cov for window is < 0.6 x mean coverage for the window]
