@@ -64,6 +64,8 @@ It prints windows that meet any of the following
 ./cornetto funbits test/cov-total.bg -q test/cov-mq20.bg > fun.txt
 ```
 
+## Method to get eventual boring bits
+
 Create a full genome assembly bed:
 ```
 samtools faidx assembly.fa
