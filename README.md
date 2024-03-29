@@ -104,15 +104,15 @@ awk '{if(($3-$2)>100000) {print $1"\t0\t100000\n"$1"\t"$3-100000"\t"$3}}'  assem
 bedtools sort -i funbits.bed | bedtools merge -d 10000 > funbits_merged.bed
 ```
 
-8. subtract merged windows from (6) from the whole genome assembly
+7. subtract merged windows from (6) from the whole genome assembly
 ```
 bedtools subtract -a assembly.bed -b funbits_merged.bed > boringbits_tmp.bed
 ```
 
-9. subtract any contigs shorter than 1Mbase
+8. subtract any contigs shorter than 1Mbase
 ```
-awk '{if(($3-$2)<1000000) print $0}' short.bed
-bedtools subtract -a boringbits_tmp.bed -b funbits.bed> boringbits.bed
+awk '{if(($3-$2)<1000000) print $0}'  assembly.bed  > short.bed
+bedtools subtract -a boringbits_tmp.bed -b short.bed > boringbits.bed
 ```
 
 
