@@ -61,43 +61,57 @@ It prints windows that meet any of the following
    - windows with low mappability: [mean MQ20 cov for window is < 0.6 x mean coverage for the window]
 ```
 
-To merge the windows that are overlapping or adjacent (within 500bp), you may use bedtools as follows:
-```
-./cornetto funbits test/cov-total.bg -q test/cov-mq20.bg  | cut -f 1,2,3 | bedtools sort | bedtools merge -d 500 > funbits_tmp.bed
-```
+./cornetto funbits test/cov-total.bg -q test/cov-mq20.bg > fun.txt
 
-remove any merged intervals from above funbits_tmp.bed that are shorter than <10kb; then,
-extend intervals by +10kb in either direction;
-```
-awk '($3-$2)>=10000' funbits_tmp.bed | awk '{print $1"\t"$2-10000"\t"$3+10000}' > funbits_tmp2.bed
-```
-
-Merge any overlapping or adjacent (within 10kb) intervals from
-```
-bedtools sort -i funbits_tmp2.bed | bedtools merge -d 10000 > funbits.bit
-```
-
-Subtract the funbits from the whole assembly:
+Create a full genome assembly bed:
 ```
 samtools faidx assembly.fa
-awk '{print $1"\t0\t"$2}' > assembly.bed
-bedtools subtract -a assembly.bed -b funbits.bit > boringbits.bed
-
+awk '{print $1"\t0\t"$2}' assembly.fa.faidx > assembly.bed
 ```
 
+1. print all interesting windows with :
+   - low coverage: [<0.6x] genome average
+   - high coverage: [>1.6x] genome average
+   - low mappability: [mean MQ20 cov for window is < 0.6 x mean coverage for the window]
 
+```
+awk '{if ($4!=".") print $1"\t"$2"\t"$3}' fun.txt > 1.bed
+```
+2. merge these interesting windows - overlapping or adjacent (within 500bp)
+```
+ bedtools sort 1.bed | bedtools merge -d 500 > 2.bed
+```
+3. remove any merged intervals from (2) that are shorter than <10kb
+```
+awk '($3-$2)>=10000'  2.bed > 3.bed
 
+4. extend merged intervals from (3) by +10kb in either direction
+```
+awk '{print $1"\t"$2-10000"\t"$3+10000}' 3.bed > funbits.bed
+```
 
+5. add new windows to the file from (4), which are 100kb intervals at the left edge and right edge of the contig
 
+```
+awk '{if(($3-$2)>100000) {print $1"\t0\t100000\n"$1"\t"$3-100000"\t"$3}}'  assembly.bed >> funbits.bed
+```
 
-4. remove any merged intervals from (3) that are shorter than <10kb
-5. extend merged intervals from (4) by +10kb in either direction
-6. add new windows to the file from (5), which are 100kb intervals at the left edge and right edge of the contig
-7. merge any overlapping or adjacent (within 10kb) intervals from (6)
-8. subtract merged windows from (7) from the whole genome assembly
+6. merge any overlapping or adjacent (within 10kb) intervals from (5)
+```
+bedtools sort -i funbits.bed | bedtools merge -d 10000 > funbits_merged.bed
+```
+
+8. subtract merged windows from (6) from the whole genome assembly
+```
+bedtools subtract -a assembly.bed -b funbits.bed > boringbits_tmp.bed
+```
+
 9. subtract any contigs shorter than 1Mbase
--> now you have the final 'boring_bits' region file
 ```
+awk '{if(($3-$2)<1000000) print $0}' short.bed
+bedtools subtract -a boringbits_tmp.bed -b funbits.bed> boringbits.bed
+```
+
 
 ## Notes
 
