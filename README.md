@@ -82,7 +82,7 @@ awk '{print $1"\t0\t"$2}' assembly.fa.faidx > assembly.bed
 ```
 2. merge these interesting windows - overlapping or adjacent (within 500bp)
 ```
- bedtools sort 1.bed | bedtools merge -d 500 > 2.bed
+ bedtools sort -i 1.bed | bedtools merge -d 500 > 2.bed
 ```
 3. remove any merged intervals from (2) that are shorter than <10kb
 ```
@@ -90,7 +90,7 @@ awk '($3-$2)>=10000'  2.bed > 3.bed
 ```
 4. extend merged intervals from (3) by +10kb in either direction
 ```
-awk '{print $1"\t"$2-10000"\t"$3+10000}' 3.bed > funbits.bed
+awk '{if($2>10000){print $1"\t"$2-10000"\t"$3+10000} else {print $0}}' 3.bed > funbits.bed
 ```
 
 5. add new windows to the file from (4), which are 100kb intervals at the left edge and right edge of the contig
@@ -118,4 +118,4 @@ bedtools subtract -a boringbits_tmp.bed -b short.bed > boringbits.bed
 
 ## Notes
 
-Only tested briefly on a tiny dataset. Could be full of bugs yet. Lazily loads the whole bloody depth file to memory, thus memory inefficient. Later, let us use the htslib to get depth from the BAM.
+ Lazily loads the whole bloody depth file to memory, thus memory inefficient. Later, let us use the htslib to get depth from the BAM.
