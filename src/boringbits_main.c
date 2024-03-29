@@ -81,6 +81,8 @@ typedef struct {
     int32_t num_thread; //t
     int32_t debug_break;
 
+    int8_t boring;
+
 } optp_t;
 
 static inline void print_help_msg(FILE *fp_help, optp_t opt){
@@ -419,19 +421,48 @@ void print_reg_low_mq_cov(asm_reg_t *asm_reg, float thresh_fac){
     }
 }
 
-void print_difficult_bits(asm_reg_t *asm_reg, int thresh_low_depth, int thresh_high_depth, float thresh_fac){
+void print_fun_bits(asm_reg_t *asm_reg, int thresh_low_depth, int thresh_high_depth, float low_mq_cov_thresh, int edge_len, int min_ctg_len){
     for(int i=0;i<asm_reg->num_ctg;i++){
         ctg_reg_t *ctg_reg = &asm_reg->ctg_reg[i];
-        for(int j=0;j<ctg_reg->n_reg;j++){
-            int depth = ctg_reg->reg[j].depth;
-            int mq_depth = ctg_reg->reg[j].mq_depth;
-            if(depth<thresh_low_depth || depth>thresh_high_depth || (mq_depth /(double)depth) < thresh_fac ){
-                printf("%s\t%d\t%d\t%d\t%d\n",ctg_reg->ctg_name, ctg_reg->reg[j].st, ctg_reg->reg[j].end, ctg_reg->reg[j].depth, ctg_reg->reg[j].mq_depth);
+        int ctg_len = ctg_reg->ctg_length;
+        if(ctg_len < min_ctg_len){ // small contigs are always fun
+            printf("%s\t%d\t%d\t.\t.\n",ctg_reg->ctg_name, 0, min_ctg_len);
+        } else {
+            //print edges
+            printf("%s\t%d\t%d\t.\t.\n",ctg_reg->ctg_name, 0, edge_len);
+            printf("%s\t%d\t%d\t.\t.\n",ctg_reg->ctg_name, ctg_len-edge_len, ctg_len);
+
+            for(int j=0;j<ctg_reg->n_reg;j++){
+                int depth = ctg_reg->reg[j].depth;
+                int mq_depth = ctg_reg->reg[j].mq_depth;
+                if(depth<thresh_low_depth || depth>thresh_high_depth || (mq_depth /(double)depth) < low_mq_cov_thresh ){
+                    printf("%s\t%d\t%d\t%d\t%d\n",ctg_reg->ctg_name, ctg_reg->reg[j].st, ctg_reg->reg[j].end, ctg_reg->reg[j].depth, ctg_reg->reg[j].mq_depth);
+                }
             }
         }
     }
 }
 
+
+void print_boring_bits(asm_reg_t *asm_reg, int thresh_low_depth, int thresh_high_depth, float low_mq_cov_thresh, int edge_len, int min_ctg_len){
+    for(int i=0;i<asm_reg->num_ctg;i++){
+        ctg_reg_t *ctg_reg = &asm_reg->ctg_reg[i];
+        int ctg_len = ctg_reg->ctg_length;
+        if(ctg_len > min_ctg_len){ //only large contigs can have boring bits
+            for(int j=0;j<ctg_reg->n_reg;j++){
+                int depth = ctg_reg->reg[j].depth;
+                int mq_depth = ctg_reg->reg[j].mq_depth;
+                int st = ctg_reg->reg[j].st;
+                int end = ctg_reg->reg[j].end;
+                if ( st > edge_len && end < ctg_len - edge_len) { // exclude edges
+                    if(!(depth<thresh_low_depth || depth>thresh_high_depth || (mq_depth /(double)depth) < low_mq_cov_thresh)){
+                        printf("%s\t%d\t%d\t%d\t%d\n",ctg_reg->ctg_name, st, end, depth, mq_depth);
+                    }
+                }
+            }
+        }
+    }
+}
 
 void the_boring_bits(const char* covtotalfile, const char *covmqfile, optp_t *opt){
 
@@ -464,32 +495,18 @@ void the_boring_bits(const char* covtotalfile, const char *covmqfile, optp_t *op
 
     //print_regs(asm_reg);
     int thresh_low_depth = round(low_cov_thresh * asm_reg->mean_depth);
+    int thresh_high_depth = round(high_cov_thresh * asm_reg->mean_depth);
+
     //print_reg_low_cov(asm_reg, thresh_low_depth);
 
-    int thresh_high_depth = round(high_cov_thresh * asm_reg->mean_depth);
     //print_reg_high_cov(asm_reg, thresh_high_depth);
 
     //print_reg_low_mq_cov(asm_reg, low_mq_cov_thresh);
 
-    //print_difficult_bits(asm_reg, thresh_low_depth, thresh_high_depth, low_mq_cov_thresh);
-
-    for(int i=0;i<asm_reg->num_ctg;i++){
-        ctg_reg_t *ctg_reg = &asm_reg->ctg_reg[i];
-        int ctg_len = ctg_reg->ctg_length;
-        if(ctg_len > min_ctg_len){ //only large contigs can have boring bits
-            for(int j=0;j<ctg_reg->n_reg;j++){
-                int depth = ctg_reg->reg[j].depth;
-                int mq_depth = ctg_reg->reg[j].mq_depth;
-                int st = ctg_reg->reg[j].st;
-                int end = ctg_reg->reg[j].end;
-                if ( st > edge_len && end < ctg_len - edge_len) { // exclude edges
-                    if(!(depth<thresh_low_depth || depth>thresh_high_depth || (mq_depth /(double)depth) < low_mq_cov_thresh)){
-                        printf("%s\t%d\t%d\t%d\t%d\n",ctg_reg->ctg_name, st, end, depth, mq_depth);
-                    }
-                }
-            }
-        }
-    }
+    if(opt->boring)
+        print_boring_bits(asm_reg, thresh_low_depth, thresh_high_depth, low_mq_cov_thresh, edge_len, min_ctg_len);
+    else
+        print_fun_bits(asm_reg, thresh_low_depth, thresh_high_depth, low_mq_cov_thresh, edge_len, min_ctg_len);
 
 
     free_asm_reg(asm_reg);
@@ -514,9 +531,11 @@ void init_optp(optp_t *opt){
     opt->num_thread = 8;
     opt->debug_break = 0;
     opt->flag = 0;
+
+    opt->boring = 1;
 }
 
-int boringbits_main(int argc, char* argv[]) {
+int boringbits_main(int argc, char* argv[], int8_t boring) {
 
     double realtime0 = realtime();
 
@@ -593,6 +612,7 @@ int boringbits_main(int argc, char* argv[]) {
         #endif
         }
     }
+    opt.boring = boring;
 
     // No arguments given
     if (argc - optind != 1 || fp_help == stdout) {

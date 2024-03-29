@@ -38,13 +38,14 @@ SOFTWARE.
 #include "cornetto.h"
 
 int depth_main(int argc, char* argv[]);
-int boringbits_main(int argc, char* argv[]);
+int boringbits_main(int argc, char* argv[], int8_t boring);
 
 int print_usage(FILE *fp_help){
 
     fprintf(fp_help,"Usage: cornetto <command> [options]\n\n");
     fprintf(fp_help,"command:\n");
     fprintf(fp_help,"         boringbits      do something\n");
+    fprintf(fp_help,"         funbits          do something\n");
     //fprintf(fp_help,"         subtool2      do something\n");
 
     if(fp_help==stderr){
@@ -68,7 +69,9 @@ int main(int argc, char* argv[]){
     } else if (strcmp(argv[1],"depth")==0){
         ret=depth_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"boringbits")==0){
-        ret=boringbits_main(argc-1, argv+1);
+        ret=boringbits_main(argc-1, argv+1, 1);
+    } else if (strcmp(argv[1],"funbits")==0){
+        ret=boringbits_main(argc-1, argv+1, 0);
     } else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"cornetto %s\n",CORNETTO_VERSION);
         exit(EXIT_SUCCESS);
