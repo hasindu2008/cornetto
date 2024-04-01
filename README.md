@@ -24,9 +24,9 @@ basic options:
    -q FILE                    depth file with high mapq read coverage
    -w INT                     window size [2500]
    -i INT                     window increment [50]
-   -l FLOAT                   low coverage threshold factor [0.6]
-   -h FLOAT                   high coverage threshold factor [1.6]
-   -L FLOAT                   mapq low coverage threshold factor [0.6]
+   -L FLOAT                   low coverage threshold factor [0.6]
+   -H FLOAT                   high coverage threshold factor [1.6]
+   -Q FLOAT                   mapq low coverage threshold factor [0.6]
    -m INT                     minimum contig length [1000000]
    -e INT                     edge length to ignore [100000]
    -h                         help

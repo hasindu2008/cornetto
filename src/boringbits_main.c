@@ -56,9 +56,9 @@ static struct option long_options[] = {
     {"qual",required_argument, 0, 'q'},             //10 cov-mq20.bg
     {"window-size",required_argument, 0, 'w'},     //11 window size
     {"window-inc",required_argument, 0, 'i'},       //12 window increment
-    {"low-thresh",required_argument, 0, 'l'},       //13 lowt hreshold for depth
-    {"high-thresh",required_argument, 0, 'h'},      //14 high threshold for depth
-    {"low-mq-thresh",required_argument, 0, 'L'},    //15 lowthreshold for mapq depth
+    {"low-thresh",required_argument, 0, 'L'},       //13 lowt hreshold for depth
+    {"high-thresh",required_argument, 0, 'H'},      //14 high threshold for depth
+    {"low-mq-thresh",required_argument, 0, 'Q'},    //15 lowthreshold for mapq depth
     {"min-ctg-len",required_argument, 0, 'm'},      //16 min contig length
     {"edge-len",required_argument, 0, 'e'},         //17 edge length to ignore
     {0, 0, 0, 0}};
@@ -94,9 +94,9 @@ static inline void print_help_msg(FILE *fp_help, optp_t opt){
     fprintf(fp_help,"   -q FILE                    depth file with high mapq read coverage\n");
     fprintf(fp_help,"   -w INT                     window size [%d]\n",opt.window_size);
     fprintf(fp_help,"   -i INT                     window increment [%d]\n",opt.window_inc);
-    fprintf(fp_help,"   -l FLOAT                   low coverage threshold factor [%.1f]\n",opt.low_cov_thresh);
-    fprintf(fp_help,"   -h FLOAT                   high coverage threshold factor [%.1f]\n",opt.high_cov_thresh);
-    fprintf(fp_help,"   -L FLOAT                   mapq low coverage threshold factor [%.1f]\n",opt.low_mq_cov_thresh);
+    fprintf(fp_help,"   -L FLOAT                   low coverage threshold factor [%.1f]\n",opt.low_cov_thresh);
+    fprintf(fp_help,"   -H FLOAT                   high coverage threshold factor [%.1f]\n",opt.high_cov_thresh);
+    fprintf(fp_help,"   -Q FLOAT                   mapq low coverage threshold factor [%.1f]\n",opt.low_mq_cov_thresh);
     fprintf(fp_help,"   -m INT                     minimum contig length [%d]\n",opt.min_ctg_len);
     fprintf(fp_help,"   -e INT                     edge length to ignore [%d]\n",opt.edge_len);
 
@@ -539,7 +539,7 @@ int boringbits_main(int argc, char* argv[], int8_t boring) {
 
     double realtime0 = realtime();
 
-    const char* optstring = "t:B:K:v:o:q:l:h:L:w:i:e:m:hV";
+    const char* optstring = "t:B:K:v:o:q:Q:H:L:w:i:e:m:hV";
 
     int longindex = 0;
     int32_t c = -1;
@@ -588,11 +588,11 @@ int boringbits_main(int argc, char* argv[], int8_t boring) {
             opt.window_size = atoi(optarg);
         } else if (c=='i'){
             opt.window_inc = atoi(optarg);
-        } else if (c=='l'){
-            opt.low_cov_thresh = atof(optarg);
-        } else if (c=='h'){
-            opt.high_cov_thresh = atof(optarg);
         } else if (c=='L'){
+            opt.low_cov_thresh = atof(optarg);
+        } else if (c=='H'){
+            opt.high_cov_thresh = atof(optarg);
+        } else if (c=='Q'){
             opt.low_mq_cov_thresh = atof(optarg);
         } else if (c=='m'){
             opt.min_ctg_len = atoi(optarg);
