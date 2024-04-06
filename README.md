@@ -86,7 +86,7 @@ awk '{print $1"\t0\t"$2}' assembly.fa.faidx > assembly.bed
 ```
 3. remove any merged intervals from (2) that are shorter than <10kb
 ```
-awk '($3-$2)>=10000'  2.bed > 3.bed
+awk '($3-$2)>=20000'  2.bed > 3.bed
 ```
 4. extend merged intervals from (3) by +10kb in either direction
 ```
@@ -125,7 +125,6 @@ do
 ctg_len=$(grep "$p" assembly.bed | cut -f 3)
 ctg_boring=$(grep "$p" ${INPUT} | awk '{sum+=$3-$2}END{ print sum}') 
 fac=$(echo "$ctg_boring*100/$ctg_len" | bc)
-echo "$fac"
 if [ "$fac" -gt "50" ];then
 	grep "$p" ${INPUT}
 fi
