@@ -115,6 +115,22 @@ awk '{if(($3-$2)<1000000) print $0}'  assembly.bed  > short.bed
 bedtools subtract -a boringbits_tmp.bed -b short.bed > boringbits.bed
 ```
 
+9. if 'boring bits' are <50% of a single contig/scaffold, remove all boring bits on the whole scaffold. Use the below horrible inefficient code snippet for now
+
+```
+INPUT=boringbits_10k.bed
+cut -f 1 ${INPUT}  | uniq > boring_ctg.tmp
+while read p; 
+do
+ctg_len=$(grep "$p" assembly.bed | cut -f 3)
+ctg_boring=$(grep "$p" ${INPUT} | awk '{sum+=$3-$2}END{ print sum}') 
+fac=$(echo "$ctg_boring*100/$ctg_len" | bc)
+echo "$fac"
+if [ "$fac" -gt "50" ];then
+	grep "$p" ${INPUT}
+fi
+done < boring_ctg.tmp > boringbits_10k_final.bed
+```
 
 ## Notes
 
