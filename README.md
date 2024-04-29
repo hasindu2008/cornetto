@@ -229,5 +229,5 @@ compleasm run -a RGBX240039_HG002.hifiasm.primary_asm.fasta -o output_dir -t 8 -
 
 ```
 # /install/vgp-pipeline/telomere/find_telomere.sh RGBX240039_HG002.hifiasm.primary_asm.fasta
-/install/vgp-pipeline/telomere/find_telomere.sh 0.4 50000 RGBX240039_HG002.hifiasm.primary_asm.fasta telo
+/install/vgp-pipeline/telomere/telomere_analysis.sh RGBX240039_HG002 0.4 50000 RGBX240039_HG002.hifiasm.primary_asm.fasta
 ```
