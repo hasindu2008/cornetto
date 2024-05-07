@@ -173,7 +173,7 @@ done < ctg.list > ctg_dir.txt
 grep "+" ctg_dir.txt | cut -f 1 > ctg_plus.txt
 grep "-" ctg_dir.txt | cut -f 1 > ctg_mins.txt
 
-samtools faidx  RGBX240039_HG002.hifiasm.primary_asm.fasta ctg_plus.txt > RGBX240039_HG002_fixed.hifiasm.primary_asm.fasta
+samtools faidx  RGBX240039_HG002.hifiasm.primary_asm.fasta -r ctg_plus.txt > RGBX240039_HG002_fixed.hifiasm.primary_asm.fasta
 samtools faidx  RGBX240039_HG002.hifiasm.primary_asm.fasta -r ctg_mins.txt -i >> RGBX240039_HG002_fixed.hifiasm.primary_asm.fasta
 ```
 
