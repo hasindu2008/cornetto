@@ -135,9 +135,11 @@ done < boring_ctg.tmp > boringbits_10k_final.bed
 
  Lazily loads the whole bloody depth file to memory, thus memory inefficient. Later, let us use the htslib to get depth from the BAM.
 
+
 ## Evaluation methods
 
 A useful article https://lh3.github.io/2021/04/17/concepts-in-phased-assemblies
+
 
 ### Dot plots
 
@@ -145,6 +147,11 @@ A useful article https://lh3.github.io/2021/04/17/concepts-in-phased-assemblies
 
 ```
 wget https://s3-us-west-2.amazonaws.com/human-pangenomics/T2T/HG002/assemblies/hg002v1.0.1.fasta.gz
+samtools faidx hg002v1.0.1.fasta.gz
+grep "PATERNAL\|chrEBV\|chrM\|chrX\|chrY" hg002v1.0.1.fasta.gz.fai | cut -f 1 > paternal.txt
+grep "MATERNAL\|chrEBV\|chrM\|chrX\|chrY" hg002v1.0.1.fasta.gz.fai | cut -f 1 > maternal.txt
+samtools faidx hg002v1.0.1.fasta.gz -r paternal.txt -o hg002v1.0.1_pat.fa
+samtools faidx hg002v1.0.1.fasta.gz -r maternal.txt -o hg002v1.0.1_mat.fa
 ```
 
 2. Minimap
