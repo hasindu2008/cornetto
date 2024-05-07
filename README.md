@@ -157,7 +157,7 @@ samtools faidx hg002v1.0.1.fasta.gz -r maternal.txt -o hg002v1.0.1_mat.fa
 2. Minimap
 
 ```
-minimap2 -t16 --eqx -cx asm5 hg002v1.0.1.fasta.gz RGBX240039_HG002.hifiasm.primary_asm.fasta > a.paf
+minimap2 -t16 --eqx -cx asm5 hg002v1.0.1_pat.fa RGBX240039_HG002.hifiasm.primary_asm.fasta > a.paf
 ```
 
 3. fix the directions
@@ -188,7 +188,12 @@ minimap2 -t16 --eqx -cx asm5 hg002v1.0.1.fasta.gz RGBX240039_HG002_fixed.hifiasm
 /install/miniasm/minidot b.paf -f 4  > a.eps
 ```
 
+A shit script that I wrote quickly (ultra-inefficient) is in scripts/minidotplot.sh which you can use as `minidotplot.sh hg002v1.0.1_pat.fa RGBX240039_HG002.hifiasm.primary_asm.fasta` for instance.
+
+
 ### assembly QV
+
+Get the trio data to generate the yak databases.
 
 Using yak:
 
@@ -202,6 +207,8 @@ Using yak:
 ```
 
 Using Merqury:
+
+WARNING: Meryl seem to take ages to run
 
 1. Get Meryl dbs from Illumina WGS and hapmers are available (wtf is a hapmer?)
 
