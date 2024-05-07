@@ -242,6 +242,7 @@ compleasm run -a RGBX240039_HG002.hifiasm.primary_asm.fasta -o output_dir -t 8 -
 ### T2T counts
 
 ```
+cat RGBX240039_HG002.hifiasm.primary_asm.hap1.fasta RGBX240039_HG002.hifiasm.primary_asm.hap2.fasta > RGBX240039_HG002.hifiasm.primary_asm.fasta
 # /install/vgp-pipeline/telomere/find_telomere.sh RGBX240039_HG002.hifiasm.primary_asm.fasta
 /install/vgp-pipeline/telomere/telomere_analysis.sh RGBX240039_HG002 0.4 50000 RGBX240039_HG002.hifiasm.primary_asm.fasta
 ```
