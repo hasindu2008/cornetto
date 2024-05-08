@@ -243,6 +243,6 @@ compleasm run -a RGBX240039_HG002.hifiasm.primary_asm.fasta -o output_dir -t 8 -
 
 ```
 cat RGBX240039_HG002.hifiasm.primary_asm.hap1.fasta RGBX240039_HG002.hifiasm.primary_asm.hap2.fasta > RGBX240039_HG002.hifiasm.primary_asm.fasta
-# /install/vgp-pipeline/telomere/find_telomere.sh RGBX240039_HG002.hifiasm.primary_asm.fasta
 /install/vgp-pipeline/telomere/telomere_analysis.sh RGBX240039_HG002 0.4 50000 RGBX240039_HG002.hifiasm.primary_asm.fasta
+cat telomere/RGBX240039_HG002.hifiasm.primary_asm.windows.0.4.50kb.ends.bed | cut -f 1  | sort | uniq -c | awk 'BEGIN{t1=0;t2=0;t3=0}{if($1==1){t1+=1}else if($1==2){t2+=1} else {t3+=1}} END{print "telo in one end:\t"t1"\ntelo in two ends:\t"t2"\ntelo more than 2 (must be 0):\t"t3"\n"}'
 ```
