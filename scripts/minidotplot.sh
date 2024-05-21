@@ -43,12 +43,12 @@ echo -n -e "${p}\t"
 grep $p ${PREFIX}.tmp.paf | cut -f 6 | sort | uniq -c | sort -k1,1 -rn | head -1 | awk '{print $2}' | awk -F'_' '{print $1}'
 done  > ${PREFIX}.chr.annotate.txt || die "grep failed"
 
-awk '{count[$2]++; if (count[$2] > 1) {print $1, $2 "_" count[$2]-1} else {print $1, $2}}' ${PREFIX}.chr.annotate.txt > ${PREFIX}.chr.rename.txt || die "awk failed"
+awk '{count[$2]++; if (count[$2] > 1) {print $1"\t"$2 "_" count[$2]-1} else {print $1"\t"$2 "_0"}}' ${PREFIX}.chr.annotate.txt > ${PREFIX}.chr.rename.txt || die "awk failed"
 
 awk '{print "s/"$1"/"$2"/g"}' ${PREFIX}.chr.rename.txt | sed -f - ${PREFIX}.tmp.fix.fasta > ${PREFIX}.tmp.renamed.fasta || die "sed failed"
 
 $MINIMAP2 -t16 --eqx -cx asm5 $REF ${PREFIX}.tmp.renamed.fasta > ${PREFIX}.fix.tmp.paf || die "minimap2 failed"
 
-${MINIDOT} ${PREFIX}.fix.tmp.paf -f 4  > ${PREFIX}.eps || die "minidot failed"
+${MINIDOT} ${PREFIX}.fix.tmp.paf -f 2  > ${PREFIX}.eps || die "minidot failed"
 
 echo "yey, all done"
