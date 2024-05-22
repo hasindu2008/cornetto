@@ -72,6 +72,8 @@ samtools faidx assembly.fa
 awk '{print $1"\t0\t"$2}' assembly.fa.faidx > assembly.bed
 ```
 
+## Cornetto 2 Pannel
+
 1. print all interesting windows with :
    - low coverage: [<0.6x] genome average
    - high coverage: [>1.6x] genome average
@@ -129,6 +131,29 @@ if [ "$fac" -gt "50" ];then
 	grep "$p" ${INPUT}
 fi
 done < boring_ctg.tmp > boringbits_10k_final.bed
+```
+
+### cornetto 3 panel
+
+```
+#1# get contigs longer than 1Mbase and make BED file covering whole contig excluding 200kb at each end
+cat assembly.bed | awk '$3 >= 1000000' | awk '{print $1"\t"200000"\t"$3-200000}' > long_contigs.200kb-excluded.bed
+
+#2# get regions longer than 5kb which were labelled by hifiasm as "low quality" (not sure what the definition of this is exactly)
+cat RGBX240039_HG002.hifiasm.primary_asm.bp.p_ctg.lowQ.bed | awk '($3-$2)>=5000' > lowQ-5kbplus.bed
+
+#3# exclude each low-Q region by 50kb on either side
+cat lowQ-5kbplus.bed | awk '{print $1"\t"$2-50000"\t"$3+50000}' | awk -vOFS='\t' '{for(i=1;i<=NF;i++)if($i<0||$i=="-nan")$i=0}1' > lowQ-5kbplus_extended.bed
+
+#4# subtract extended lowQ regions from the BED file above ins step #2#
+bedtools subtract -a long_contigs.200kb-excluded.bed -b lowQ-5kbplus_extended.bed > boring_bits.bed
+
+```
+
+### cornetto 4 panel
+
+```
+
 ```
 
 ## Notes
