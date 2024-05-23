@@ -120,7 +120,7 @@ bedtools subtract -a boringbits_tmp.bed -b short.bed > boringbits.bed
 9. if 'boring bits' are <50% of a single contig/scaffold, remove all boring bits on the whole scaffold. Use the below horrible inefficient code snippet for now
 
 ```
-INPUT=boringbits_10k.bed
+INPUT=boringbits.bed
 cut -f 1 ${INPUT}  | uniq > boring_ctg.tmp
 while read p; 
 do
@@ -130,7 +130,7 @@ fac=$(echo "$ctg_boring*100/$ctg_len" | bc)
 if [ "$fac" -gt "50" ];then
 	grep "$p" ${INPUT}
 fi
-done < boring_ctg.tmp > boringbits_10k_final.bed
+done < boring_ctg.tmp > boringbits_50k_final.bed
 ```
 
 ### cornetto 3 panel
