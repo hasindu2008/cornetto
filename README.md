@@ -101,9 +101,9 @@ awk '{if($2>10000){print $1"\t"$2-10000"\t"$3+10000} else {print $0}}' 3.bed > f
 awk '{if(($3-$2)>100000) {print $1"\t0\t100000\n"$1"\t"$3-100000"\t"$3}}'  assembly.bed >> funbits.bed
 ```
 
-6. merge any overlapping or adjacent (within 10kb) intervals from (5)
+6. merge any overlapping or adjacent (within 50kb) intervals from (5)
 ```
-bedtools sort -i funbits.bed | bedtools merge -d 10000 > funbits_merged.bed
+bedtools sort -i funbits.bed | bedtools merge -d 50000 > funbits_merged.bed
 ```
 
 7. subtract merged windows from (6) from the whole genome assembly
