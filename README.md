@@ -153,7 +153,7 @@ bedtools subtract -a long_contigs.200kb-excluded.bed -b lowQ-5kbplus_extended.be
 ### cornetto 4 panel
 
 ```
-cat boringbits_cornetto2.bed boringbits_cornetto3.bed | bedtools sort  | bedtools intersect -a boringbits_cornetto2.bed -b boringbits_cornetto3.bed > boringbits_cornetto4.bed
+bedtools intersect -a boringbits_cornetto2.bed -b boringbits_cornetto3.bed > boringbits_cornetto4.bed
 ```
 
 ## Notes
