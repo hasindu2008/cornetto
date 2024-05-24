@@ -130,7 +130,7 @@ fac=$(echo "$ctg_boring*100/$ctg_len" | bc)
 if [ "$fac" -gt "50" ];then
 	grep "$p" ${INPUT}
 fi
-done < boring_ctg.tmp > boringbits_50k_final.bed
+done < boring_ctg.tmp > boringbits_cornetto2.bed
 ```
 
 ### cornetto 3 panel
@@ -146,14 +146,14 @@ cat RGBX240039_HG002.hifiasm.primary_asm.bp.p_ctg.lowQ.bed | awk '($3-$2)>=5000'
 cat lowQ-5kbplus.bed | awk '{print $1"\t"$2-50000"\t"$3+50000}' | awk -vOFS='\t' '{for(i=1;i<=NF;i++)if($i<0||$i=="-nan")$i=0}1' > lowQ-5kbplus_extended.bed
 
 #4# subtract extended lowQ regions from the BED file above ins step #2#
-bedtools subtract -a long_contigs.200kb-excluded.bed -b lowQ-5kbplus_extended.bed > boring_bits.bed
+bedtools subtract -a long_contigs.200kb-excluded.bed -b lowQ-5kbplus_extended.bed > boringbits_cornetto3.bed
 
 ```
 
 ### cornetto 4 panel
 
 ```
-
+cat boringbits_cornetto2.bed boringbits_cornetto3.bed | bedtools sort  | bedtools intersect -a boringbits_cornetto2.bed -b boringbits_cornetto3.bed > boringbits_cornetto4.bed
 ```
 
 ## Notes
