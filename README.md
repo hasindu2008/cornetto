@@ -75,12 +75,12 @@ awk '{print $1"\t0\t"$2}' assembly.fa.faidx > assembly.bed
 ## Cornetto 2 Pannel
 
 1. print all interesting windows with :
-   - low coverage: [<0.6x] genome average
-   - high coverage: [>1.6x] genome average
-   - low mappability: [mean MQ20 cov for window is < 0.6 x mean coverage for the window]
+   - low coverage: [<0.5x] genome average
+   - high coverage: [>2.2x] genome average
+   - low mappability: [mean MQ20 cov for window is < 0.5 x mean coverage for the window]
 
 ```
-./cornetto funbits test/cov-total.bg -q test/cov-mq20.bg | awk '{if ($4!=".") print $1"\t"$2"\t"$3}' > 1.bed
+./cornetto funbits -H 2.2 -L 0.5 -Q 0.5 test/cov-total.bg -q test/cov-mq20.bg | awk '{if ($4!=".") print $1"\t"$2"\t"$3}' > 1.bed
 ```
 2. merge these interesting windows - overlapping or adjacent (within 500bp)
 ```
