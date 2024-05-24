@@ -86,7 +86,7 @@ awk '{print $1"\t0\t"$2}' assembly.fa.faidx > assembly.bed
 ```
  bedtools sort -i 1.bed | bedtools merge -d 500 > 2.bed
 ```
-3. remove any merged intervals from (2) that are shorter than <10kb
+3. remove any merged intervals from (2) that are shorter than <20kb
 ```
 awk '($3-$2)>=20000'  2.bed > 3.bed
 ```
