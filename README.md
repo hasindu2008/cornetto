@@ -153,7 +153,7 @@ bedtools subtract -a long_contigs.200kb-excluded.bed -b lowQ-5kbplus_extended.be
 ### cornetto 4 panel
 
 ```
-bedtools intersect -a boringbits_cornetto2.bed -b boringbits_cornetto3.bed > boringbits_cornetto4.bed
+scripts/create_cornetto4.sh
 ```
 
 ## Notes
