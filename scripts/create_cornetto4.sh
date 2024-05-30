@@ -10,7 +10,7 @@ BGTOTAL=RGBX240039_HG002.hifiasm.primary_asm.cov-total.bg
 BGMQ20=RGBX240039_HG002.hifiasm.primary_asm.cov-mq20.bg
 LOWQ=RGBX240039_HG002.hifiasm.primary_asm.bp.p_ctg.lowQ.bed
 
-# /home/hasindu/hasindu2008.git/cornetto/cornetto funbits -H 2.5 -L 0.4 -Q 0.4 ${BGTOTAL} -q ${BGMQ20} | awk '{if ($4!=".") print $1"\t"$2"\t"$3}' > 1_tmp.bed
+/home/hasindu/hasindu2008.git/cornetto/cornetto funbits -H 2.5 -L 0.4 -Q 0.4 ${BGTOTAL} -q ${BGMQ20} | awk '{if ($4!=".") print $1"\t"$2"\t"$3}' > 1_tmp.bed
 
 #2# merge these interesting windows - overlapping or adjacent (within 1000bp)
 cat 1_tmp.bed | sort -k1,1 -k2,2n | bedtools merge -d 1000 > 2_tmp.bed
