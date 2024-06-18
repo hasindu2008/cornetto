@@ -59,7 +59,7 @@ done
 echo ""
 echo ""
 echo "LX of Contigs whose majority is mapped to the corresponding chromosome"
-echo -e "\tL50\L90\L95\L99\CumCovN5"
+echo -e "\tL50\tL90\tL95\tL99\tCumCovN5"
 for chr in chr1_PATERNAL chr2_PATERNAL chr3_PATERNAL chr4_PATERNAL chr5_PATERNAL chr6_PATERNAL chr7_PATERNAL chr8_PATERNAL chr9_PATERNAL chr10_PATERNAL chr11_PATERNAL chr12_PATERNAL chr13_PATERNAL chr14_PATERNAL chr15_PATERNAL chr16_PATERNAL chr17_PATERNAL chr18_PATERNAL chr19_PATERNAL chr20_PATERNAL chr21_PATERNAL chr22_PATERNAL chrX_MATERNAL chrY_PATERNAL
 do
 chr_prefix=$(echo $chr | awk -F'_' '{print $1}')
