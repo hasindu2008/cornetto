@@ -50,6 +50,30 @@ LEN=$(awk -v chr="$chr" '{if($6==chr) print $1"\t"$7}' $FILE | head -1 | cut -f 
 awk -v chr="$chr" '{if($6==chr) print $1"\t"$9-$8}' $FILE | sort -k1,1 | datamash -g 1 sum 2 | grep "$chr_prefix""_" | awk -v chr=$chr_prefix -v len="$LEN" 'BEGIN{c0=0;s0=0;c01=0;s01=0;c1=0;s1=0;c5=0;s5=0;c10=0;c10=0;}{if($2>0){c0+=1; s0+=$2} if($2>=100000){c01+=1; s01+=$2} if($2>=1000000){c1+=1; s1+=$2} if($2>=5000000){c5+=1; s5+=$2} if($2>=10000000){c10+=1; s10+=$2}  }END{print chr"\t"c0"\t"c01"\t"c1"\t"c5"\t"c10"\t"s0/len*100"\t"s01/len*100"\t"s1/len*100"\t"s5/len*100"\t"s10/len*100}'
 done
 
+
+# L50: Min N major-mapping contigs that cover >= 50% of chromosome [n=X]
+# L90: Min N major-mapping contigs that cover >= 90% of chromosome [n=X]
+# L95: Min N major-mapping contigs that cover >= 95% of chromosome [n=X]
+# L99: Min N major-mapping contigs that cover >= 99% of chromosome [n=X]
+# CumCovN5: Cumulative % covered by n=5 largest contigs [n%,n%,n%,n%,n%]
+echo ""
+echo ""
+echo "LX of Contigs whose majority is mapped to the corresponding chromosome"
+echo -e "\tL50\L90\L95\L99\CumCovN5"
+for chr in chr1_PATERNAL chr2_PATERNAL chr3_PATERNAL chr4_PATERNAL chr5_PATERNAL chr6_PATERNAL chr7_PATERNAL chr8_PATERNAL chr9_PATERNAL chr10_PATERNAL chr11_PATERNAL chr12_PATERNAL chr13_PATERNAL chr14_PATERNAL chr15_PATERNAL chr16_PATERNAL chr17_PATERNAL chr18_PATERNAL chr19_PATERNAL chr20_PATERNAL chr21_PATERNAL chr22_PATERNAL chrX_MATERNAL chrY_PATERNAL
+do
+chr_prefix=$(echo $chr | awk -F'_' '{print $1}')
+LEN=$(awk -v chr="$chr" '{if($6==chr) print $1"\t"$7}' $FILE | head -1 | cut -f 2 ) # length of the chromosome
+
+# 1. get the contigs aligned to the chromosome with the alignment block length on the chr
+# 2. sort the contigs by contig name
+# 3. get the sum of the alignment block length for each contig
+# 4. filter the contigs that are >50% of its length are actually aligned to the chromosome
+# 5. get the counts and stats
+awk -v chr="$chr" '{if($6==chr) print $1"\t"$9-$8}' $FILE | sort -k1,1 | datamash -g 1 sum 2 | grep "$chr_prefix""_" | cut -f 2 | sort -r -n | awk -v chr=$chr_prefix -v len="$LEN" 'BEGIN{l50=0;l90=0;l95=0;l99=0;sum=0;CumCovN5=0;} { sum+=$1; if(sum>=len*0.50 && l50==0){l50=NR} if(sum>=len*0.90 && l90==0){l90=NR} if(sum>=len*0.95 && l95==0){l95=NR}  if(sum>=len*0.99 && l99==0){l99=NR} if(NR<=5) {CumCovN5+=$1} } END{print chr"\t"l50"\t"l90"\t"l95"\t"l99"\t"CumCovN5/len*100}'
+done
+
+
 echo ""
 echo ""
 echo "Contigs whose majority is mapped to another chromosome"
@@ -60,5 +84,11 @@ for chr in chr1_PATERNAL chr2_PATERNAL chr3_PATERNAL chr4_PATERNAL chr5_PATERNAL
 do
 chr_prefix=$(echo $chr | awk -F'_' '{print $1}')
 LEN=$(awk -v chr="$chr" '{if($6==chr) print $1"\t"$7}' $FILE | head -1 | cut -f 2 ) # length of the chromosome
+
+# 1. get the contigs aligned to the chromosome with the alignment block length on the chr
+# 2. sort the contigs by contig name
+# 3. get the sum of the alignment block length for each contig
+# 4. filter the contigs that are >50% of its length are actually aligned to the chromosome
+# 5. get the counts and stats
 awk -v chr="$chr" '{if($6==chr) print $1"\t"$9-$8}' $FILE | sort -k1,1 | datamash -g 1 sum 2 | grep -v "$chr_prefix""_" | awk -v chr=$chr_prefix -v len="$LEN" 'BEGIN{c0=0;s0=0;c01=0;s01=0;c1=0;s1=0;c5=0;s5=0;c10=0;c10=0;}{if($2>0){c0+=1; s0+=$2} if($2>=100000){c01+=1; s01+=$2} if($2>=1000000){c1+=1; s1+=$2} if($2>=5000000){c5+=1; s5+=$2} if($2>=10000000){c10+=1; s10+=$2}  }END{print chr"\t"c0"\t"c01"\t"c1"\t"c5"\t"c10"\t"s0/len*100"\t"s01/len*100"\t"s1/len*100"\t"s5/len*100"\t"s10/len*100}'
 done
