@@ -324,3 +324,8 @@ You may use the `scripts/telostats.sh`.
 
 Launch `scripts/asmstats.sh` e.g. RGBX240039_HG002.hifiasm.primary_asm.fasta.
 
+### PAF to depth
+
+```
+cat HG002_asm.hifiasm-cornetto5-2.fasta.fix.tmp.paf | awk '{print $6"\t"$8"\t"$9"\t"$1"\t"$12"\t"$5}' > HG002_asm.hifiasm-cornetto5-2.fasta.fix.tmp.paf.bed
+```
