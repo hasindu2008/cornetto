@@ -329,3 +329,20 @@ Launch `scripts/asmstats.sh` e.g. RGBX240039_HG002.hifiasm.primary_asm.fasta.
 ```
 cat HG002_asm.hifiasm-cornetto5-2.fasta.fix.tmp.paf | awk '{print $6"\t"$8"\t"$9"\t"$1"\t"$12"\t"$5}' > HG002_asm.hifiasm-cornetto5-2.fasta.fix.tmp.paf.bed
 ```
+
+### t2t-aware fishembly
+
+```
+scp gadi:/g/data/ox63/cornetto/HG002/evaluation/mapping_to_reference/PGXHXX240192_0.5.duplex_reads_out/PGXHXX240192_0.5.duplex_reads.hg002v1.0.1_pat.bam .
+samtools index PGXHXX240192_0.5.duplex_reads.hg002v1.0.1_pat.bam
+scp gadi:/g/data/ox63/cornetto/data/gtg_internal/HG002/PGXHXX240192_0.5.duplex_reads.fastq .
+samtools fqidx PGXHXX240192_0.5.duplex_reads.fastq
+
+samtools view PGXHXX240192_0.5.duplex_reads.hg002v1.0.1_pat.bam chr3_PATERNAL | cut -f 1 > t2t_rid.txt
+samtools view PGXHXX240192_0.5.duplex_reads.hg002v1.0.1_pat.bam chr11_PATERNAL | cut -f 1 >> t2t_rid.txt
+sort -u t2t_rid.txt > t2t_rid_uniq.txt
+cut -f 1 PGXHXX240192_0.5.duplex_reads.fastq.fai > all_reads.txt
+grep -v -F -f  t2t_rid_uniq.txt all_reads.txt > good.txt
+samtools fqidx -r good.txt PGXHXX240192_0.5.duplex_reads.fastq  > PGXHXX240192_0.5.duplex_reads_good2.fastq
+
+
