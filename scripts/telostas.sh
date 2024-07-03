@@ -9,11 +9,13 @@ die(){
 
 FILE=$1
 
+test -z ${TELO_SCRIPT_PATH} && TELO_SCRIPT_PATH=/install/vgp-pipeline/telomere/telomere_analysis.sh
+
 test -f $FILE || die "File $FILE not found"
 PREFIX=$(basename $FILE .fasta)
 BED=${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed
 
-/install/vgp-pipeline/telomere/telomere_analysis.sh ${PREFIX} 0.4 50000 ${FILE}
+${TELO_SCRIPT_PATH} ${PREFIX} 0.4 50000 ${FILE}
 test -e ${BED} || die "telomere_analysis.sh failed"
 
 echo -e "FILE\t${FILE}"

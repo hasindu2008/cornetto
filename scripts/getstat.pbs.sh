@@ -49,8 +49,9 @@ samtools --version || die "Could not find samtools"
 
 export MINIDOT=/g/data/ox63/install/miniasm/minidot
 export PATH=$PATH:/g/data/ox63/install/datamash
+export TELO_SCRIPT_PATH=/g/data/ox63/install/vgp-pipeline/telomere/telomere_analysis.sh
+export SCRIPT_DIR=/g/data/ox63/hasindu2008.git/cornetto/scripts
 
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 ${SCRIPT_DIR}/minidotplot.sh ${REF} ${ASM}  || die "Failed to run minidotplot"
 
 ${SCRIPT_DIR}/telostas.sh ${ASM}  || die "Failed to run telostas"
