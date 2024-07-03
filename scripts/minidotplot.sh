@@ -9,7 +9,7 @@ die() {
 
 MINIMAP2=minimap2
 SAMTOOLS=samtools
-MINIDOT=/install/miniasm/minidot
+test -z ${MINIDOT} && MINIDOT=/install/miniasm/minidot
 
 REF=$1
 ASM=$2
