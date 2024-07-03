@@ -50,7 +50,7 @@ minimap2 --version || die "Could not find minimap2"
 samtools --version || die "Could not find samtools"
 
 export MINIDOT=/g/data/ox63/install/miniasm/minidot
-export PATH=$PATH:/g/data/ox63/install/datamash
+export PATH=$PATH:/g/data/ox63/install/datamash-1.3/
 export TELO_SCRIPT_PATH=/g/data/ox63/install/vgp-pipeline/telomere/telomere_analysis.sh
 export SCRIPT_DIR=/g/data/ox63/hasindu/cornetto/cornetto/scripts
 
@@ -63,6 +63,6 @@ test -e ${FILENAME} ||  die "Assembly file not available in the current director
 
 ${SCRIPT_DIR}/minidotplot.sh ${REF} ${FILENAME}  || die "Failed to run minidotplot"
 
-${SCRIPT_DIR}/telostas.sh ${FILENAME}  || die "Failed to run telostas"
+${SCRIPT_DIR}/telostas.sh ${FILENAME} > ${FILENAME}.telostas.txt || die "Failed to run telostas"
 
 ${SCRIPT_DIR}/asmstats.sh ${FILENAME} > ${FILENAME}.asmstats.txt || die "Failed to run asmstats"

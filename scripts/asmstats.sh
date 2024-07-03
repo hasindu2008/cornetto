@@ -11,6 +11,8 @@ die() {
 
 [ $# -ne 1 ] && die "Usage: $0 <FASTA>"
 
+datamash --version || die "Datamash not found"
+
 FASTA=$1
 PREFIX=$(basename $FASTA .fasta)
 FILE=$PREFIX.fasta.fix.tmp.paf
