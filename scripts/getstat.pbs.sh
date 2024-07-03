@@ -58,7 +58,7 @@ test -z $REF && die "Reference file not provided"
 test -z $ASM && die "Assembly file not provided"
 
 FILENAME=$(basename ${ASM})
-test -e ${ASM} || cp ${ASM} ${FILENAME}
+test -e ${FILENAME} || cp ${ASM} ${FILENAME}
 test -e ${FILENAME} ||  die "Assembly file not available in the current directory"
 
 ${SCRIPT_DIR}/minidotplot.sh ${REF} ${FILENAME}  || die "Failed to run minidotplot"
