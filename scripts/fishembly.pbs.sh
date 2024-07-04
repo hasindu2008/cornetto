@@ -16,15 +16,15 @@
 # 1. wv19 and ox63 to your own projects
 
 # to run:
-# qsub -v FASTQ=/path/to/duplex_reads.fastq,BAM=/path/to/duplex_reads.hg002v1.0.1_pat.bam ./fishsembly.pbs.sh
+# qsub -v FASTQ=/path/to/duplex_reads.fastq,BAM=/path/to/duplex_reads.hg002v1.0.1_pat.bam ./fishembly.pbs.sh
 
 ###################################################################
 
-CHR_LIST="chr3_PATERNAL  chr11_PATERNAL"
+CHR_LIST="chr3_PATERNAL chr6_PATERNAL chr11_PATERNAL chr12_PATERNAL  chr18_PATERNAL chr20_PATERNAL"
 OUTPUT="duplex_reads_good.fastq"
 
 usage() {
-	echo "Usage: qsub -v qsub -v FASTQ=/path/to/duplex_reads.fastq,BAM=/path/to/duplex_reads.hg002v1.0.1_pat.bam ./fishsembly.pbs.sh" >&2
+	echo "Usage: qsub -v qsub -v FASTQ=/path/to/duplex_reads.fastq,BAM=/path/to/duplex_reads.hg002v1.0.1_pat.bam ./fishembly.pbs.sh" >&2
 	echo
 	exit 1
 }
