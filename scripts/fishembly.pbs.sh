@@ -35,7 +35,7 @@ usage() {
 #ref
 [ -z "${BAM}" ] && usage
 
-module load samtools/1.12
+module load samtools/1.19
 
 ###################################################################
 
