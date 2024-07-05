@@ -24,7 +24,7 @@ CHR_LIST="chr3_PATERNAL chr6_PATERNAL chr11_PATERNAL chr12_PATERNAL  chr18_PATER
 OUTPUT="duplex_reads_good.fastq"
 
 usage() {
-	echo "Usage: qsub -v qsub -v FASTQ=/path/to/duplex_reads.fastq,BAM=/path/to/duplex_reads.hg002v1.0.1_pat.bam ./fishembly.pbs.sh" >&2
+	echo "Usage: qsub -v FASTQ=/path/to/duplex_reads.fastq,BAM=/path/to/duplex_reads.hg002v1.0.1_pat.bam ./fishembly.pbs.sh" >&2
 	echo
 	exit 1
 }

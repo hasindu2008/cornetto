@@ -72,7 +72,7 @@ LEN=$(awk -v chr="$chr" '{if($6==chr) print $1"\t"$7}' $FILE | head -1 | cut -f 
 # 3. get the sum of the alignment block length for each contig
 # 4. filter the contigs that are >50% of its length are actually aligned to the chromosome
 # 5. get the counts and stats
-awk -v chr="$chr" '{if($6==chr) print $1"\t"$9-$8}' $FILE | sort -k1,1 | datamash -g 1 sum 2 | grep "$chr_prefix""_" | cut -f 2 | sort -r -n | awk -v chr=$chr_prefix -v len="$LEN" 'BEGIN{l50=0;l90=0;l95=0;l99=0;sum=0;CumCovN5=0;} { sum+=$1; if(sum>=len*0.50 && l50==0){l50=NR} if(sum>=len*0.90 && l90==0){l90=NR} if(sum>=len*0.95 && l95==0){l95=NR}  if(sum>=len*0.99 && l99==0){l99=NR} if(NR<=5) {CumCovN5+=$1} } END{print chr"\t"l50"\t"l90"\t"l95"\t"l99"\t"CumCovN5/len*100}'
+awk -v chr="$chr" '{if($6==chr) print $1"\t"$9-$8}' $FILE | sort -k1,1 | datamash -g 1 sum 2 | grep "$chr_prefix""_" | cut -f 2 | sort -r -n | awk -v chr=$chr_prefix -v len="$LEN" 'BEGIN{l50=0;l90=0;l95=0;l99=0;sum=0;CumCov1=0;CumCov2=0;CumCov3=0;CumCov4=0;CumCov5=0;} { sum+=$1; if(sum>=len*0.50 && l50==0){l50=NR} if(sum>=len*0.90 && l90==0){l90=NR} if(sum>=len*0.95 && l95==0){l95=NR}  if(sum>=len*0.99 && l99==0){l99=NR} if(NR<=1) {CumCov1+=$1} if(NR<=2) {CumCov2+=$1} if(NR<=3) {CumCov3+=$1} if(NR<=4) {CumCov4+=$1} if(NR<=5) {CumCov5+=$1} } END{print chr"\t"l50"\t"l90"\t"l95"\t"l99"\t"CumCov1/len*100","CumCov2/len*100","CumCov3/len*100","CumCov4/len*100","CumCov5/len*100}'
 done
 
 
