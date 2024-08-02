@@ -352,7 +352,7 @@ Ass based:
 scp gadi:/g/data/ox63/cornetto/data/gtg_internal/HG002/PGXHXX240192_0.5.duplex_reads.fastq .
 samtools fqidx PGXHXX240192_0.5.duplex_reads.fastq
 scp gadi:/g/data/ox63/cornetto/HG002/cornetto_assemblies/HG002_asm.hifiasm-cornetto4-5/HG002_asm.hifiasm-cornetto4-5.fasta .
-minimap2 -ax map-ont --secondary=no -t20 HG002_asm.hifiasm-cornetto4-5.fasta PGXHXX240192_0.5.duplex_reads.fastq > PGXHXX240192_0.5.duplex_reads.cornetto4-5.bam
+minimap2 -ax map-ont --secondary=no -t20 HG002_asm.hifiasm-cornetto4-5.fasta PGXHXX240192_0.5.duplex_reads.fastq | samtools sort - -o PGXHXX240192_0.5.duplex_reads.cornetto4-5.bam
 cat HG002_asm.hifiasm-cornetto4-5/HG002_asm.hifiasm-cornetto4-5.windows.0.4.50kb.ends.bed  | cut -f 1  | sort | uniq -c | sort -nr -k1,1
 
 samtools index PGXHXX240192_0.5.duplex_reads.cornetto4-5.bam
