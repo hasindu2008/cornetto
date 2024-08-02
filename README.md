@@ -332,6 +332,7 @@ cat HG002_asm.hifiasm-cornetto5-2.fasta.fix.tmp.paf | awk '{print $6"\t"$8"\t"$9
 
 ### t2t-aware fishembly
 
+Ref based:
 ```
 scp gadi:/g/data/ox63/cornetto/HG002/evaluation/mapping_to_reference/PGXHXX240192_0.5.duplex_reads_out/PGXHXX240192_0.5.duplex_reads.hg002v1.0.1_pat.bam .
 samtools index PGXHXX240192_0.5.duplex_reads.hg002v1.0.1_pat.bam
@@ -344,5 +345,21 @@ sort -u t2t_rid.txt > t2t_rid_uniq.txt
 cut -f 1 PGXHXX240192_0.5.duplex_reads.fastq.fai > all_reads.txt
 grep -v -F -f  t2t_rid_uniq.txt all_reads.txt > good.txt
 samtools fqidx -r good.txt PGXHXX240192_0.5.duplex_reads.fastq  > PGXHXX240192_0.5.duplex_reads_good2.fastq
+```
 
+Ass based:
+```
+scp gadi:/g/data/ox63/cornetto/data/gtg_internal/HG002/PGXHXX240192_0.5.duplex_reads.fastq .
+samtools fqidx PGXHXX240192_0.5.duplex_reads.fastq
+scp gadi:/g/data/ox63/cornetto/HG002/cornetto_assemblies/HG002_asm.hifiasm-cornetto4-5/HG002_asm.hifiasm-cornetto4-5.fasta .
+minimap2 -ax map-ont --secondary=no -t20 HG002_asm.hifiasm-cornetto4-5.fasta PGXHXX240192_0.5.duplex_reads.fastq > PGXHXX240192_0.5.duplex_reads.cornetto4-5.bam
+cat HG002_asm.hifiasm-cornetto4-5/HG002_asm.hifiasm-cornetto4-5.windows.0.4.50kb.ends.bed  | cut -f 1  | sort | uniq -c | sort -nr -k1,1
 
+samtools index PGXHXX240192_0.5.duplex_reads.cornetto4-5.bam
+samtools view PGXHXX240192_0.5.duplex_reads.cornetto4-5.bam ptg000019l | cut -f 1 > t2t_rid.txt
+samtools view PGXHXX240192_0.5.duplex_reads.cornetto4-5.bam ptg000002l | cut -f 1 >> t2t_rid.txt
+sort -u t2t_rid.txt > t2t_rid_uniq.txt
+cut -f 1 PGXHXX240192_0.5.duplex_reads.fastq.fai > all_reads.txt
+grep -v -F -f  t2t_rid_uniq.txt all_reads.txt > good.txt
+samtools fqidx -r good.txt PGXHXX240192_0.5.duplex_reads.fastq  > PGXHXX240192_0.5.duplex_reads_good.fastq
+```
