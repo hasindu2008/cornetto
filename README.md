@@ -382,18 +382,19 @@ Cornetto duplex assembly (created without removing any telomere reads) (A_1):
 ~/hasindu2008.git/cornetto/scripts/telostas.sh A_0-RGBX240039_HG002.fasta
 
 2. If a contig has a corner with a telomere, create a 100kb window covering that corner.
-cat A_0-RGBX240039_HG002/A_0-RGBX240039_HG002.windows.0.4.50kb.ends.bed | awk '{if($2==0) { print $1":0-100000" } else if ($3-100000>100000 ) { print $1":"$3-100000"-"$3 } }' > telocorners.txt
+cat A_0-RGBX240039_HG002/A_0-RGBX240039_HG002.windows.0.4.50kb.ends.bed | awk '{if($2==0) { print $1"\t0\t100000" } else if ($3-100000>100000 ) { print $1"\t"$3-100000"\t"$3 } }' > telocorners.txt
 
 3. Align duplex FASTQ file (A_1) to HiFi assembly (A_0) and identify any read that is a unique (MapQ>=5), primary alignment within a telomere corner window; save IDs.
 minimap2 -ax map-ont --secondary=no -t20 A_0-RGBX240039_HG002.fasta A_1-QGXHXX240262.duplex_reads.fastq.gz | samtools sort - -o A_1-QGXHXX240262.duplex_reads.A_0.bam && samtools index A_1-QGXHXX240262.duplex_reads.A_0.bam 
-samtools view A_1-QGXHXX240262.duplex_reads.A_0.bam -r telocorners.txt | cut -f 1 >  t2t_rid.txt
+samtools view A_1-QGXHXX240262.duplex_reads.A_0.bam -L telocorners.txt | cut -f 1 >  t2t_rid.txt
 sort -u t2t_rid.txt > t2t_rid_uniq.txt
 
 4. Remove reads labelled in (3) from the Duplex FASTQ file (A_1) to create a new FASTQ file: A_1-clean.
-cut -f 1 PGXHXX240192_0.5.duplex_reads.fastq.fai > all_reads.txt
-grep -v -F -f  t2t_rid_uniq.txt all_reads.txt > good.txt
+
 gunzip A_1-QGXHXX240262.duplex_reads.fastq.gz
 samtools fqidx A_1-QGXHXX240262.duplex_reads.fastq
+cut -f 1 A_1-QGXHXX240262.duplex_reads.fastq.fai > all_reads.txt
+grep -v -F -f  t2t_rid_uniq.txt all_reads.txt > good.txt
 samtools fqidx -r good.txt A_1-QGXHXX240262.duplex_reads.fastq  > A_1-QGXHXX240262_clean.duplex_reads.fastq
 ```
 
