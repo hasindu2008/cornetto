@@ -10,7 +10,8 @@ die() {
 NAME=$1
 DATA_PATH=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/autocall_hasindu/
 FRIDGE_PATH=/data3/cornetto/
-SCRIPT_PATH=$(dirname "$0")
+SCRIPT_REALPATH=$(realpath "$0")
+SCRIPT_PATH=$(dirname "$SCRIPT_REALPATH")
 
 
 test -e $SCRIPT_PATH/fridge_dload.sge.sh || die "Could not find $SCRIPT_PATH/fridge_dload.sge.sh"
