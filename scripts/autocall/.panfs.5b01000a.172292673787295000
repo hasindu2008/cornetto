@@ -20,11 +20,11 @@ test -e $SCRIPT_PATH/split_dorado_duplex.sge.sh || die "Could not find $SCRIPT_P
 test -e $SCRIPT_PATH/get_duplex_and_simplex_reads.sge.sh || die "Could not find $SCRIPT_PATH/get_duplex_and_simplex_reads.sge.sh"
 
 cd $DATA_PATH/ || die "Could not cd to $DATA_PATH"
-mkdir ${NAME} || die "Could not create ${NAME}"
+#mkdir ${NAME} || die "Could not create ${NAME}"
 cd ${NAME} || die "Could not cd to ${NAME}"
 
-qsub -sync y $SCRIPT_PATH/fridge_dload.sge.sh ${FRIDGE_PATH}/${NAME}.blow5 ./ || die "Could not download the data"
-qsub -sync y $SCRIPT_PATH/split_dorado_duplex.sge.sh ${NAME} || die "Could not basecall the data"
+#qsub -sync y $SCRIPT_PATH/fridge_dload.sge.sh ${FRIDGE_PATH}/${NAME}.blow5 ./ || die "Could not download the data"
+#qsub -sync y $SCRIPT_PATH/split_dorado_duplex.sge.sh ${NAME} || die "Could not basecall the data"
 
 #handle those failed basecall files if any?
 # these qsub scripts are not propoerly error checked
