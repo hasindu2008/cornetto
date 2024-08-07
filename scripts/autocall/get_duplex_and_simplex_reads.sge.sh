@@ -19,6 +19,7 @@ BAM_LIST=${SAMPLE}_duplex_out/split_bam.list
 find ${SAMPLE}_duplex_out/split_bam/ -name *.bam > ${BAM_LIST}
 
 export PATH=$PATH:/home/iradev/scripts/
+export MODULEPATH=$MODULEPATH:/share/ClusterShare/Modules/modulefiles/noarch:/share/ClusterShare/Modules/modulefiles/centos6.2_x86_64:/share/ClusterShare/Modules/modulefiles/contrib/:/usr/share/Modules/modulefiles:/etc/modulefiles
 module load centos7.8/aletan/samtools/1.14
 module load centos6.10/gi/pigz/2.3
 module load centos7.8/qiadu/minimap2/2.22

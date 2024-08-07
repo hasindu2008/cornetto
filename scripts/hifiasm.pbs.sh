@@ -10,16 +10,10 @@
 #PBS -l wd
 #PBS -M i.deveson@garvan.org.au
 
-THREADS=24
-
-export MODULEPATH=$MODULEPATH:/g/data/if89/apps/modulefiles/
-
 ## inputs
 DATADIR=/g/data/ox63/cornetto/data/gtg_internal/HG002/
-HIFI_A_0=${DATADIR}/RGBX240039_HG002.hifi.fastq.gz
-HIFI_B_0=${DATADIR}/RGBX240196_HG002.hifi.fastq.gz
-DUP_A_1=${DATADIR}/A_1-QGXHXX240262.duplex_reads.fastq.gz
-DUP_B_1=${DATADIR}/B_1-QGXHXX240263.duplex_reads.fastq.gz
+HIFI_0=${DATADIR}/RGBX240039_HG002.hifi.fastq.gz
+DUP_1=${DATADIR}/A_1-QGXHXX240262.duplex_reads.fastq.gz
 
 ## outputs
 ASM=hg002-cornetto-A_1
@@ -27,6 +21,7 @@ CHROMBED=${ASM}.chroms.bed
 CHROMSIZES=${ASM}.chromsizes.tsv
 
 ## load software
+export MODULEPATH=$MODULEPATH:/g/data/if89/apps/modulefiles/
 module load hifiasm/0.19.8
 module load minimap2/2.24
 module load samtools/1.19
@@ -35,11 +30,14 @@ module load quast/5.1.0rc1
 
 GFATOOLS=/g/data/ox63/ira/adaptive_assembly/gfatools/gfatools
 FLATTEN=/g/data/te53/ontsv/sv_parsing/scripts/flattenFasta.pl
+REFERENCE=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
+GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/scripts/getstat.pbs.sh
+THREADS=${PBS_NCPUS}
 
 #########################################
 
 ## generate assembly with hifiasm
-hifiasm -t ${THREADS} --hg-size 3g -o ${ASM} ${HIFI_A_0} ${DUP_A_1}
+hifiasm -t ${THREADS} --hg-size 3g -o ${ASM} ${HIFI_0} ${DUP_1}
 
 ## convert assembly graph to FASTA format
 ${GFATOOLS} gfa2fa ${ASM}.bp.p_ctg.gfa > ${ASM}.fasta
@@ -59,6 +57,6 @@ ASMPATH=`realpath ${ASM}.fasta`
 quast.py -t ${THREADS} -o ${ASM}.quast_out -l ${ASM} --large ${ASMPATH}
 
 ## run hasindu chromosomes stats script
-qsub -v REF=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa,ASM=${ASMPATH} /g/data/ox63/hasindu/cornetto/cornetto/scripts/getstat.pbs.sh
+qsub -v REF=${REFERENCE},ASM=${ASMPATH} ${GETSTAT_SCRIPT}
 
 
