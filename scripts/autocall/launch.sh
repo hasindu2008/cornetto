@@ -10,15 +10,17 @@ die() {
 #PREFIX=A_1
 #SAMPLE=QGXHXX240275
 
-test $# -eq 2 || die "Usage: $0 <prefix:A_1> <sample:QGXHXX240275>"
+test $# -eq 3 || die "Usage: $0 <prefix:A_1> <sample:QGXHXX240275> <pacbiofastq>"
 
 PREFIX=$1
 SAMPLE=$2
+BASEFASTQ=$3
 
 FRIDGE_TMP=/data3/cornetto
 BRENNER_SCRIPT=/home/hasgam/hasindu2008.git/cornetto/scripts/autocall/autocall.sh
 BRENNER_DATA=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/autocall_hasindu/
 GADI_DATA=/g/data/ox63/hasindu/cornetto/autocall
+GADI_BASEDATA=/g/data/ox63/cornetto/data/gtg_internal/HG002/
 
 NAME=${PREFIX}_${SAMPLE}
 
@@ -29,7 +31,7 @@ checkshit() {
     ssh brenner-fpga "test -d ${BRENNER_DATA}/${NAME}" && die "${BRENNER_DATA}/${NAME} already exists on brenner-fpga. Delete that shit first"
     ssh gadi "test -d ${GADI_DATA}" || die "${GADI_DATA} not found on gadi"
     ssh gadi "test -d ${GADI_DATA}/${NAME}" && die "${GADI_DATA}/${NAME} already exists on gadi. Delete that shit first"
-
+    ssh gadi "test -e ${GADI_BASEDATA}/BASEFASTQ" || die "${GADI_BASEDATA}/BASEFASTQ not found on gadi"
 }
 
 checkshit
