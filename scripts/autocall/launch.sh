@@ -40,6 +40,6 @@ slow5tools stats ${PREFIX}_${SAMPLE}.blow5 || die "Could not get stats"
 
 COMMAND="screen -S autocall_${PREFIX}_${SAMPLE} -d -m -L ${BRENNER_SCRIPT} ${NAME}"
 echo "$COMMAND"
-ssh brenner-fpga "$COMMAND"
+ssh brenner-fpga -t 'source ~/.bashrc' "$COMMAND"
 
 echo "Handed the work to the brenner-fpga"
