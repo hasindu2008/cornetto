@@ -11,24 +11,25 @@
 #PBS -M i.deveson@garvan.org.au
 
 usage() {
-	echo "Usage: qsub -v PREFIX=A_1,ONT_SAMPLE=QGXHXX240275(optional),BASE_FASTQ=RGBX240039_HG002.hifi.fastq.gz ./getstat.pbs.sh" >&2
+	echo "Usage: qsub -v BASE_FASTQ=RGBX240039_HG002.hifi.fastq.gz,OUT_PREFIX=hg002-cornetto-A_1(optional),DUPLEX1=A_1_QGXHXX240275(optional), ./getstat.pbs.sh" >&2
 	echo
 	exit 1
 }
 
 #output prefix
-[ -z "${PREFIX}" ] && usage
+[ -z "${OUT_PREFIX}" ] && OUT_PREFIX=hg002-cornetto-A_1
 #pacbio fastq
 [ -z "${BASE_FASTQ}" ] && usage
-#ref
-[ -z "${REF}" ] && usage
 
 ## inputs
 BASEDATA_DIR=/g/data/ox63/cornetto/data/gtg_internal/HG002/
 HIFI_0=${BASEDATA_DIR}/${BASE_FASTQ}
 
-ONT_DATADIR=/g/data/ox63/hasindu/cornetto/autocall/${PREFIX}_${ONT_SAMPLE}/
-DUP1=${ONT_DATADIR}/${PREFIX}_${ONT_SAMPLE}.duplex_reads.fastq
+ONT_DATADIR=/g/data/ox63/hasindu/cornetto/autocall/
+DUP1=${ONT_DATADIR}/${DUPLEX1}/${DUPLEX1}.duplex_reads.fastq
+
+FASTQ_LIST=${HIFI_0}
+test -z "${DUP1}" || FASTQ_LIST="${FASTQ_LIST} ${DUP1}"
 
 ## outputs
 ASM=${PREFIX}
@@ -59,7 +60,7 @@ THREADS=${PBS_NCPUS}
 #########################################
 
 ## generate assembly with hifiasm
-hifiasm -t ${THREADS} --hg-size 3g -o ${ASM} ${HIFI_0} ${DUP_1}
+hifiasm -t ${THREADS} --hg-size 3g -o ${ASM} ${FASTQ_LIST}
 
 ## convert assembly graph to FASTA format
 ${GFATOOLS} gfa2fa ${ASM}.bp.p_ctg.gfa > ${ASM}.fasta
