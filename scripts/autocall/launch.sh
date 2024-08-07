@@ -38,8 +38,8 @@ cd ${FRIDGE_TMP} || die "Could not cd to ${FRIDGE_TMP}"
 slow5tools merge /data/${SAMPLE}/*/*/slow5/ -o ${PREFIX}_${SAMPLE}.blow5 || die "Could not merge slow5 files"
 slow5tools stats ${PREFIX}_${SAMPLE}.blow5 || die "Could not get stats"
 
-COMMAND="screen -S autocall_${PREFIX}_${SAMPLE} -d -m -L ${BRENNER_SCRIPT} ${NAME}"
+COMMAND="source ~/.bashrc; screen -S autocall_${PREFIX}_${SAMPLE} -d -m -L ${BRENNER_SCRIPT} ${NAME}"
 echo "$COMMAND"
-ssh brenner-fpga -t 'source ~/.bashrc' "$COMMAND"
+ssh brenner-fpga "$COMMAND"
 
 echo "Handed the work to the brenner-fpga"
