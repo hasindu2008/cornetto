@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -P ox63
-#PBS -q express
+#PBS -q normal
 #PBS -N hifiasm
 #PBS -l walltime=12:00:00
 #PBS -l storage=gdata/ox63+scratch/ox63+scratch/if89+gdata/if89+gdata/te53
@@ -11,7 +11,7 @@
 #PBS -M i.deveson@garvan.org.au
 
 usage() {
-	echo "Usage: qsub -v BASE_FASTQ=/path/to/RGBX240039_HG002.hifi.fastq.gz,OUT_PREFIX=hg002-cornetto-A_1(optional),DUPLEX1=A_1_QGXHXX240275(optional),DUPLEX2=.... ./getstat.pbs.sh" >&2
+	echo "Usage: qsub -v BASE_FASTQ=/path/to/RGBX240039_HG002.hifi.fastq.gz,OUT_PREFIX=hg002-cornetto-A_1(optional),DUPLEX1=A_1_QGXHXX240275(optional),DUPLEX2=.... ./hifiasm.pbs.sh" >&2
 	echo
 	exit 1
 }
@@ -31,14 +31,14 @@ DUP3=${ONT_DATADIR}/${DUPLEX3}/${DUPLEX3}.duplex_reads.fastq
 DUP4=${ONT_DATADIR}/${DUPLEX4}/${DUPLEX4}.duplex_reads.fastq
 
 FASTQ_LIST=${HIFI_0}
-test -z "${DUP1}" || FASTQ_LIST="${FASTQ_LIST} ${DUP1}"
-test -z "${DUP2}" || FASTQ_LIST="${FASTQ_LIST} ${DUP2}"
-test -z "${DUP3}" || FASTQ_LIST="${FASTQ_LIST} ${DUP3}"
-test -z "${DUP4}" || FASTQ_LIST="${FASTQ_LIST} ${DUP4}"
+test -z "${DUPLEX1}" || FASTQ_LIST="${FASTQ_LIST} ${DUP1}"
+test -z "${DUPLEX2}" || FASTQ_LIST="${FASTQ_LIST} ${DUP2}"
+test -z "${DUPLEX3}" || FASTQ_LIST="${FASTQ_LIST} ${DUP3}"
+test -z "${DUPLEX4}" || FASTQ_LIST="${FASTQ_LIST} ${DUP4}"
 
 
 ## outputs
-ASM=${PREFIX}
+ASM=${OUT_PREFIX}
 CHROMBED=${ASM}.chroms.bed
 CHROMSIZES=${ASM}.chromsizes.tsv
 
