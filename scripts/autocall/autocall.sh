@@ -29,6 +29,14 @@ qsub -sync y $SCRIPT_PATH/split_dorado_duplex.sge.sh ${NAME} || die "Could not b
 #handle those failed basecall files if any?
 # these qsub scripts are not propoerly error checked
 
+
+if [ -z "$( ls -A ${NAME}_duplex_out/split_blow5_failed/ )" ]; then
+   echo "All channels are done"
+else
+    echo "Some channels failed"
+    qsub -sync y $SCRIPT_PATH/dorado_duplex_retry.sge.sh ${NAME} || echo "even the retry for the failed channels failed"
+fi
+
 qsub -sync y $SCRIPT_PATH/get_duplex_and_simplex_reads.sge.sh ${NAME} || die "Could not basecall the data"
 
 ssh gadi "mkdir ${GADI_DATA}/${NAME}" || die "gadi ssh failed"
