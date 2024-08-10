@@ -4,38 +4,38 @@
 #PBS -N hifiasm
 #PBS -l walltime=12:00:00
 #PBS -l storage=gdata/ox63+scratch/ox63+scratch/if89+gdata/if89+gdata/te53
-#PBS -l mem=180GB
-#PBS -l jobfs=200GB
-#PBS -l ncpus=24
+#PBS -l mem=192GB
+#PBS -l ncpus=48
 #PBS -l wd
 #PBS -M i.deveson@garvan.org.au
 
 usage() {
-	echo "Usage: qsub -v BASE_FASTQ=/path/to/RGBX240039_HG002.hifi.fastq.gz,OUT_PREFIX=hg002-cornetto-A_1(optional),DUPLEX1=A_1_QGXHXX240275(optional),DUPLEX2=.... ./hifiasm.pbs.sh" >&2
+	echo "Usage: qsub -v BASE_FASTQ=/path/to/RGBX240039_HG002.hifi.fastq.gz,OUT_PREFIX=hg002-cornetto-A_3(optional),FISH_NOW=A_3_QGXHXX240283(optional),FISH_PREV=A_1_QGXHXX240275:A_2_QGXHXX240279(optional) ./hifiasm.pbs.sh" >&2
 	echo
 	exit 1
 }
 
 #output prefix
-[ -z "${OUT_PREFIX}" ] && OUT_PREFIX=hg002-cornetto-A_1
+[ -z "${OUT_PREFIX}" ] && OUT_PREFIX=hg002-cornetto
 #pacbio fastq
 [ -z "${BASE_FASTQ}" ] && usage
 
 ## inputs
 HIFI_0=${BASE_FASTQ}
+FASTQ_LIST=${HIFI_0}
 
 ONT_DATADIR=/g/data/ox63/hasindu/cornetto/autocall/
-DUP1=${ONT_DATADIR}/${DUPLEX1}/${DUPLEX1}.duplex_reads.fastq
-DUP2=${ONT_DATADIR}/${DUPLEX2}/${DUPLEX2}.duplex_reads.fastq
-DUP3=${ONT_DATADIR}/${DUPLEX3}/${DUPLEX3}.duplex_reads.fastq
-DUP4=${ONT_DATADIR}/${DUPLEX4}/${DUPLEX4}.duplex_reads.fastq
+if [ -n "${FISH_PREV}" ]; then
+	echo "FISH_PREV" | tr ':' '\n' | while read DUPLEX; do
+		DUP=${ONT_DATADIR}/${DUPLEX}/${DUPLEX}.duplex_reads.fastq
+		FASTQ_LIST="${FASTQ_LIST} ${DUP}"
+	done
+fi
 
-FASTQ_LIST=${HIFI_0}
-test -z "${DUPLEX1}" || FASTQ_LIST="${FASTQ_LIST} ${DUP1}"
-test -z "${DUPLEX2}" || FASTQ_LIST="${FASTQ_LIST} ${DUP2}"
-test -z "${DUPLEX3}" || FASTQ_LIST="${FASTQ_LIST} ${DUP3}"
-test -z "${DUPLEX4}" || FASTQ_LIST="${FASTQ_LIST} ${DUP4}"
-
+if [ -n "${FISH_NOW}" ]; then
+	DUP=${ONT_DATADIR}/${FISH_NOW}/${FISH_NOW}.duplex_reads.fastq
+	FASTQ_LIST="${FASTQ_LIST} ${DUP}"
+fi
 
 ## outputs
 ASM=${OUT_PREFIX}
