@@ -10,7 +10,7 @@
 #PBS -M i.deveson@garvan.org.au
 
 usage() {
-	echo "Usage: qsub -v BASE_FASTQ=/path/to/RGBX240039_HG002.hifi.fastq.gz,OUT_PREFIX=hg002-cornetto-A_3(optional),FISH_NOW=A_3_QGXHXX240283(optional),FISH_PREV=A_1_QGXHXX240275:A_2_QGXHXX240279(optional) ./hifiasm.pbs.sh" >&2
+	echo "Usage: qsub -v BASE_FASTQ=/path/to/RGBX240039_HG002.hifi.fastq.gz,FISH_PREV=A_1_QGXHXX240275:A_2_QGXHXX240279(optional),FISH_NOW=A_3_QGXHXX240283(optional),OUT_PREFIX=hg002-cornetto-A_3(optional) ./hifiasm.pbs.sh" >&2
 	echo
 	exit 1
 }
@@ -26,7 +26,8 @@ FASTQ_LIST=${HIFI_0}
 
 ONT_DATADIR=/g/data/ox63/hasindu/cornetto/autocall/
 if [ -n "${FISH_PREV}" ]; then
-	echo "FISH_PREV" | tr ':' '\n' | while read DUPLEX; do
+	LIST=$(echo "$FISH_PREV" | tr ':' ' ' )
+	for DUPLEX in ${LIST}; do
 		DUP=${ONT_DATADIR}/${DUPLEX}/${DUPLEX}.duplex_reads.fastq
 		FASTQ_LIST="${FASTQ_LIST} ${DUP}"
 	done
