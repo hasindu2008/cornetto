@@ -87,5 +87,5 @@ slow5tools stats ${PREFIX}_${SAMPLE}.blow5 || die "Could not get stats"
 COMMAND="source /etc/profile; screen -S autocall_${PREFIX}_${SAMPLE} -d -m -L ${BRENNER_SCRIPT} ${NAME} ${GADI_PBS_ARGS}"
 echo "$COMMAND"
 ssh brenner-fpga "$COMMAND"
-
+echo ""
 echo "Handed the work to the brenner-fpga"

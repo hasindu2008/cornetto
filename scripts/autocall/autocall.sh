@@ -60,6 +60,9 @@ if [ -n "${GADI_PBS_ARGS}" ]; then
     GADI_COMMAND="qsub -v ${GADI_PBS_ARGS} ${GADI_SCRIPT}"
     echo "Running on gadi: ${GADI_COMMAND}"
     ssh gadi "${GADI_COMMAND}" || die "gadi qsub failed"
+    echo "Handed over work to gadi"
+else
+    echo "No GADI_PBS_ARGS provided. Not running on gadi"
 fi
 
-echo "Done"
+

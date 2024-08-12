@@ -66,17 +66,22 @@ THREADS=${PBS_NCPUS}
 
 #########################################
 
+echo "Running hifiasm with ${THREADS} threads, outprefix ${ASM}, and input fastq list ${FASTQ_LIST}" > hifiasm.log
+
 ## generate assembly with hifiasm
 /usr/bin/time -v hifiasm -t ${THREADS} --hg-size 3g -o ${ASM} ${FASTQ_LIST}
+echo "hifiasm completed" >> hifiasm.log
 
 ## convert assembly graph to FASTA format
 ${GFATOOLS} gfa2fa ${ASM}.bp.p_ctg.gfa > ${ASM}.fasta
 ${GFATOOLS} gfa2fa ${ASM}.bp.hap1.p_ctg.gfa > ${ASM}.hap1.fasta
 ${GFATOOLS} gfa2fa ${ASM}.bp.hap2.p_ctg.gfa > ${ASM}.hap2.fasta
+echo "gfa2fa completed" >> hifiasm.log
 
 ## index the assembly FASTA
 samtools faidx ${ASM}.fasta
 minimap2 -d ${ASM}.fasta.idx ${ASM}.fasta
+echo "indexing completed" >> hifiasm.log
 
 ## generate CHROMBED and CHROMSIZES files
 ${FLATTEN} -tab ${ASM}.fasta | awk '{print $1"\t0\t"length($2)}' | sort -k3,3nr > ${CHROMBED}
@@ -85,8 +90,9 @@ cat ${CHROMBED} | awk '{print $1"\t"$3}' > ${CHROMSIZES}
 ## run quast to evaluate assemblies
 ASMPATH=`realpath ${ASM}.fasta`
 quast.py -t ${THREADS} -o ${ASM}.quast_out -l ${ASM} --large ${ASMPATH}
+echo "quast completed" >> hifiasm.log
 
 ## run hasindu chromosomes stats script
 qsub -v REF=${REFERENCE},ASM=${ASMPATH} ${GETSTAT_SCRIPT}
-
+echo "getstat.pbs.sh submitted" >> hifiasm.log
 
