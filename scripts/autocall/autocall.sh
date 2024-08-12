@@ -5,12 +5,26 @@ die() {
     exit 1
 }
 
-[ $# -ne 1 ] && die "Usage: $0 <prefix_sample>"
+usage () {
+    echo "Usage: $0 <prefix_sample> <GADI_PBS_ARGS>"
+    exit 1
+}
+
+if [ $# -lt 1 ] ; then
+    usage
+elif [ $# -gt 2 ]; then
+    usage
+fi
 
 NAME=$1
+if [ $# -eq 2 ]; then
+    GADI_PBS_ARGS=$2
+fi
+
 BRENNER_DATA=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/autocall_hasindu/
 FRIDGE_TMP=/data3/cornetto/
 GADI_DATA=/g/data/ox63/hasindu/cornetto/autocall
+GADI_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/scripts/hifiasm.pbs.sh
 
 SCRIPT_REALPATH=$(realpath "$0")
 SCRIPT_PATH=$(dirname "$SCRIPT_REALPATH")
@@ -41,5 +55,11 @@ qsub -sync y $SCRIPT_PATH/get_duplex_and_simplex_reads.sge.sh ${NAME} || die "Co
 
 ssh gadi "mkdir ${GADI_DATA}/${NAME}" || die "gadi ssh failed"
 scp ${NAME}.duplex_reads.fastq gadi-dm:${GADI_DATA}/${NAME}/ || die "copying to Gadi failed"
+
+if [ -n "${GADI_PBS_ARGS}" ]; then
+    GADI_COMMAND="qsub -v ${GADI_PBS_ARGS} ${GADI_SCRIPT}"
+    echo "Running on gadi: ${GADI_COMMAND}"
+    ssh gadi "${GADI_COMMAND}" || die "gadi qsub failed"
+fi
 
 echo "Done"
