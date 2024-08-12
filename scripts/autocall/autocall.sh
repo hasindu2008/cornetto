@@ -57,7 +57,7 @@ ssh gadi "mkdir ${GADI_DATA}/${NAME}" || die "gadi ssh failed"
 scp ${NAME}.duplex_reads.fastq gadi-dm:${GADI_DATA}/${NAME}/ || die "copying to Gadi failed"
 
 if [ -n "${GADI_PBS_ARGS}" ]; then
-    GADI_COMMAND="qsub -v ${GADI_PBS_ARGS} ${GADI_SCRIPT}"
+    GADI_COMMAND="cd ${GADI_DATA}/${NAME}/ && qsub -v ${GADI_PBS_ARGS} ${GADI_SCRIPT}"
     echo "Running on gadi: ${GADI_COMMAND}"
     ssh gadi "${GADI_COMMAND}" || die "gadi qsub failed"
     echo "Handed over work to gadi"
