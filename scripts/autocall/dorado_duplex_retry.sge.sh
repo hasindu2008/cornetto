@@ -21,6 +21,20 @@ BLOW5_DIR=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/auto
 SLOW5_DORADO=/share/ClusterShare/software/contrib/hasgam/slow5-dorado-0.3.4/bin/slow5-dorado
 MODEL_SUP=/share/ClusterShare/software/contrib/hasgam/slow5-dorado-0.3.4/models/dna_r10.4.1_e8.2_400bps_sup@v4.2.0
 
+BASECALL_SHIT(){
+    /usr/bin/time -v ${SLOW5_DORADO} duplex ${MODEL_SUP} ${BLOW5_LOCAL}  > sup_duplex_unmapped_${channel}.bam
+    status=$?
+    if [ $status -eq 0 ]
+    then
+        echo "basecalling succeeded for channel group $channel"
+        mv sup_duplex_unmapped_${channel}.bam ${BLOW5_DIR}/../split_bam/
+    else
+        echo "ERROR: basecallings failed for channel group $channel. try again"
+        rm sup_duplex_unmapped_${channel}.bam
+    fi
+    return ${status}
+}
+
 
 ls -1 -A ${BLOW5_DIR} | while read file
 do
@@ -31,16 +45,7 @@ do
     echo "Copying SLOW5 file $BLOW5"
     cp $BLOW5 $BLOW5_LOCAL || die "Copying $BLOW5 to $BLOW5_LOCAL  failed"
 
-    /usr/bin/time -v ${SLOW5_DORADO} duplex ${MODEL_SUP} ${BLOW5_LOCAL}  > sup_duplex_unmapped_${channel}.bam
-    status=$?
-    if [ $status -eq 0 ]
-    then
-        echo "basecalling succeeded for channel group $channel"
-        mv sup_duplex_unmapped_${channel}.bam ${BLOW5_DIR}/../split_bam/
-    else
-        echo "ERROR: basecallings failed for channel group $channel"
-        rm sup_duplex_unmapped_${channel}.bam
-    fi
+    BASECALL_SHIT || BASECALL_SHIT || BASECALL_SHIT || BASECALL_SHIT || BASECALL_SHIT || echo "Failed after 5 times"
 
     rm $TMPDIR/reads.blow5
 
