@@ -20,17 +20,22 @@
 
 ###################################################################
 
-# usage() {
-# 	echo "Usage: qsub -v REF=/path/to/ref.fa,ASM=/path/to/asm.fa ./getstat.pbs.sh" >&2
-# 	echo
-# 	exit 1
-# }
+ASM_LIST="A_1_QGXHXX240275:A_2_QGXHXX240279:A_3_QGXHXX240283:A_4_QGXHXX240293:A_5_QGXHXX240298:A_6_QGXHXX240304:A_7_QGXHXX240308:A_8_QGXHXX240317:A_9_QGXHXX240325"
+ASM_WORK_DIR=/g/data/ox63/hasindu/cornetto/autocall
+ASM_NAME_PREFIX=hg002-cornetto-
+REF=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
+
+usage() {
+	echo "Usage: qsub -v ASM_LIST=A_1_QGXHXX240275:A_2_QGXHXX240279a.REF=/path/to/ref.fa ./fisht2t.pbs.sh" >&2
+	echo
+	exit 1
+}
 
 
-# #asm
-# [ -z "${ASM}" ] && usage
-# #ref
-# [ -z "${REF}" ] && usage
+#asm
+[ -z "${ASM}" ] && usage
+#ref
+[ -z "${REF}" ] && usage
 
 module load minimap2/2.24
 module load samtools/1.12
@@ -44,12 +49,11 @@ die() {
 	exit 1
 }
 
-ASM_WORK_DIR=/g/data/ox63/hasindu/cornetto/autocall
-ASM_DIR_LIST="A_1_QGXHXX240275 A_2_QGXHXX240279 A_3_QGXHXX240283 A_4_QGXHXX240293 A_5_QGXHXX240298 A_6_QGXHXX240304 A_7_QGXHXX240308 A_8_QGXHXX240317 A_9_QGXHXX240325"
-ASM_NAME_PREFIX=hg002-cornetto-
+
+REFERENCE=${REF}
+ASM_DIR_LIST=$(echo $ASM_LIST | tr ':' ' ')
 GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/scripts/getstat.pbs.sh
 QUAST_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/scripts/quast.pbs.sh
-REFERENCE=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
 THREADS=${PBS_NCPUS}
 
 
@@ -176,7 +180,7 @@ do
 	if [ $CURR -eq $COUNT ]
 	then
 		echo "    Last one. Appending none T2T contigs to the base asm"
-		grep ${ASM}.fai  -v -F -f ${ASM_DIR_NAME}.t2t.txt >  ${ASM_DIR_NAME}.nont2t.txt || die "grabbing the non t2t failed"
+		cut -f1 ${ASM}.fai  | grep -v -F -f ${ASM_DIR_NAME}.t2t.txt >  ${ASM_DIR_NAME}.nont2t.txt || die "grabbing the non t2t failed"
 
 		EXTRACT_CONTIG nont2t
 		GET_NEWFOUND_LIST nont2t
