@@ -110,7 +110,7 @@ GET_NEWFOUND_LIST(){
 		then
 			grep $p ${ASM_DIR_NAME}.${NAME}.paf | awk 'BEGIN{sum=0} {sum+=($4-$3)} END{if(sum/$2<0.5){print $1}}'  >> ${ASM_DIR_NAME}.${NAME}.renamed.newfound.txt
 		else
-			echo "            $p is not in PAF, adding to newfound"
+			echo "            $p is not in PAF, adding to newfound: ${ASM_DIR_NAME}.${NAME}.renamed.newfound.txt"
 			echo $p >> ${ASM_DIR_NAME}.${NAME}.renamed.newfound.txt
 		fi
 	done <  ${ASM_DIR_NAME}.${NAME}.renamed.txt
@@ -148,16 +148,16 @@ do
 
 		if [ ${T2T_FOUND} -eq 0 ] # if no telo as been found so far, create the base t2t
 		then
-			echo "        Creating the base t2t"
+			echo "        Creating the base t2t: ${OUTPUT_NAME}.t2t.fasta"
 			cp ${ASM_DIR_NAME}.t2t.renamed.fasta ${OUTPUT_NAME}.t2t.fasta || die "Could not copy the base t2t"
 		else  # otherwise map the t2t to the base t2t; append any new t2t (which map <50% to any in base t2t) to the base t2t
 			echo "        Finding newfound t2t"
 
 			GET_NEWFOUND_LIST t2t
 
-			if [ -s diff.txt ]
+			if [ -s ${ASM_DIR_NAME}.t2t.renamed.newfound.txt ]
 			then
-				echo "            Found newfound t2t"
+				echo "            Found newfound t2t. See ${ASM_DIR_NAME}.t2t.renamed.newfound.txt"
 				samtools faidx ${ASM_DIR_NAME}.t2t.renamed.fasta || die "Could not index the  fasta"
 				samtools faidx ${ASM_DIR_NAME}.t2t.renamed.fasta -r ${ASM_DIR_NAME}.t2t.renamed.newfound.txt >> ${OUTPUT_NAME}.t2t.fasta || die "Could not append the newfound t2t"
 			else
