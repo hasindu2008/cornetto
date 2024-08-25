@@ -33,7 +33,7 @@ usage() {
 
 
 #asm
-[ -z "${ASM}" ] && usage
+[ -z "${ASM_LIST}" ] && usage
 #ref
 [ -z "${REF}" ] && usage
 
