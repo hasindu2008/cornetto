@@ -106,9 +106,9 @@ GET_NEWFOUND_LIST(){
 
 	while read p;
 	do
-		if [ grep $p ${ASM_DIR_NAME}.${NAME}.paf ]
+		if [ grep -q $p ${ASM_DIR_NAME}.${NAME}.paf ]
 		then
-			grep $p ${ASM_DIR_NAME}.${NAME}.paf | awk 'BEGIN{sum=0} {sum+=($4-$3)}} END{if(sum/$2<0.5){print $1}'  >> ${ASM_DIR_NAME}.${NAME}.renamed.newfound.txt
+			grep $p ${ASM_DIR_NAME}.${NAME}.paf | awk 'BEGIN{sum=0} {sum+=($4-$3)} END{if(sum/$2<0.5){print $1}}'  >> ${ASM_DIR_NAME}.${NAME}.renamed.newfound.txt
 		else
 			echo "            $p is not in PAF, adding to newfound"
 			echo $p >> ${ASM_DIR_NAME}.${NAME}.renamed.newfound.txt
@@ -155,8 +155,15 @@ do
 
 			GET_NEWFOUND_LIST t2t
 
-			samtools faidx ${ASM_DIR_NAME}.t2t.renamed.fasta || die "Could not index the  fasta"
-			samtools faidx ${ASM_DIR_NAME}.t2t.renamed.fasta -r ${ASM_DIR_NAME}.t2t.renamed.newfound.txt >> ${OUTPUT_NAME}.t2t.fasta || die "Could not append the newfound t2t"
+			if [ -s diff.txt ]
+			then
+				echo "            Found newfound t2t"
+				samtools faidx ${ASM_DIR_NAME}.t2t.renamed.fasta || die "Could not index the  fasta"
+				samtools faidx ${ASM_DIR_NAME}.t2t.renamed.fasta -r ${ASM_DIR_NAME}.t2t.renamed.newfound.txt >> ${OUTPUT_NAME}.t2t.fasta || die "Could not append the newfound t2t"
+			else
+				echo "            No newfound t2t"
+			fi
+
 		fi
 
 		T2T_FOUND=1
