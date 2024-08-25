@@ -106,7 +106,7 @@ GET_NEWFOUND_LIST(){
 
 	while read p;
 	do
-		if [ grep -q $p ${ASM_DIR_NAME}.${NAME}.paf ]
+		if grep -q $p ${ASM_DIR_NAME}.${NAME}.paf
 		then
 			grep $p ${ASM_DIR_NAME}.${NAME}.paf | awk 'BEGIN{sum=0} {sum+=($4-$3)} END{if(sum/$2<0.5){print $1}}'  >> ${ASM_DIR_NAME}.${NAME}.renamed.newfound.txt
 		else
