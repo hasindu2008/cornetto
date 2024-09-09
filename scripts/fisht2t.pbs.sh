@@ -22,8 +22,6 @@
 
 #ASM_LIST="A_1_QGXHXX240275:A_2_QGXHXX240279:A_3_QGXHXX240283:A_4_QGXHXX240293:A_5_QGXHXX240298:A_6_QGXHXX240304:A_7_QGXHXX240308:A_8_QGXHXX240317:A_9_QGXHXX240325"
 ASM_WORK_DIR=/g/data/ox63/hasindu/cornetto/autocall
-ASM_NAME_PREFIX=hg002-cornetto-
-REF=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
 
 usage() {
 	echo "Usage: qsub -v ASM_LIST=A_1_QGXHXX240275:A_2_QGXHXX240279a.REF=/path/to/ref.fa ./fisht2t.pbs.sh" >&2
@@ -35,7 +33,9 @@ usage() {
 #asm
 [ -z "${ASM_LIST}" ] && usage
 #ref
-[ -z "${REF}" ] && usage
+[ -z "${REF}" ] && REF=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
+#
+[-z "${ASM_NAME_PREFIX}" ] && ASM_NAME_PREFIX=hg002-cornetto-
 
 module load minimap2/2.24
 module load samtools/1.12
