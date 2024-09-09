@@ -35,7 +35,7 @@ usage() {
 #ref
 [ -z "${REF}" ] && REF=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
 #
-[-z "${ASM_NAME_PREFIX}" ] && ASM_NAME_PREFIX=hg002-cornetto-
+[ -z "${ASM_NAME_PREFIX}" ] && ASM_NAME_PREFIX=hg002-cornetto-
 
 module load minimap2/2.24
 module load samtools/1.12
