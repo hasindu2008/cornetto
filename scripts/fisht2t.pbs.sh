@@ -34,8 +34,10 @@ usage() {
 [ -z "${ASM_LIST}" ] && usage
 #ref
 [ -z "${REF}" ] && REF=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
-#
+#ASM_NAME_PREFIX
 [ -z "${ASM_NAME_PREFIX}" ] && ASM_NAME_PREFIX=hg002-cornetto-
+#min contig len
+[ -z "${MIN_CONTIG_LEN}" ] && MIN_CONTIG_LEN=40000000
 
 module load minimap2/2.24
 module load samtools/1.12
@@ -144,11 +146,13 @@ do
 		# get the t2t > 40M
 		cat $TELO_END | cut -f 1 | sort | uniq -c | sort -k1,1 -n -r  | awk '{if($1==2) print $2}' > ${ASM_DIR_NAME}.t2t.tmp.txt || die "Could not get the all t2t"
 		test -e ${ASM}.fai || samtools faidx ${$ASM} || die "Could not create the faidx"
-		cat ${ASM}.fai  | awk '{if($2>40000000) print $1}' > ${ASM_DIR_NAME}.longcontig.txt || die "grabbing the longcontig failed"
+		cat ${ASM}.fai  | awk -v LEN=${MIN_CONTIG_LEN} '{if($2>LEN) print $1}' > ${ASM_DIR_NAME}.longcontig.txt || die "grabbing the longcontig failed"
 		grep ${ASM_DIR_NAME}.t2t.tmp.txt -F -f ${ASM_DIR_NAME}.longcontig.txt >  ${ASM_DIR_NAME}.t2t.txt || die "grabbing the t2t failed"
 
 		# extract the long T2T to a file with the contif names appended with LETTER_NUM
 		EXTRACT_CONTIG t2t
+
+		# if there are any t2t, do the following
 
 		if [ ${T2T_FOUND} -eq 0 ] # if no telo as been found so far, create the base t2t
 		then
@@ -171,6 +175,8 @@ do
 		fi
 
 		T2T_FOUND=1
+
+		# otherwise, do nothing
 
 	else
 		echo "    ${ASM_DIR_NAME} has no T2T"
