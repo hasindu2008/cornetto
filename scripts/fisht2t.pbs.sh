@@ -37,7 +37,7 @@ usage() {
 #ASM_NAME_PREFIX
 [ -z "${ASM_NAME_PREFIX}" ] && ASM_NAME_PREFIX=hg002-cornetto-
 #min contig len
-[ -z "${MIN_CONTIG_LEN}" ] && MIN_CONTIG_LEN=40000000
+[ -z "${MIN_CONTIG_LEN}" ] && MIN_CONTIG_LEN=1000000
 
 module load minimap2/2.24
 module load samtools/1.12
