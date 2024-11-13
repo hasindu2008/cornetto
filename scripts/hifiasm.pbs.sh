@@ -98,5 +98,5 @@ qsub -v REF=${REFERENCE},ASM=${ASMPATH} ${GETSTAT_SCRIPT}
 echo "getstat.pbs.sh submitted" >> hifiasm.log
 
 ## run generate panel script
-qsub -v FISH_NOW=${FISH_NOW},PREFIX=${ASM} ${GENERATE_PANEL_SCRIPT}
+qsub -v FISH_NOW=${FISH_NOW},PREFIX=${OUT_PREFIX} ${GENERATE_PANEL_SCRIPT}
 echo "generate_panel.pbs.sh submitted" >> hifiasm.log
