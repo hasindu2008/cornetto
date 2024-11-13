@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -P ox63
-#PBS -N getstat
+#PBS -N generate_panel
 #PBS -q normal
 #PBS -l ncpus=4
 #PBS -l mem=16GB
