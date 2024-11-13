@@ -9,7 +9,8 @@
 #PBS -l wd
 
 usage() {
-	echo "Usage: qsub -v ASM=/path/to/asm.fa,OUT_DIR=busco/ ./compleasm.pbs.sh" >&2
+	echo "Usage: qsub -v ASM=/path/to/asm.fa,LINEAGE=lineage,OUT_DIR=busco/ ./compleasm.pbs.sh" >&2
+	ecgo "       linage: primates for human, actinopterygii_odb10 for cichlid, tetrapoda_odb10 for birds" >&2
 	echo
 	exit 1
 }
@@ -18,6 +19,8 @@ usage() {
 [ -z "${ASM}" ] && usage
 
 [ -z "${OUT_DIR}" ] && usage
+
+[ -z "{LINEAGE}" ] && usage
 
 # terminate script
 die() {
