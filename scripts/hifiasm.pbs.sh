@@ -62,6 +62,7 @@ GFATOOLS=/g/data/ox63/ira/adaptive_assembly/gfatools/gfatools
 FLATTEN=/g/data/te53/ontsv/sv_parsing/scripts/flattenFasta.pl
 REFERENCE=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
 GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/scripts/getstat.pbs.sh
+GENERATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/scripts/generate_panel.pbs.sh
 THREADS=${PBS_NCPUS}
 
 #########################################
@@ -96,3 +97,5 @@ echo "quast completed" >> hifiasm.log
 qsub -v REF=${REFERENCE},ASM=${ASMPATH} ${GETSTAT_SCRIPT}
 echo "getstat.pbs.sh submitted" >> hifiasm.log
 
+## run generate panel script
+qsub -v FISH_NOW=${FISH_NOW},PREFIX=${ASM} \
