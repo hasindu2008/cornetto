@@ -23,7 +23,7 @@ FLATTEN=/g/data/ox63/ira/scripts/flattenFasta.pl
 
 ONT_DATADIR=/g/data/ox63/hasindu/cornetto/autocall/
 
-cd ${ONT_DATADIR}
+cd ${ONT_DATADIR}/${FISH_NOW}
 
 ## generate CHROMBED file
 ${FLATTEN} -tab ${PREFIX}.fasta | awk '{print $1"\t0\t"length($2)}' | sort -k3,3nr > ${PREFIX}.chroms.bed
