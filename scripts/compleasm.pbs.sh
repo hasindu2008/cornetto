@@ -42,4 +42,4 @@ test -e ${OUT_DIR} && die "Output directory already there. Delete that first: ${
 
 #########################################
 
-compleasm run -a ${ASM} -o ${OUT_DIR} -t 8 -l primates -L /g/data/ox63/install/compleasm-0.2.6/mb_downloads
+compleasm run -a ${ASM} -o ${OUT_DIR} -t 8 -l ${LINEAGE} -L /g/data/ox63/install/compleasm-0.2.6/mb_downloads
