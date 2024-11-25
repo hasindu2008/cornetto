@@ -29,21 +29,26 @@ SOFTWARE.
 ******************************************************************************/
 
 #include "cornetto.h"
+#include "khash.h"
 #include "error.h"
-#include "misc.h"
 #include <assert.h>
 #include <getopt.h>
 #include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
-#include "htslib/faidx.h"
-
-#include "khash.h"
 
 static inline void print_help_msg(FILE *fp_help){
     fprintf(fp_help,"Usage: cornetto fixdir a.paf\n");
+}
+
+char *strDup(const char *src) {
+    char *dst = malloc(strlen (src) + 1);  // Space for length plus nul
+    if (dst == NULL) return NULL;          // No memory
+    strcpy(dst, src);                      // Copy the characters
+    return dst;                            // Return the new string
 }
 
 typedef struct{
@@ -77,7 +82,7 @@ paf_rec_t *parse_paf_rec(char *buffer){
 
     //read name
     pch = strtok (buffer,"\t\r\n"); assert(pch!=NULL);
-    paf->rid = strdup(pch);
+    paf->rid = strDup(pch);
 
     //readlen
     pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
@@ -105,7 +110,7 @@ paf_rec_t *parse_paf_rec(char *buffer){
 
     //targetname
     pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
-    paf->tid = strdup(pch);
+    paf->tid = strDup(pch);
 
     //target len
     pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
@@ -149,7 +154,7 @@ int fixdir_main(int argc, char* argv[]) {
     FILE *fp_help = stderr;
 
     // more arguments given
-    if (argc - optind != 0 || fp_help == stdout) {
+    if (argc - optind != 1 || fp_help == stdout) {
         print_help_msg(fp_help);
         if(fp_help == stdout){
             exit(EXIT_SUCCESS);
@@ -189,7 +194,7 @@ int fixdir_main(int argc, char* argv[]) {
         khiter_t k = kh_get(map_ctgs, h, rec->tid);
         if (k == kh_end(h)) {
             ctg_t new_ctg;
-            new_ctg.id = strdup(rec->tid);
+            new_ctg.id = strDup(rec->rid);
             new_ctg.sump = 0;
             new_ctg.sumn = 0;
             k = kh_put(map_ctgs, h, new_ctg.id, &absent);
@@ -222,7 +227,7 @@ int fixdir_main(int argc, char* argv[]) {
     const char *key;
     ctg_t val;
     kh_foreach(h, key, val, {
-        if (val.sump > val.sumn) {
+        if (val.sump >= val.sumn) {
             fprintf(fp_plus, "%s\n", val.id);
         } else {
             fprintf(fp_minus, "%s\n", val.id);
