@@ -82,7 +82,7 @@ paf_rec_t *parse_paf_rec(char *buffer){
 
     //read name
     pch = strtok (buffer,"\t\r\n"); assert(pch!=NULL);
-    paf->rid = strDup(pch);
+    paf->rid = strdup(pch);
 
     //readlen
     pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
@@ -110,7 +110,7 @@ paf_rec_t *parse_paf_rec(char *buffer){
 
     //targetname
     pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
-    paf->tid = strDup(pch);
+    paf->tid = strdup(pch);
 
     //target len
     pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
@@ -194,7 +194,7 @@ int fixdir_main(int argc, char* argv[]) {
         khiter_t k = kh_get(map_ctgs, h, rec->tid);
         if (k == kh_end(h)) {
             ctg_t new_ctg;
-            new_ctg.id = strDup(rec->rid);
+            new_ctg.id = strdup(rec->rid);
             new_ctg.sump = 0;
             new_ctg.sumn = 0;
             k = kh_put(map_ctgs, h, new_ctg.id, &absent);
