@@ -39,19 +39,12 @@ SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <htslib/faidx.h>
+#include <zlib.h>
+#include "kseq.h"
 
-static inline void print_help_msg(FILE *fp_help){
-    fprintf(fp_help,"Usage: cornetto fixdir a.paf\n");
-}
-
-char *strDup(const char *src) {
-    char *dst = malloc(strlen (src) + 1);  // Space for length plus nul
-    if (dst == NULL) return NULL;          // No memory
-    strcpy(dst, src);                      // Copy the characters
-    return dst;                            // Return the new string
-}
-
-typedef struct{
+// Type definitions
+typedef struct {
     char *rid;
     int32_t qlen;
     int32_t query_start;
@@ -63,83 +56,80 @@ typedef struct{
     int32_t target_end;
     uint8_t mapq;
     char tp;
-}paf_rec_t;
+} paf_rec_t;
 
-typedef struct{
+typedef struct {
     char* id;
-    int64_t sump;
-    int64_t sumn;
-}ctg_t;
+    int32_t sump;
+    int32_t sumn;
+} ctg_t;
 
+KSEQ_INIT(gzFile, gzread)
 KHASH_MAP_INIT_STR(map_ctgs, ctg_t)
 
-paf_rec_t *parse_paf_rec(char *buffer){
+// Function declarations
+static inline void print_help_msg(FILE *fp_help);
+char *strDup(const char *src);
+paf_rec_t *parse_paf_rec(char *buffer);
+void reverse_complement(kseq_t *seq);
+int fixdir_main(int argc, char* argv[]);
 
-    char *pch=NULL;
+// Function implementations
+static inline void print_help_msg(FILE *fp_help) {
+    fprintf(fp_help, "Usage: cornetto fixdir <incorrect_assembly.fa> <a.paf>\n");
+}
 
+char *strDup(const char *src) {
+    char *dst = malloc(strlen(src) + 1);
+    if (dst == NULL) return NULL;
+    strcpy(dst, src);
+    return dst;
+}
+
+paf_rec_t *parse_paf_rec(char *buffer) {
+    char *pch = NULL;
     paf_rec_t *paf = (paf_rec_t *)malloc(sizeof(paf_rec_t));
     MALLOC_CHK(paf);
 
-    //read name
-    pch = strtok (buffer,"\t\r\n"); assert(pch!=NULL);
-    paf->rid = strdup(pch);
+    // Read fields from buffer
+    pch = strtok(buffer, "\t\r\n"); assert(pch != NULL);
+    paf->rid = strDup(pch);
 
-    //readlen
-    pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
+    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
     paf->qlen = atoi(pch);
 
-    //query start
-    pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
+    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
     paf->query_start = atoi(pch);
 
-    //query end
-    pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
-    paf->query_end= atoi(pch);
+    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
+    paf->query_end = atoi(pch);
 
-    //relative strand
-    pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
-    if(strcmp(pch,"+")==0){
-        paf->strand=0;
-    }
-    else if(strcmp(pch,"-")==0){
-        paf->strand=1;
-    }
-    else{
-        assert(0);
-    }
+    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
+    paf->strand = (strcmp(pch, "+") == 0) ? 0 : 1;
 
-    //targetname
-    pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
-    paf->tid = strdup(pch);
+    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
+    paf->tid = strDup(pch);
 
-    //target len
-    pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
+    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
     paf->tlen = atoi(pch);
 
-    //target start
-    pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
+    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
     paf->target_start = atoi(pch);
 
-    //target end
-    pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
-    paf->target_end= atoi(pch);
+    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
+    paf->target_end = atoi(pch);
 
-    //num residue
-    pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
+    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
+    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
 
-    //num block
-    pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
-
-    //mapq
-    pch = strtok (NULL,"\t\r\n"); assert(pch!=NULL);
+    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
     paf->mapq = atoi(pch);
 
     paf->tp = 'P';
-    while((pch = strtok(NULL,"\t\r\n"))){
-        if(strcmp("tp:A:P",pch)==0){
+    while ((pch = strtok(NULL, "\t\r\n"))) {
+        if (strcmp("tp:A:P", pch) == 0) {
             paf->tp = 'P';
-        }
-        else if (strcmp("tp:A:S",pch)==0){
+        } else if (strcmp("tp:A:S", pch) == 0) {
             paf->tp = 'S';
         }
     }
@@ -147,62 +137,67 @@ paf_rec_t *parse_paf_rec(char *buffer){
     return paf;
 }
 
+void reverse_complement(kseq_t *seq) {
+    int len = seq->seq.l;
+    for (int i = 0; i < len / 2; ++i) {
+        char tmp = seq->seq.s[i];
+        seq->seq.s[i] = seq->seq.s[len - 1 - i];
+        seq->seq.s[len - 1 - i] = tmp;
+    }
+    for (int i = 0; i < len; ++i) {
+        switch (seq->seq.s[i]) {
+            case 'A': seq->seq.s[i] = 'T'; break;
+            case 'T': seq->seq.s[i] = 'A'; break;
+            case 'G': seq->seq.s[i] = 'C'; break;
+            case 'C': seq->seq.s[i] = 'G'; break;
+            default: break;
+        }
+    }
+}
+
 int fixdir_main(int argc, char* argv[]) {
-
-    const char *paffile = NULL;
-
     FILE *fp_help = stderr;
 
-    // more arguments given
-    if (argc - optind != 1 || fp_help == stdout) {
+    // Check arguments
+    if (argc - optind != 2) {
         print_help_msg(fp_help);
-        if(fp_help == stdout){
-            exit(EXIT_SUCCESS);
-        }
         exit(EXIT_FAILURE);
     }
 
-    paffile = argv[optind];
+    const char *fastafile = argv[optind];
+    const char *paffile = argv[optind + 1];
 
-    if (paffile == NULL) {
+    if (paffile == NULL || fastafile == NULL) {
         print_help_msg(fp_help);
-        if(fp_help == stdout){
-            exit(EXIT_SUCCESS);
-        }
         exit(EXIT_FAILURE);
     }
 
-    //buffers for getline
+    // Initialize buffers
     size_t bufferSize = 4096;
-    char *buffer = (char *)malloc(sizeof(char)*(bufferSize));
+    char *buffer = (char *)malloc(sizeof(char) * bufferSize);
     MALLOC_CHK(buffer);
-    int readlinebytes=1;
 
-    int absent, is_missing;
+    // Initialize hash table
+    khash_t(map_ctgs) *h = kh_init(map_ctgs);
+    int absent;
 
-    khash_t(map_ctgs) *h = kh_init(map_ctgs);  // allocate a hash table
-
+    // Read PAF file
     FILE *fp = fopen(paffile, "r");
     if (!fp) {
         perror("fopen");
         exit(EXIT_FAILURE);
     }
 
-    while ((readlinebytes = getline(&buffer, &bufferSize, fp)) != -1) {
+    while (getline(&buffer, &bufferSize, fp) != -1) {
         paf_rec_t *rec = parse_paf_rec(buffer);
-
-        khiter_t k = kh_get(map_ctgs, h, rec->tid);
-        if (k == kh_end(h)) {
-            ctg_t new_ctg;
-            new_ctg.id = strdup(rec->rid);
-            new_ctg.sump = 0;
-            new_ctg.sumn = 0;
-            k = kh_put(map_ctgs, h, new_ctg.id, &absent);
+        khiter_t k = kh_put(map_ctgs, h, rec->rid, &absent);
+        if (absent) {
+            ctg_t new_ctg = { .id = strDup(rec->rid), .sump = 0, .sumn = 0 };
             kh_value(h, k) = new_ctg;
         }
 
         ctg_t *cur_ctg = &kh_value(h, k);
-        int64_t length = rec->target_end - rec->target_start;
+        int32_t length = rec->target_end - rec->target_start;
         if (rec->strand == 0) {
             cur_ctg->sump += length;
         } else {
@@ -213,30 +208,42 @@ int fixdir_main(int argc, char* argv[]) {
         free(rec->tid);
         free(rec);
     }
-
     fclose(fp);
-    free(buffer);
 
-    FILE *fp_plus = fopen("ctg_plus.txt", "w");
-    FILE *fp_minus = fopen("ctg_minus.txt", "w");
-    if (!fp_plus || !fp_minus) {
+    // Read FASTA file and create corrected FASTA
+    gzFile fp_fasta = gzopen(fastafile, "r");
+    F_CHK(fp_fasta, fastafile);
+
+    kseq_t *seq = kseq_init(fp_fasta);
+    MALLOC_CHK(seq);
+
+    FILE *fp_corrected_fasta = fopen("corrected_contigs.fasta", "w");
+    if (!fp_corrected_fasta) {
         perror("fopen");
         exit(EXIT_FAILURE);
     }
 
-    const char *key;
-    ctg_t val;
-    kh_foreach(h, key, val, {
-        if (val.sump >= val.sumn) {
-            fprintf(fp_plus, "%s\n", val.id);
-        } else {
-            fprintf(fp_minus, "%s\n", val.id);
+    int total = 0, neg = 0;
+    while (kseq_read(seq) >= 0) {
+        khiter_t k = kh_get(map_ctgs, h, seq->name.s);
+        if (k != kh_end(h)) {
+            ctg_t *cur_ctg = &kh_value(h, k);
+            if (cur_ctg->sump < cur_ctg->sumn) { // relative strand is negative
+                reverse_complement(seq);
+                neg++;
+            }
+            fprintf(fp_corrected_fasta, ">%s\n%s\n", seq->name.s, seq->seq.s);
+            total++;
         }
-    });
+    }
+    printf("count: %d\nneg: %d\n", total, neg);
 
-    fclose(fp_plus);
-    fclose(fp_minus);
+    // Clean up
+    kseq_destroy(seq);
+    gzclose(fp_fasta);
+    fclose(fp_corrected_fasta);
     kh_destroy(map_ctgs, h);
+    free(buffer);
 
     return 0;
 }
