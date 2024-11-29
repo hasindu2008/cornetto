@@ -27,7 +27,7 @@ SOFTWARE.
 
 
 ******************************************************************************/
-
+#define _XOPEN_SOURCE 700
 #include "cornetto.h"
 #include "khash.h"
 #include "error.h"
@@ -69,7 +69,7 @@ KHASH_MAP_INIT_STR(map_ctgs, ctg_t)
 
 // Function declarations
 static inline void print_help_msg(FILE *fp_help);
-char *strDup(const char *src);
+char *strdup(const char *src);
 paf_rec_t *parse_paf_rec(char *buffer);
 void reverse_complement(kseq_t *seq);
 int fixdir_main(int argc, char* argv[]);
@@ -79,13 +79,6 @@ static inline void print_help_msg(FILE *fp_help) {
     fprintf(fp_help, "Usage: cornetto fixdir <incorrect_assembly.fa> <a.paf>\n");
 }
 
-char *strDup(const char *src) {
-    char *dst = malloc(strlen(src) + 1);
-    if (dst == NULL) return NULL;
-    strcpy(dst, src);
-    return dst;
-}
-
 paf_rec_t *parse_paf_rec(char *buffer) {
     char *pch = NULL;
     paf_rec_t *paf = (paf_rec_t *)malloc(sizeof(paf_rec_t));
@@ -93,7 +86,7 @@ paf_rec_t *parse_paf_rec(char *buffer) {
 
     // Read fields from buffer
     pch = strtok(buffer, "\t\r\n"); assert(pch != NULL);
-    paf->rid = strDup(pch);
+    paf->rid = strdup(pch);
 
     pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
     paf->qlen = atoi(pch);
@@ -108,7 +101,7 @@ paf_rec_t *parse_paf_rec(char *buffer) {
     paf->strand = (strcmp(pch, "+") == 0) ? 0 : 1;
 
     pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->tid = strDup(pch);
+    paf->tid = strdup(pch);
 
     pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
     paf->tlen = atoi(pch);
@@ -192,7 +185,7 @@ int fixdir_main(int argc, char* argv[]) {
         paf_rec_t *rec = parse_paf_rec(buffer);
         khiter_t k = kh_put(map_ctgs, h, rec->rid, &absent);
         if (absent) {
-            ctg_t new_ctg = { .id = strDup(rec->rid), .sump = 0, .sumn = 0 };
+            ctg_t new_ctg = { .id = strdup(rec->rid), .sump = 0, .sumn = 0 };
             kh_value(h, k) = new_ctg;
         }
 
