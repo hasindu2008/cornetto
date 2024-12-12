@@ -65,7 +65,7 @@ typedef struct {
 } ctg_t;
 
 KSEQ_INIT(gzFile, gzread)
-KHASH_MAP_INIT_STR(map_ctgs, ctg_t)
+KHASH_MAP_INIT_STR(map_ctgs, ctg_t*)
 
 // Function declarations
 static inline void print_help_msg(FILE *fp_help);
@@ -180,16 +180,24 @@ int fixdir_main(int argc, char* argv[]) {
         perror("fopen");
         exit(EXIT_FAILURE);
     }
-
+    ctg_t *new_ctg = NULL;
     while (getline(&buffer, &bufferSize, fp) != -1) {
         paf_rec_t *rec = parse_paf_rec(buffer);
         khiter_t k = kh_put(map_ctgs, h, rec->rid, &absent);
-        if (absent) {
-            ctg_t new_ctg = { .id = strdup(rec->rid), .sump = 0, .sumn = 0 };
+        if (absent == 1) {
+            new_ctg = (ctg_t *)malloc(sizeof(ctg_t));
+            new_ctg->id = rec->rid;
+            new_ctg->sump = 0; 
+            new_ctg->sumn = 0;
             kh_value(h, k) = new_ctg;
+        } else if (absent == -1) {
+            printf("Error: failed to insert key\n");
+            perror("kh_put");
+        } else {
+            free(rec->rid);
         }
 
-        ctg_t *cur_ctg = &kh_value(h, k);
+        ctg_t *cur_ctg = kh_value(h, k);
         int32_t length = rec->target_end - rec->target_start;
         if (rec->strand == 0) {
             cur_ctg->sump += length;
@@ -197,7 +205,6 @@ int fixdir_main(int argc, char* argv[]) {
             cur_ctg->sumn += length;
         }
 
-        free(rec->rid);
         free(rec->tid);
         free(rec);
     }
@@ -216,25 +223,40 @@ int fixdir_main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    int total = 0, neg = 0;
+    FILE *fp_missing_seq = fopen("missing_sequences.log", "w");
+    if (!fp_missing_seq) {
+        perror("fopen");
+        exit(EXIT_FAILURE);
+    }
+
+    int missing=0, total = 0, neg = 0;
     while (kseq_read(seq) >= 0) {
         khiter_t k = kh_get(map_ctgs, h, seq->name.s);
         if (k != kh_end(h)) {
-            ctg_t *cur_ctg = &kh_value(h, k);
+            ctg_t *cur_ctg = kh_value(h, k);
             if (cur_ctg->sump < cur_ctg->sumn) { // relative strand is negative
                 reverse_complement(seq);
                 neg++;
             }
             fprintf(fp_corrected_fasta, ">%s\n%s\n", seq->name.s, seq->seq.s);
             total++;
+        }else{
+            fprintf(fp_missing_seq, "%s\n", seq->name.s);
+            missing++;
         }
     }
-    printf("count: %d\nneg: %d\n", total, neg);
+    printf("total: %d\nnegative: %d\nmissing: %d\n", total, neg, missing);
 
     // Clean up
     kseq_destroy(seq);
     gzclose(fp_fasta);
     fclose(fp_corrected_fasta);
+    for(khiter_t k = kh_begin(h); k != kh_end(h); ++k) {
+        if (kh_exist(h, k)) {
+            free((void *)kh_value(h, k)->id);
+            free((void *)kh_value(h, k));
+        }
+    }
     kh_destroy(map_ctgs, h);
     free(buffer);
 
