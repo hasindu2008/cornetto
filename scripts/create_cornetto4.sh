@@ -7,6 +7,8 @@ die () {
 
 [ "$#" -eq 1 ] || die "1 argument required, $# provided. Usage: create_cornetto4.sh <assembly.fa>"
 
+test -z ${CORNETTO_BIN} && CORNETTO_BIN=/home/hasindu/hasindu2008.git/cornetto/cornetto
+
 # dont run in parallel in same directory
 
 FASTA=$1
@@ -29,7 +31,7 @@ awk '{print $1"\t0\t"$2}' ${FASTA}.fai > ${ASSBED} || die "awk failed"
 # high coverage: [>2.5x] genome average
 # low mappability: [mean MQ20 cov for window is < 0.4 x mean coverage for the window]
 
-/home/hasindu/hasindu2008.git/cornetto/cornetto funbits -H 2.5 -L 0.4 -Q 0.4 ${BGTOTAL} -q ${BGMQ20} | awk '{if ($4!=".") print $1"\t"$2"\t"$3}' > 1_tmp.bed || die "cornetto failed"
+${CORNETTO_BIN} funbits -H 2.5 -L 0.4 -Q 0.4 ${BGTOTAL} -q ${BGMQ20} | awk '{if ($4!=".") print $1"\t"$2"\t"$3}' > 1_tmp.bed || die "cornetto failed"
 
 #2# merge these interesting windows - overlapping or adjacent (within 1000bp)
 cat 1_tmp.bed | sort -k1,1 -k2,2n | bedtools merge -d 1000 > 2_tmp.bed || die "bedtools merge failed"

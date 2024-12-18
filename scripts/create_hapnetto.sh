@@ -5,7 +5,9 @@ die () {
     exit 1
 }
 
-ASSNAME=A_0-RGBX240039_HG002
+[ "$#" -eq 1 ] || die "1 argument required, $# provided. Usage: create_hapnetto.sh <assembly prefix>"
+
+ASSNAME=$1
 FASTA=../${ASSNAME}.fasta
 ASSBED=${FASTA}.bed
 
@@ -20,7 +22,6 @@ test -f ${ASSNAME}.hap2.fasta || die "File ${ASSNAME}.hap2.fasta not found."
 #1# align the hapX assemblies to the primary assembly
 minimap2 -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap1.fasta > ${ASSNAME}_hap1_to_asm.paf || die "minimap2 failed"
 minimap2 -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap2.fasta > ${ASSNAME}_hap2_to_asm.paf | die "minimap2 failed"
-
 
 GET_HAP_X_FUN () {
     HAP=$1
