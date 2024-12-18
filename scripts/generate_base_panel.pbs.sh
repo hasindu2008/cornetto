@@ -46,7 +46,7 @@ MQ20COV=${ASM}.cov-mq20
 
 ## index the assembly FASTA
 samtools faidx ${ASM}.fasta || die "samtools faidx failed"
-minimap2 -d ${ASM}.fasta.idx ${ASM}.fasta || die "minimap2 failed"
+minimap2 -x map-ont -d ${ASM}.fasta.idx ${ASM}.fasta || die "minimap2 failed"
 
 ## generate CHROMBED and CHROMSIZES files
 ${FLATTEN} -tab ${ASM}.fasta | awk '{print $1"\t0\t"length($2)}' | sort -k3,3nr > ${CHROMBED} || die "flattenFasta.pl failed"
