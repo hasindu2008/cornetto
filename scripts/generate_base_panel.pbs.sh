@@ -14,14 +14,18 @@ usage() {
 	exit 1
 }
 
+die () {
+	echo >&2 "$@"
+	exit 1
+}
+
 [ -z "${FQ}" ] && usage
 [ -z "${ASM}" ] && usage
 
 test -f ${ASM}.fasta || die "Assembly FASTA not found"
 test -f ${FQ} || die "Input FASTQ not found"
 
-
-
+export MODULEPATH=$MODULEPATH:/g/data/if89/apps/modulefiles/
 module load minimap2/2.24
 module load samtools/1.19
 module load kentutils/0.0
