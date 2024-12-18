@@ -1,19 +1,24 @@
 
-# protocol for basecall 
+# shitflow (shell-based internode transfer flow)
+
+On fridge just call launch.sh
+
+
+## Custom example
 
 ```
 PREFIX=A_1
 SAMPLE=QGXHXX240275
 ```
 
-## On fridge: run inside a screen session
+### On fridge: run inside a screen session
 
 ```
 cd /data3/cornetto
 slow5tools merge /data/${SAMPLE}/*/*/slow5/ -o ${PREFIX}_${SAMPLE}.blow5
 slow5tools stats ${PREFIX}_${SAMPLE}.blow5
 ```
-## on brenner
+### on brenner
 ```
 cd /directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/temp_hasindu
 mkdir ${PREFIX}_${SAMPLE} && cd ${PREFIX}_${SAMPLE}
