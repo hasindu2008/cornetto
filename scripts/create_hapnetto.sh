@@ -16,12 +16,12 @@ test -f ${ASSBED} || die "File ${ASSBED} not found. Did you run create cornetto4
 test -f ../3_tmp.bed || die "File ../3_tmp.bed not found. Did you run create cornetto4 and are inside a directory inside that?"
 test -f ../lowQ_tmp.bed || die "File ../lowQ_tmp.bed not found. Did you run create cornetto4 and are inside a directory inside that?"
 
-test -f ${ASSNAME}.hap1.fasta || die "File ${ASSNAME}.hap1.fasta not found."
-test -f ${ASSNAME}.hap2.fasta || die "File ${ASSNAME}.hap2.fasta not found."
+test -f ../${ASSNAME}.hap1.fasta || die "File ../${ASSNAME}.hap1.fasta not found."
+test -f ../${ASSNAME}.hap2.fasta || die "File ../${ASSNAME}.hap2.fasta not found."
 
 #1# align the hapX assemblies to the primary assembly
-minimap2 -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap1.fasta > ${ASSNAME}_hap1_to_asm.paf || die "minimap2 failed"
-minimap2 -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap2.fasta > ${ASSNAME}_hap2_to_asm.paf | die "minimap2 failed"
+minimap2 -t16 --eqx -cx asm5 ${FASTA} ../${ASSNAME}.hap1.fasta > ${ASSNAME}_hap1_to_asm.paf || die "minimap2 failed"
+minimap2 -t16 --eqx -cx asm5 ${FASTA} ../${ASSNAME}.hap2.fasta > ${ASSNAME}_hap2_to_asm.paf | die "minimap2 failed"
 
 GET_HAP_X_FUN () {
     HAP=$1

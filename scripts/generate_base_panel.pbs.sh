@@ -4,8 +4,8 @@
 #PBS -N generate
 #PBS -l walltime=12:00:00
 #PBS -l storage=gdata/ox63+scratch/ox63+scratch/if89+gdata/if89
-#PBS -l mem=96GB
-#PBS -l ncpus=24
+#PBS -l mem=192GB
+#PBS -l ncpus=48
 #PBS -l wd
 
 usage() {
