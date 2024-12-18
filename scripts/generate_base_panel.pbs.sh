@@ -38,7 +38,7 @@ export SCRIPT_DIR=/g/data/ox63/hasindu/cornetto/cornetto/scripts
 minimap2 --version || die "Could not find minimap2"
 samtools --version || die "Could not find samtools"
 bedtools --version || die "Could not find bedtools"
-bedGraphToBigWig -version || die "Could not find bedGraphToBigWig"
+bedGraphToBigWig --version || die "Could not find bedGraphToBigWig"
 ${CORNETTO_BIN} --version || die "Could not find cornetto"
 
 THREADS=24
