@@ -69,9 +69,4 @@ samtools depth -@ ${THREADS} -Q 20 -b ${CHROMBED} -aa ${BAM} | awk '{print $1"\t
 bedGraphToBigWig ${TOTCOV}.bg ${CHROMSIZES} ${TOTCOV}.bw || die "bedGraphToBigWig failed"
 bedGraphToBigWig ${MQ20COV}.bg ${CHROMSIZES} ${MQ20COV}.bw || die "bedGraphToBigWig failed"
 
-${SCRIPT_DIR}/create_cornetto4.sh ${ASM}.fasta|| die "create_cornetto4.sh failed"
-mkdir diploid || die "mkdir failed"
-cd diploid || die "cd failed"
-${SCRIPT_DIR}/create_hapnetto.sh ${ASM} || die "create_hapnetto.sh failed"
-
-echo "all done. f ya."
+qsub -v ASM=${ASM} ${SCRIPT_DIR}/generate_base_corhapnetto.sh || die "generate_base_corhapnetto.sh failed"
