@@ -61,21 +61,21 @@ core_t* init_core(const char *bamfilename, opt_t opt,double realtime0) {
     core->sum_bytes=0;
     core->total_reads=0;
 
-    // load bam file
-    core->bam_fp = sam_open(bamfilename, "r");
-    NULL_CHK(core->bam_fp);
+    // // load bam file
+    // core->bam_fp = sam_open(bamfilename, "r");
+    // NULL_CHK(core->bam_fp);
 
-    // load bam index file
-    core->bam_idx = sam_index_load(core->bam_fp, bamfilename);
-    if(core->bam_idx==NULL){
-        ERROR("could not load the .bai index file for %s", bamfilename);
-        fprintf(stderr, "Please run 'samtools index %s'\n", bamfilename);
-        exit(EXIT_FAILURE);
-    }
+    // // load bam index file
+    // core->bam_idx = sam_index_load(core->bam_fp, bamfilename);
+    // if(core->bam_idx==NULL){
+    //     ERROR("could not load the .bai index file for %s", bamfilename);
+    //     fprintf(stderr, "Please run 'samtools index %s'\n", bamfilename);
+    //     exit(EXIT_FAILURE);
+    // }
 
-    // read the bam header
-    core->bam_hdr = sam_hdr_read(core->bam_fp);
-    NULL_CHK(core->bam_hdr);
+    // // read the bam header
+    // core->bam_hdr = sam_hdr_read(core->bam_fp);
+    // NULL_CHK(core->bam_hdr);
 
     // If processing a region of the genome, get clipping coordinates
     core->clip_start = -1;
@@ -84,38 +84,38 @@ core_t* init_core(const char *bamfilename, opt_t opt,double realtime0) {
     core->reg_list=NULL; //region list is NULL by default
     core->reg_i=0;
     core->reg_n=0;
-    core->itr = NULL;
+    //core->itr = NULL;
 
-    if(opt.region_str == NULL){
-        core->itr = sam_itr_queryi(core->bam_idx, HTS_IDX_START, 0, 0);
-        if(core->itr==NULL){
-            ERROR("%s","sam_itr_queryi failed. A problem with the BAM index?");
-            exit(EXIT_FAILURE);
-        }
-    }
-    else{
-        //determine if .bed
-        int region_str_len = strlen(opt.region_str);
-        if(region_str_len>=4 && strcmp(&(opt.region_str[region_str_len-4]),".bed")==0 ){
-            VERBOSE("Fetching the list of regions from file: %s", opt.region_str);
-            WARNING("%s", "Loading region windows from a bed file is an experimental option and not yet throughly tested.");
-            WARNING("%s", "When loading windows from a bed file, output is based on reads that are unclipped. Also, there may be repeated entries when regions overlap.");
-            int64_t count=0;
-            char **reg_l = read_bed_regions(opt.region_str, &count);
-            core->reg_list = reg_l;
-            core->reg_i = 0;
-            core->reg_n = count;
-        }
-        else{
-            VERBOSE("Iterating over region: %s\n", opt.region_str);
-            core->itr = sam_itr_querys(core->bam_idx, core->bam_hdr, opt.region_str);
-            if(core->itr==NULL){
-                ERROR("sam_itr_querys failed. Please check if the region string you entered [%s] is valid",opt.region_str);
-                exit(EXIT_FAILURE);
-            }
-            hts_parse_reg(opt.region_str, &(core->clip_start) , &(core->clip_end));
-        }
-    }
+    // if(opt.region_str == NULL){
+    //     core->itr = sam_itr_queryi(core->bam_idx, HTS_IDX_START, 0, 0);
+    //     if(core->itr==NULL){
+    //         ERROR("%s","sam_itr_queryi failed. A problem with the BAM index?");
+    //         exit(EXIT_FAILURE);
+    //     }
+    // }
+    // else{
+    //     //determine if .bed
+    //     int region_str_len = strlen(opt.region_str);
+    //     if(region_str_len>=4 && strcmp(&(opt.region_str[region_str_len-4]),".bed")==0 ){
+    //         VERBOSE("Fetching the list of regions from file: %s", opt.region_str);
+    //         WARNING("%s", "Loading region windows from a bed file is an experimental option and not yet throughly tested.");
+    //         WARNING("%s", "When loading windows from a bed file, output is based on reads that are unclipped. Also, there may be repeated entries when regions overlap.");
+    //         int64_t count=0;
+    //         char **reg_l = read_bed_regions(opt.region_str, &count);
+    //         core->reg_list = reg_l;
+    //         core->reg_i = 0;
+    //         core->reg_n = count;
+    //     }
+    //     else{
+    //         VERBOSE("Iterating over region: %s\n", opt.region_str);
+    //         core->itr = sam_itr_querys(core->bam_idx, core->bam_hdr, opt.region_str);
+    //         if(core->itr==NULL){
+    //             ERROR("sam_itr_querys failed. Please check if the region string you entered [%s] is valid",opt.region_str);
+    //             exit(EXIT_FAILURE);
+    //         }
+    //         hts_parse_reg(opt.region_str, &(core->clip_start) , &(core->clip_end));
+    //     }
+    // }
 
 
 #ifdef HAVE_ACC
@@ -131,9 +131,9 @@ core_t* init_core(const char *bamfilename, opt_t opt,double realtime0) {
 /* free the core data structure */
 void free_core(core_t* core,opt_t opt) {
 
-    if(core->itr){
-        sam_itr_destroy(core->itr);
-    }
+    // if(core->itr){
+    //     sam_itr_destroy(core->itr);
+    // }
     if(core->reg_list){
         for(int64_t i=0;i<core->reg_n;i++){
             free(core->reg_list[i]);
@@ -141,9 +141,9 @@ void free_core(core_t* core,opt_t opt) {
         free(core->reg_list);
     }
 
-    bam_hdr_destroy(core->bam_hdr);
-    hts_idx_destroy(core->bam_idx);
-    sam_close(core->bam_fp);
+    //bam_hdr_destroy(core->bam_hdr);
+    //hts_idx_destroy(core->bam_idx);
+    //sam_close(core->bam_fp);
 
 #ifdef HAVE_ACC
     if (core->opt.flag & CORNETTO_ACC) {

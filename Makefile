@@ -1,4 +1,4 @@
-CPPFLAGS += -I htslib/
+# CPPFLAGS += -I htslib/
 CFLAGS   += -g -Wall -O2  -std=c99
 LDFLAGS  += $(LIBS) -lz -lm -lpthread
 BUILD_DIR = build
@@ -20,8 +20,8 @@ endif
 
 .PHONY: clean distclean test install uninstall
 
-$(BINARY): htslib/libhts.a $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) htslib/libhts.a $(LDFLAGS) -o $@
+$(BINARY): $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) $(LDFLAGS) -o $@
 
 $(BUILD_DIR)/main.o: src/main.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
@@ -47,14 +47,14 @@ $(BUILD_DIR)/misc_p.o: src/misc_p.c src/misc.h
 $(BUILD_DIR)/error.o: src/error.c src/error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
-htslib/libhts.a:
-	@if test -e $(BUILD_DIR)/lib/libhts.a; then \
-		echo "htslib found at htslib/libhts.a"; \
-	else \
-		echo "htslib not found at htslib/libhts.a"; \
-		echo "Please run 'scripts/install-hts.sh' first"; \
-		exit 1; \
-	fi
+# htslib/libhts.a:
+# 	@if test -e $(BUILD_DIR)/lib/libhts.a; then \
+# 		echo "htslib found at htslib/libhts.a"; \
+# 	else \
+# 		echo "htslib not found at htslib/libhts.a"; \
+# 		echo "Please run 'scripts/install-hts.sh' first"; \
+# 		exit 1; \
+# 	fi
 
 clean:
 	rm -rf $(BINARY) $(BUILD_DIR)/*.o

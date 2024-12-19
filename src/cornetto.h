@@ -34,8 +34,8 @@ SOFTWARE.
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <htslib/hts.h>
-#include <htslib/sam.h>
+//#include <htslib/hts.h>
+//#include <htslib/sam.h>
 
 #define CORNETTO_VERSION "0.1.0"
 
@@ -91,10 +91,10 @@ typedef struct {
     opt_t opt;
 
     // bam file related
-    htsFile* bam_fp;
-    hts_idx_t* bam_idx;
-    bam_hdr_t* bam_hdr;
-    hts_itr_t* itr;
+    // htsFile* bam_fp;
+    // hts_idx_t* bam_idx;
+    // bam_hdr_t* bam_hdr;
+    // hts_itr_t* itr;
 
     //multi region related
     char **reg_list; //the list of regions

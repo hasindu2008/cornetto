@@ -10,13 +10,11 @@ die () {
 test -z ${CORNETTO_BIN} && CORNETTO_BIN=/home/hasindu/hasindu2008.git/cornetto/cornetto
 
 # dont run in parallel in same directory
-
 FASTA=$1
 ASSBED=${FASTA}.bed
 BGTOTAL=${FASTA%.fasta}.cov-total.bg
 BGMQ20=${FASTA%.fasta}.cov-mq20.bg
 LOWQ=${FASTA%.fasta}.bp.p_ctg.lowQ.bed
-
 
 test -f ${FASTA} || die "File ${FASTA} not found"
 test -f ${BGTOTAL} || die "File ${BGTOTAL} not found"
@@ -31,7 +29,7 @@ awk '{print $1"\t0\t"$2}' ${FASTA}.fai > ${ASSBED} || die "awk failed"
 # high coverage: [>2.5x] genome average
 # low mappability: [mean MQ20 cov for window is < 0.4 x mean coverage for the window]
 
-${CORNETTO_BIN} funbits -H 2.5 -L 0.4 -Q 0.4 ${BGTOTAL} -q ${BGMQ20} | awk '{if ($4!=".") print $1"\t"$2"\t"$3}' > 1_tmp.bed || die "cornetto failed"
+${CORNETTO_BIN} noboringbits -H 2.5 -L 0.4 -Q 0.4 ${BGTOTAL} -q ${BGMQ20} | awk '{if ($4!=".") print $1"\t"$2"\t"$3}' > 1_tmp.bed || die "cornetto failed"
 
 #2# merge these interesting windows - overlapping or adjacent (within 1000bp)
 cat 1_tmp.bed | sort -k1,1 -k2,2n | bedtools merge -d 1000 > 2_tmp.bed || die "bedtools merge failed"

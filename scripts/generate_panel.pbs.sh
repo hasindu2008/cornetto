@@ -41,7 +41,7 @@ awk '{if(($3-$2)>200000) {print $1"\t0\t200000\n"$1"\t"$3-200000"\t"$3}}' ${PREF
 bedtools sort -i funbits.bed | bedtools merge -d 200000 > funbits_merged.bed
 
 #5# subtract merged windows from (4) from the whole genome assembly
-bedtools subtract -a ${PREFIX}.chroms.bed -b funbits_merged.bed > boringbits_tmp.bed
+bedtools subtract -a ${PREFIX}.chroms.bed -b noboringbits_merged.bed > boringbits_tmp.bed
 
 #6# subtract any contigs shorter than 1Mbase
 awk '{if(($3-$2)<1000000) print $0}' ${PREFIX}.chroms.bed > short.bed
