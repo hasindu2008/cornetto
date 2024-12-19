@@ -466,7 +466,9 @@ void print_boring_bits(asm_reg_t *asm_reg, int thresh_low_depth, int thresh_high
 
 void the_boring_bits(const char* covtotalfile, const char *covmqfile, optp_t *opt){
 
+    double realtime0 = realtime();
     asm_depth_t *asm_depth = get_depths(covtotalfile, covmqfile);
+    VERBOSE("Loaded depth files in %.2f seconds", realtime() - realtime0);
 
     int window_size = opt->window_size;
     int window_inc = opt->window_inc;
@@ -489,7 +491,10 @@ void the_boring_bits(const char* covtotalfile, const char *covmqfile, optp_t *op
 
     //print_depth_mq(asm_depth);
 
+    realtime0 = realtime();
     asm_reg_t *asm_reg = get_regs(asm_depth, window_size, window_inc);
+    VERBOSE("Found regions in %.2f seconds", realtime() - realtime0);
+
     free_asm_depth(asm_depth);
 
 
@@ -503,15 +508,14 @@ void the_boring_bits(const char* covtotalfile, const char *covmqfile, optp_t *op
 
     //print_reg_low_mq_cov(asm_reg, low_mq_cov_thresh);
 
+    realtime0 = realtime();
     if(opt->boring)
         print_boring_bits(asm_reg, thresh_low_depth, thresh_high_depth, low_mq_cov_thresh, edge_len, min_ctg_len);
     else
         print_fun_bits(asm_reg, thresh_low_depth, thresh_high_depth, low_mq_cov_thresh, edge_len, min_ctg_len);
-
+    VERBOSE("Printed the bits in %.2f seconds", realtime() - realtime0);
 
     free_asm_reg(asm_reg);
-
-
 
 }
 
@@ -537,7 +541,7 @@ void init_optp(optp_t *opt){
 
 int boringbits_main(int argc, char* argv[], int8_t boring) {
 
-    double realtime0 = realtime();
+    //double realtime0 = realtime();
 
     const char* optstring = "t:B:K:v:o:q:Q:H:L:w:i:e:m:hV";
 

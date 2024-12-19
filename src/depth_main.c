@@ -156,7 +156,7 @@ int depth_main(int argc, char* argv[]) {
     //initialise the core data structure
     core_t* core = init_core(bamfile, opt, realtime0);
 
-    int32_t counter=0;
+    //int32_t counter=0;
 
     //initialise a databatch
     db_t* db = init_db(core);
