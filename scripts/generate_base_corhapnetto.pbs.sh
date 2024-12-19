@@ -2,10 +2,10 @@
 #PBS -P ox63
 #PBS -q normal
 #PBS -N cornetto
-#PBS -l walltime=2:00:00
+#PBS -l walltime=3:00:00
 #PBS -l storage=gdata/ox63+scratch/ox63+scratch/if89+gdata/if89
-#PBS -l mem=192GB
-#PBS -l ncpus=48
+#PBS -l mem=64GB
+#PBS -l ncpus=16
 #PBS -l wd
 
 usage() {
