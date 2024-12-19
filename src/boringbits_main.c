@@ -337,6 +337,7 @@ asm_reg_t *get_regs(asm_depth_t *asm_depth, int window_size, int window_inc){
         ctg_reg->ctg_length = length;
 
         ctg_reg->n_reg = (length - window_size + window_inc -1) / window_inc + 1;
+        VERBOSE("Number of windows for %s: %d, length %d, total size %ld",ctg_reg->ctg_name, ctg_reg->n_reg, length, ctg_reg->n_reg*sizeof(reg_t));
         ctg_reg->reg = (reg_t*)malloc(ctg_reg->n_reg*sizeof(reg_t));
         MALLOC_CHK(ctg_reg->reg);
 
