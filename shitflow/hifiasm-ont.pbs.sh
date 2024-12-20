@@ -92,7 +92,7 @@ echo "gfa2fa completed" >> hifiasm.log
 
 ## run quast to evaluate assemblies
 ASMPATH=`realpath ${ASM}.fasta`
-qsub -v ASM=${ASMPATH},OUT=${ASM}.quast_out ${QUAST_SCRIPT} || die "quast submission failed"
+qsub -v ASM=${ASMPATH},OUT_DIR=${ASM}.quast_out ${QUAST_SCRIPT} || die "quast submission failed"
 echo "quast.pbs.sh submitted" >> hifiasm.log
 
 ## run hasindu chromosomes stats script
