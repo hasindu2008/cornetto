@@ -6,7 +6,6 @@ samtools faidx assembly.fa
 awk '{print $1"\t0\t"$2}' assembly.fa.faidx > assembly.bed
 ```
 
-
 ### cornetto panel
 
 ```
@@ -56,6 +55,6 @@ fi
 done < boring_ctg.tmp > boringbits_cornetto4.bed
 ```
 
-You may use the script under `scripts/create_cornetto4.sh`. On gadi you may launch `scripts/generate_base_panel.pbs.sh`
+You may use the script under `scripts/create_cornetto.sh`. On gadi you may launch `scripts/generate_base_panel.pbs.sh`
 
 For previous deprecated cornetto panels refer to [archived](archived.md).
