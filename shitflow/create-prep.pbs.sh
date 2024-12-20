@@ -33,7 +33,7 @@ module load bedtools/2.28.0
 export PATH=$PATH:/g/data/ox63/ira/scripts/
 FLATTEN=/g/data/ox63/ira/scripts/flattenFasta.pl
 export CORNETTO_BIN=/g/data/ox63/hasindu/cornetto/cornetto/cornetto
-export SCRIPT_DIR=/g/data/ox63/hasindu/cornetto/cornetto/scripts
+export SF_SCRIPT_DIR=/g/data/ox63/hasindu/cornetto/cornetto/shitflow
 
 minimap2 --version || die "Could not find minimap2"
 samtools --version || die "Could not find samtools"
@@ -69,4 +69,4 @@ samtools depth -@ ${THREADS} -Q 20 -b ${CHROMBED} -aa ${BAM} | awk '{print $1"\t
 bedGraphToBigWig ${TOTCOV}.bg ${CHROMSIZES} ${TOTCOV}.bw || die "bedGraphToBigWig failed"
 bedGraphToBigWig ${MQ20COV}.bg ${CHROMSIZES} ${MQ20COV}.bw || die "bedGraphToBigWig failed"
 
-qsub -v ASM=${ASM} ${SCRIPT_DIR}/generate_base_corhapnetto.sh || die "generate_base_corhapnetto.sh failed"
+qsub -v ASM=${ASM} ${SF_SCRIPT_DIR}/create.pbs.sh || die "create.pbs.sh failed"

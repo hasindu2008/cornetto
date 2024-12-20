@@ -9,7 +9,7 @@
 #PBS -l wd
 
 usage() {
-	echo "Usage: qsub -v ASM=RGBX240039_HG002.hifiasm-hifi_1x ./generate_base_corhapnetto.sh" >&2
+	echo "Usage: qsub -v ASM=RGBX240039_HG002.hifiasm-hifi_1x ./create.pbs.sh" >&2
 	echo
 	exit 1
 }
