@@ -26,11 +26,12 @@ See [C programme commands and options](docs/command.md).
 
 ### Creating a new cornetto panel
 
+```
+scripts/create-cornetto base_assembly.fasta
+```
+
 See [Creating a new cornetto panel](docs/create.md) for more details.
 
-## assembling
-
-See `scripts/hihiasm/pbs.sh`.
 
 ## t2t-aware iterative assembly
 
@@ -40,9 +41,16 @@ For cumulative assemblies, you may use `scripts/postcall_all/run_fisht2t_all.sh`
 The older methods can be found under [archived](archived.md)
 
 ### Evaluating
+
+```
+scripts/minidotplot.sh ref.fasta assembly.fasta
+scripts/telostat.sh assembly.fasta
+scripts/assembly.fasta
+```
+
 See [Evaluation](docs/eval.md) for more details.
 
 ## shitflow (shell-based internode transfer flow)
 
-see [here](shitflow/shitflow/README.md).
+see [here](shitflow/README.md).
 
