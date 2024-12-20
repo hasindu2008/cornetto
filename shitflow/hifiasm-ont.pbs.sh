@@ -27,13 +27,13 @@ ONT_DATADIR=/g/data/ox63/hasindu/cornetto/shitflow/
 if [ -n "${FISH_PREV}" ]; then
 	LIST=$(echo "$FISH_PREV" | tr ':' ' ' )
 	for DUPLEX in ${LIST}; do
-		DUP=${ONT_DATADIR}/${DUPLEX}/${DUPLEX}.duplex_reads.fastq
+		DUP=${ONT_DATADIR}/${DUPLEX}/${DUPLEX}.fastq
 		FASTQ_LIST="${FASTQ_LIST} ${DUP}"
 	done
 fi
 
 if [ -n "${FISH_NOW}" ]; then
-	DUP=${ONT_DATADIR}/${FISH_NOW}/${FISH_NOW}.duplex_reads.fastq
+	DUP=${ONT_DATADIR}/${FISH_NOW}/${FISH_NOW}.fastq
 	FASTQ_LIST="${FASTQ_LIST} ${DUP}"
 fi
 
