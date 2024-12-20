@@ -26,6 +26,7 @@ test -f ${LOWQ} || die "File ${LOWQ} not found"
 BASENAME=$(basename ${FASTA})
 TMPOUT=tmp_create_cornetto
 test -d ${TMPOUT} && die "Directory ${TMPOUT} already exists. Please remove it before running this script or change to a different working directory"
+mkdir ${TMPOUT} || die "mkdir failed"
 
 ASSBED=${TMPOUT}/${BASENAME}.bed
 test -f ${FASTA}.fai || samtools faidx ${FASTA} || die "samtools faidx on ${FASTA} failed"
