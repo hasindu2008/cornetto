@@ -11,7 +11,7 @@
 set -o pipefail
 
 usage() {
-	echo "Usage: qsub -v FQ=/g/data/ox63/cornetto/data/gtg_internal/HG002/RGBX240039_HG002.hifi.fastq.gz,ASM=RGBX240039_HG002.hifiasm-hifi_1x ./generate_base_panel.pbs.sh" >&2
+	echo "Usage: qsub -v FQ=/g/data/ox63/cornetto/data/gtg_internal/HG002/RGBX240039_HG002.hifi.fastq.gz,ASM=RGBX240039_HG002.hifiasm-hifi_1x ./create-launch.pbs.sh" >&2
 	echo
 	exit 1
 }

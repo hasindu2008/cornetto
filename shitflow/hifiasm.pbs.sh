@@ -62,7 +62,9 @@ GFATOOLS=/g/data/ox63/ira/adaptive_assembly/gfatools/gfatools
 FLATTEN=/g/data/te53/ontsv/sv_parsing/scripts/flattenFasta.pl
 REFERENCE=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
 GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/getstat.pbs.sh
-GENERATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/recreate.pbs.sh
+CREATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/create.pbs.sh
+RECREATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/recreate.pbs.sh
+QUAST_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/quast.pbs.sh
 THREADS=${PBS_NCPUS}
 
 #########################################
@@ -90,13 +92,19 @@ cat ${CHROMBED} | awk '{print $1"\t"$3}' > ${CHROMSIZES}
 
 ## run quast to evaluate assemblies
 ASMPATH=`realpath ${ASM}.fasta`
-quast.py -t ${THREADS} -o ${ASM}.quast_out -l ${ASM} --large ${ASMPATH}
-echo "quast completed" >> hifiasm.log
+qsub -v ASM=${ASMPATH},OUT_DIR=${ASM}.quast_out ${QUAST_SCRIPT} || die "quast submission failed"
+echo "quast.pbs.sh submitted" >> hifiasm.log
 
 ## run hasindu chromosomes stats script
 qsub -v REF=${REFERENCE},ASM=${ASMPATH} ${GETSTAT_SCRIPT}
 echo "getstat.pbs.sh submitted" >> hifiasm.log
 
 ## run generate panel script
-qsub -v FISH_NOW=${FISH_NOW},PREFIX=${OUT_PREFIX} ${GENERATE_PANEL_SCRIPT}
-echo "recreate.pbs.sh submitted" >> hifiasm.log
+if [ -z "${FISH_NOW}" ]; then
+	qsub -v FQ=${BASE_FASTQ},ASM=${ASM} ${CREATE_PANEL_SCRIPT} || die "create-launch submission failed"
+	echo "create-launch.pbs.sh submitted" >> hifiasm.log
+else
+	qsub -v FISH_NOW=${FISH_NOW},PREFIX=${OUT_PREFIX} ${RECREATE_PANEL_SCRIPT} || die "recreate submission failed"
+	echo "recreate.pbs.sh submitted" >> hifiasm.log
+fi
+

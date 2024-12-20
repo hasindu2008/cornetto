@@ -59,7 +59,8 @@ module load quast/5.1.0rc1 || die "loading quast/5.1.0rc1 module failed"
 REFERENCE=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
 
 GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/getstat.pbs.sh
-GENERATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/recreate.pbs.sh
+CREATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/create.pbs.sh
+RECREATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/recreate.pbs.sh
 QUAST_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/quast.pbs.sh
 
 HIFIASM=/g/data/ox63/install/hifiasm-0.22.0/hifiasm
@@ -101,8 +102,9 @@ echo "getstat.pbs.sh submitted" >> hifiasm.log
 
 ## run generate panel script
 if [ -z "${FISH_NOW}" ]; then
-	echo "FISH_NOW not provided. No new panel to generate" >> hifiasm.log
+	qsub -v FQ=${BASE_FASTQ},ASM=${ASM} ${CREATE_PANEL_SCRIPT} || die "create-launch submission failed"
+	echo "create-launch.pbs.sh submitted" >> hifiasm.log
 else
-	qsub -v FISH_NOW=${FISH_NOW},PREFIX=${OUT_PREFIX} ${GENERATE_PANEL_SCRIPT} || die "recreate submission failed"
+	qsub -v FISH_NOW=${FISH_NOW},PREFIX=${OUT_PREFIX} ${RECREATE_PANEL_SCRIPT} || die "recreate submission failed"
 	echo "recreate.pbs.sh submitted" >> hifiasm.log
 fi

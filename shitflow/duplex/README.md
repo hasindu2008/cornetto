@@ -1,8 +1,9 @@
 
 # shitflow (shell-based internode transfer flow)
 
-On fridge just call launch.sh
+For duplex reads:
 
+On fridge just call launch.sh
 
 ## Custom example
 

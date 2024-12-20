@@ -38,7 +38,7 @@ PREFIX=$1
 SAMPLE=$2
 
 FRIDGE_TMP=/data3/cornetto
-BRENNER_SCRIPT=/home/hasgam/hasindu2008.git/cornetto/shitflow/shitflow/shitflow.sh
+BRENNER_SCRIPT=/home/hasgam/hasindu2008.git/cornetto/shitflow/duplex/shitflow.sh
 BRENNER_DATA=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/shitflow_hasindu/
 GADI_DATA=/g/data/ox63/hasindu/cornetto/shitflow
 GADI_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/hifiasm.pbs.sh
