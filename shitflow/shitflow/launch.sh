@@ -38,14 +38,14 @@ PREFIX=$1
 SAMPLE=$2
 
 FRIDGE_TMP=/data3/cornetto
-BRENNER_SCRIPT=/home/hasgam/hasindu2008.git/cornetto/scripts/autocall/autocall.sh
-BRENNER_DATA=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/autocall_hasindu/
-GADI_DATA=/g/data/ox63/hasindu/cornetto/autocall
-GADI_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/scripts/hifiasm.pbs.sh
+BRENNER_SCRIPT=/home/hasgam/hasindu2008.git/cornetto/shitflow/shitflow/shitflow.sh
+BRENNER_DATA=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/shitflow_hasindu/
+GADI_DATA=/g/data/ox63/hasindu/cornetto/shitflow
+GADI_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/hifiasm.pbs.sh
 
 NAME=${PREFIX}_${SAMPLE}
 GADI_PBS_ARGS=
-echo "Launching autocall for ${NAME}"
+echo "Launching shitflow for ${NAME}"
 
 checkshit() {
     test -d ${FRIDGE_TMP} || die "${FRIDGE_TMP} not found on fridge"
@@ -84,7 +84,7 @@ cd ${FRIDGE_TMP} || die "Could not cd to ${FRIDGE_TMP}"
 slow5tools merge /data/${SAMPLE}/*/*/slow5/ -o ${PREFIX}_${SAMPLE}.blow5 || die "Could not merge slow5 files"
 slow5tools stats ${PREFIX}_${SAMPLE}.blow5 || die "Could not get stats"
 
-COMMAND="source /etc/profile; screen -S autocall_${PREFIX}_${SAMPLE} -d -m -L ${BRENNER_SCRIPT} ${NAME} ${GADI_PBS_ARGS}"
+COMMAND="source /etc/profile; screen -S shitflow_${PREFIX}_${SAMPLE} -d -m -L ${BRENNER_SCRIPT} ${NAME} ${GADI_PBS_ARGS}"
 echo "$COMMAND"
 ssh brenner-fpga "$COMMAND"
 echo ""

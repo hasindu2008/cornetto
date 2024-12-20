@@ -21,10 +21,10 @@ if [ $# -eq 2 ]; then
     GADI_PBS_ARGS=$2
 fi
 
-BRENNER_DATA=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/autocall_hasindu/
+BRENNER_DATA=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/shitflow_hasindu/
 FRIDGE_TMP=/data3/cornetto/
-GADI_DATA=/g/data/ox63/hasindu/cornetto/autocall
-GADI_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/scripts/hifiasm.pbs.sh
+GADI_DATA=/g/data/ox63/hasindu/cornetto/shitflow
+GADI_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/hifiasm.pbs.sh
 
 SCRIPT_REALPATH=$(realpath "$0")
 SCRIPT_PATH=$(dirname "$SCRIPT_REALPATH")

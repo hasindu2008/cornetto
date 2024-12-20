@@ -16,7 +16,7 @@ die() {
 }
 
 SAMPLE=${1}
-BLOW5=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/autocall_hasindu/${SAMPLE}/${SAMPLE}.blow5
+BLOW5=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/shitflow_hasindu/${SAMPLE}/${SAMPLE}.blow5
 
 #don't edit stuff below here
 OUTDIR="split_bam/"

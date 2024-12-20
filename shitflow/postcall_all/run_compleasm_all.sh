@@ -9,7 +9,7 @@ LINEAGE=primates
 for EACH in ${LIST}
 do
     cd ${EACH}
-    qsub -v ASM=${ASM}.fasta,LINEAGE=${LINEAGE},OUT_DIR=busco/ ~/cornetto-hasindu/cornetto/scripts/compleasm.pbs.sh
+    qsub -v ASM=${ASM}.fasta,LINEAGE=${LINEAGE},OUT_DIR=busco/ ~/cornetto-hasindu/cornetto/shitflow/compleasm.pbs.sh
     cd ..
 done
 

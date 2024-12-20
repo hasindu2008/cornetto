@@ -7,6 +7,7 @@
 #PBS -l mem=192GB
 #PBS -l ncpus=48
 #PBS -l wd
+#PBS -M i.deveson@garvan.org.au
 
 usage() {
 	echo "Usage: qsub -v BASE_FASTQ=/path/to/RGBX240039_HG002.hifi.fastq.gz,FISH_PREV=A_1_QGXHXX240275:A_2_QGXHXX240279(optional),FISH_NOW=A_3_QGXHXX240283(optional),OUT_PREFIX=hg002-cornetto-A_3(optional) ./hifiasm.pbs.sh" >&2
@@ -23,7 +24,7 @@ usage() {
 HIFI_0=${BASE_FASTQ}
 FASTQ_LIST=${HIFI_0}
 
-ONT_DATADIR=/g/data/ox63/hasindu/cornetto/autocall/
+ONT_DATADIR=/g/data/ox63/hasindu/cornetto/shitflow/
 if [ -n "${FISH_PREV}" ]; then
 	LIST=$(echo "$FISH_PREV" | tr ':' ' ' )
 	for DUPLEX in ${LIST}; do
@@ -51,6 +52,7 @@ die() {
 
 ## load software
 export MODULEPATH=$MODULEPATH:/g/data/if89/apps/modulefiles/
+module load hifiasm/0.19.8
 module load minimap2/2.24
 module load samtools/1.19
 module load kentutils/0.0
@@ -59,9 +61,8 @@ module load quast/5.1.0rc1
 GFATOOLS=/g/data/ox63/ira/adaptive_assembly/gfatools/gfatools
 FLATTEN=/g/data/te53/ontsv/sv_parsing/scripts/flattenFasta.pl
 REFERENCE=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
-GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/scripts/getstat.pbs.sh
-GENERATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/scripts/generate_panel.pbs.sh
-HIFIASM=/g/data/ox63/install/hifiasm-0.22.0/hifiasm
+GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/getstat.pbs.sh
+GENERATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/generate_panel.pbs.sh
 THREADS=${PBS_NCPUS}
 
 #########################################
@@ -69,7 +70,7 @@ THREADS=${PBS_NCPUS}
 echo "Running hifiasm with ${THREADS} threads, outprefix ${ASM}, and input fastq list ${FASTQ_LIST}" > hifiasm.log
 
 ## generate assembly with hifiasm
-/usr/bin/time -v ${HIFIASM} --ont -t ${THREADS} --hg-size 3g -o ${ASM} ${FASTQ_LIST}
+/usr/bin/time -v hifiasm -t ${THREADS} --hg-size 3g -o ${ASM} ${FASTQ_LIST}
 echo "hifiasm completed" >> hifiasm.log
 
 ## convert assembly graph to FASTA format

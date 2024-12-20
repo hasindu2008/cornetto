@@ -39,7 +39,7 @@ usage() {
 #min contig len
 [ -z "${MIN_CONTIG_LEN}" ] && MIN_CONTIG_LEN=40000000
 #work dir
-[ -z "${ASM_WORK_DIR}" ] && ASM_WORK_DIR=/g/data/ox63/hasindu/cornetto/autocall
+[ -z "${ASM_WORK_DIR}" ] && ASM_WORK_DIR=/g/data/ox63/hasindu/cornetto/shitflow
 
 module load minimap2/2.24
 module load samtools/1.12
@@ -56,8 +56,8 @@ die() {
 
 REFERENCE=${REF}
 ASM_DIR_LIST=$(echo $ASM_LIST | tr ':' ' ')
-GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/scripts/getstat.pbs.sh
-QUAST_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/scripts/quast.pbs.sh
+GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/getstat.pbs.sh
+QUAST_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/quast.pbs.sh
 THREADS=${PBS_NCPUS}
 
 

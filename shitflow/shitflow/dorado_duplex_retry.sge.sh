@@ -16,7 +16,7 @@ die() {
 }
 
 SAMPLE=${1}
-BLOW5_DIR=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/autocall_hasindu/${SAMPLE}/${SAMPLE}_duplex_out/split_blow5_failed
+BLOW5_DIR=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/shitflow_hasindu/${SAMPLE}/${SAMPLE}_duplex_out/split_blow5_failed
 
 SLOW5_DORADO=/share/ClusterShare/software/contrib/hasgam/slow5-dorado-0.3.4/bin/slow5-dorado
 MODEL_SUP=/share/ClusterShare/software/contrib/hasgam/slow5-dorado-0.3.4/models/dna_r10.4.1_e8.2_400bps_sup@v4.2.0

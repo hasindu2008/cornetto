@@ -11,7 +11,7 @@ do
     echo $CURR_LIST
     mkdir ${NUM}
     cd ${NUM}
-    qsub -v ASM_LIST=${CURR_LIST},ASM_NAME_PREFIX=saliva_cornetto- ~/cornetto-hasindu/cornetto/scripts/fisht2t.pbs.sh
+    qsub -v ASM_LIST=${CURR_LIST},ASM_NAME_PREFIX=saliva_cornetto- ~/cornetto-hasindu/cornetto/shitflow/fisht2t.pbs.sh
     cd ..
     NUM=$((NUM+1))
 done

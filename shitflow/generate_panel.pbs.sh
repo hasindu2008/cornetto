@@ -21,7 +21,7 @@ export PATH=$PATH:/g/data/ox63/ira/scripts/
 module load bedtools/2.28.0
 FLATTEN=/g/data/ox63/ira/scripts/flattenFasta.pl
 
-ONT_DATADIR=/g/data/ox63/hasindu/cornetto/autocall/
+ONT_DATADIR=/g/data/ox63/hasindu/cornetto/shitflow/
 
 cd ${ONT_DATADIR}/${FISH_NOW}
 

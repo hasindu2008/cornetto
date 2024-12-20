@@ -44,5 +44,5 @@ See [Evaluation](docs/eval.md) for more details.
 
 ## shitflow (shell-based internode transfer flow)
 
-see [here](scripts/autocall/README.md).
+see [here](shitflow/shitflow/README.md).
 
