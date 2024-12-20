@@ -8,6 +8,8 @@
 #PBS -l ncpus=48
 #PBS -l wd
 
+set -o pipefail
+
 usage() {
 	echo "Usage: qsub -v FQ=/g/data/ox63/cornetto/data/gtg_internal/HG002/RGBX240039_HG002.hifi.fastq.gz,ASM=RGBX240039_HG002.hifiasm-hifi_1x ./generate_base_panel.pbs.sh" >&2
 	echo
@@ -26,12 +28,11 @@ test -f ${ASM}.fasta || die "Assembly FASTA not found"
 test -f ${FQ} || die "Input FASTQ not found"
 
 export MODULEPATH=$MODULEPATH:/g/data/if89/apps/modulefiles/
-module load minimap2/2.24
-module load samtools/1.19
-module load kentutils/0.0
-module load bedtools/2.28.0
-export PATH=$PATH:/g/data/ox63/ira/scripts/
-FLATTEN=/g/data/ox63/ira/scripts/flattenFasta.pl
+module load minimap2/2.24 || die "loading minimap2/2.24 module failed"
+module load samtools/1.19 || die "loading samtools/1.19 module failed"
+module load kentutils/0.0 || die "loading kentutils/0.0 module failed"
+module load bedtools/2.28.0 || die "loading bedtools/2.28.0 module failed"
+
 export CORNETTO_BIN=/g/data/ox63/hasindu/cornetto/cornetto/cornetto
 export SF_SCRIPT_DIR=/g/data/ox63/hasindu/cornetto/cornetto/shitflow
 
@@ -53,7 +54,7 @@ samtools faidx ${ASM}.fasta || die "samtools faidx failed"
 minimap2 -x map-ont -d ${ASM}.fasta.idx ${ASM}.fasta || die "minimap2 failed"
 
 ## generate CHROMBED and CHROMSIZES files
-${FLATTEN} -tab ${ASM}.fasta | awk '{print $1"\t0\t"length($2)}' | sort -k3,3nr > ${CHROMBED} || die "flattenFasta.pl failed"
+awk '{print $1"\t0\t"$2}' ${FASTA}.fai | sort -k3,3nr > ${CHROMBED} || die "awk failed"
 cat ${CHROMBED} | awk '{print $1"\t"$3}' > ${CHROMSIZES} || die "awk failed"
 
 ## align starting hifi FASTQ reads back to the assembly they generated
@@ -69,4 +70,4 @@ samtools depth -@ ${THREADS} -Q 20 -b ${CHROMBED} -aa ${BAM} | awk '{print $1"\t
 bedGraphToBigWig ${TOTCOV}.bg ${CHROMSIZES} ${TOTCOV}.bw || die "bedGraphToBigWig failed"
 bedGraphToBigWig ${MQ20COV}.bg ${CHROMSIZES} ${MQ20COV}.bw || die "bedGraphToBigWig failed"
 
-qsub -v ASM=${ASM} ${SF_SCRIPT_DIR}/create.pbs.sh || die "create.pbs.sh failed"
+qsub -v ASM=${ASM} ${SF_SCRIPT_DIR}/create-core.pbs.sh || die "create.pbs.sh failed"

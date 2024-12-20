@@ -9,19 +9,19 @@
 #PBS -l wd
 
 usage() {
-	echo "Usage: qsub -v BASE_FASTQ=/path/to/RGBX240039_HG002.hifi.fastq.gz,FISH_PREV=A_1_QGXHXX240275:A_2_QGXHXX240279(optional),FISH_NOW=A_3_QGXHXX240283(optional),OUT_PREFIX=hg002-cornetto-A_3(optional) ./hifiasm.pbs.sh" >&2
+	echo "Usage: qsub -v BASE_FASTQ=/path/to/A0_XX.fastq,FISH_PREV=A_1_QGXHXX240275:A_2_QGXHXX240279(optional),FISH_NOW=A_3_QGXHXX240283(optional),OUT_PREFIX=hg002-cornetto-A_3(optional) ./hifiasm.pbs.sh" >&2
 	echo
 	exit 1
 }
 
 #output prefix
 [ -z "${OUT_PREFIX}" ] && OUT_PREFIX=hg002-cornetto
-#pacbio fastq
+#ont base fastq
 [ -z "${BASE_FASTQ}" ] && usage
 
 ## inputs
-HIFI_0=${BASE_FASTQ}
-FASTQ_LIST=${HIFI_0}
+ONT_0=${BASE_FASTQ}
+FASTQ_LIST=${ONT_0}
 
 ONT_DATADIR=/g/data/ox63/hasindu/cornetto/shitflow/
 if [ -n "${FISH_PREV}" ]; then
@@ -39,8 +39,8 @@ fi
 
 ## outputs
 ASM=${OUT_PREFIX}
-CHROMBED=${ASM}.chroms.bed
-CHROMSIZES=${ASM}.chromsizes.tsv
+#CHROMBED=${ASM}.chroms.bed
+#CHROMSIZES=${ASM}.chromsizes.tsv
 
 # terminate script
 die() {
@@ -59,7 +59,7 @@ module load quast/5.1.0rc1 || die "loading quast/5.1.0rc1 module failed"
 REFERENCE=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
 
 GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/getstat.pbs.sh
-GENERATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/generate_panel.pbs.sh
+GENERATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/recreate.pbs.sh
 QUAST_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/quast.pbs.sh
 
 HIFIASM=/g/data/ox63/install/hifiasm-0.22.0/hifiasm
@@ -100,5 +100,9 @@ qsub -v REF=${REFERENCE},ASM=${ASMPATH} ${GETSTAT_SCRIPT} || die "getstat submis
 echo "getstat.pbs.sh submitted" >> hifiasm.log
 
 ## run generate panel script
-qsub -v FISH_NOW=${FISH_NOW},PREFIX=${OUT_PREFIX} ${GENERATE_PANEL_SCRIPT} || die "generate_panel submission failed"
-echo "generate_panel.pbs.sh submitted" >> hifiasm.log
+if [ -z "${FISH_NOW}" ]; then
+	echo "FISH_NOW not provided. No new panel to generate" >> hifiasm.log
+else
+	qsub -v FISH_NOW=${FISH_NOW},PREFIX=${OUT_PREFIX} ${GENERATE_PANEL_SCRIPT} || die "recreate submission failed"
+	echo "recreate.pbs.sh submitted" >> hifiasm.log
+fi

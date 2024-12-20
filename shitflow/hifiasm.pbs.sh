@@ -62,7 +62,7 @@ GFATOOLS=/g/data/ox63/ira/adaptive_assembly/gfatools/gfatools
 FLATTEN=/g/data/te53/ontsv/sv_parsing/scripts/flattenFasta.pl
 REFERENCE=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
 GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/getstat.pbs.sh
-GENERATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/generate_panel.pbs.sh
+GENERATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/recreate.pbs.sh
 THREADS=${PBS_NCPUS}
 
 #########################################
@@ -99,4 +99,4 @@ echo "getstat.pbs.sh submitted" >> hifiasm.log
 
 ## run generate panel script
 qsub -v FISH_NOW=${FISH_NOW},PREFIX=${OUT_PREFIX} ${GENERATE_PANEL_SCRIPT}
-echo "generate_panel.pbs.sh submitted" >> hifiasm.log
+echo "recreate.pbs.sh submitted" >> hifiasm.log

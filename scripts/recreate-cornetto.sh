@@ -1,32 +1,23 @@
 #!/bin/bash
-#PBS -P ox63
-#PBS -N generate_panel
-#PBS -q normal
-#PBS -l ncpus=4
-#PBS -l mem=16GB
-#PBS -l walltime=48:00:00
-#PBS -l wd
-#PBS -l storage=gdata/if89+scratch/wv19+gdata/wv19+gdata/ox63
 
-usage() {
-	echo "Usage: qsub -v FISH_NOW=A_3_QGXHXX240283,PREFIX=hg002-cornetto-A_3 ./generate_panel.pbs.sh" >&2
-	echo
-	exit 1
+set -o pipefail
+
+die () {
+    echo >&2 "$@"
+    exit 1
 }
 
-[ -z "${PREFIX}" ] && usage
-[ -z "${FISH_NOW}" ] && usage
+[ "$#" -eq 1 ] || die "1 argument required, $# provided. Usage: recreate_cornetto.sh <assembly.fa>"
 
-export PATH=$PATH:/g/data/ox63/ira/scripts/
-module load bedtools/2.28.0
-FLATTEN=/g/data/ox63/ira/scripts/flattenFasta.pl
+FASTA=$1
+test -f ${FASTA} || die "Assembly FASTA not found"
 
-ONT_DATADIR=/g/data/ox63/hasindu/cornetto/shitflow/
-
-cd ${ONT_DATADIR}/${FISH_NOW}
+BASENAME=$(basename ${FASTA})
+PREFIX=${FASTA%.fasta}
 
 ## generate CHROMBED file
-${FLATTEN} -tab ${PREFIX}.fasta | awk '{print $1"\t0\t"length($2)}' | sort -k3,3nr > ${PREFIX}.chroms.bed
+test -f ${FASTA}.fai || sammtools faidx ${FASTA} || die "samtools faidx failed"
+awk '{print $1"\t0\t"$2}' ${FASTA}.fai | sort -k3,3nr > ${PREFIX}.chroms.bed || die "awk failed"
 
 #1# get regions longer than 7.5kb which were labelled by hifiasm as "low quality" (not sure what the definition of this is exactly)
 cat ${PREFIX}.bp.p_ctg.lowQ.bed | awk '($3-$2)>=7500' | cut -f 1-3 > lowQ_tmp.bed
@@ -68,5 +59,3 @@ done < boring_ctg.tmp > ${PREFIX}.boringbits.bed
 cat ${PREFIX}.boringbits.bed | awk '{print $1","$2","$3",+"}' > plus_tmp
 cat ${PREFIX}.boringbits.bed | awk '{print $1","$2","$3",-"}' > minus_tmp
 cat plus_tmp minus_tmp | sort > ${PREFIX}.boringbits.txt
-
-

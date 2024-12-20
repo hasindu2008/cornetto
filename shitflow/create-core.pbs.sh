@@ -34,9 +34,9 @@ samtools --version || die "Could not find samtools"
 bedtools --version || die "Could not find bedtools"
 ${CORNETTO_BIN} --version || die "Could not find cornetto"
 
-${SCRIPT_DIR}/create_cornetto.sh ${ASM}.fasta|| die "create_cornetto.sh failed"
+${SCRIPT_DIR}/create-cornetto.sh ${ASM}.fasta|| die "create-cornetto.sh failed"
 mkdir diploid || die "mkdir failed"
 cd diploid || die "cd failed"
-${SCRIPT_DIR}/create_hapnetto.sh ${ASM} || die "create_hapnetto.sh failed"
+${SCRIPT_DIR}/create-hapnetto.sh ${ASM} || die "create-hapnetto.sh failed"
 
 echo "all done. f ya."
