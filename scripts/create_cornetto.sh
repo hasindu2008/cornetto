@@ -80,6 +80,9 @@ done < ${TMPOUT}/boring_ctg.tmp > ${BASENAME%.fasta}.boringbits.bed || die "whil
 echo -n -e "${BASENAME%.fasta}\t"
 cat ${BASENAME%.fasta}.boringbits.bed | awk '{sum+=($3-$2)}END{print sum/3100000000*100}'
 
-
+#12# create readfish targets
+cat ${BASENAME%.fasta}.boringbits.bed  | awk '{print $1","$2","$3",+"}' > ${TMPOUT}/plus_tmp
+cat ${BASENAME%.fasta}.boringbits.bed  | awk '{print $1","$2","$3",-"}' > ${TMPOUT}/minus_tmp
+cat ${TMPOUT}/plus_tmp ${TMPOUT}/minus_tmp | sort > ${BASENAME%.fasta}.boringbits.txt
 
 
