@@ -51,17 +51,20 @@ die() {
 
 ## load software
 export MODULEPATH=$MODULEPATH:/g/data/if89/apps/modulefiles/
-module load minimap2/2.24
-module load samtools/1.19
-module load kentutils/0.0
-module load quast/5.1.0rc1
+module load minimap2/2.24 || die "loading minimap2/2.24 module failed"
+module load samtools/1.19 || die "loading samtools/1.19 module failed"
+module load quast/5.1.0rc1 || die "loading quast/5.1.0rc1 module failed"
 
-GFATOOLS=/g/data/ox63/ira/adaptive_assembly/gfatools/gfatools
-FLATTEN=/g/data/te53/ontsv/sv_parsing/scripts/flattenFasta.pl
+#FLATTEN=/g/data/te53/ontsv/sv_parsing/scripts/flattenFasta.pl
 REFERENCE=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
+
 GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/getstat.pbs.sh
 GENERATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/generate_panel.pbs.sh
+QUAST_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/quast.pbs.sh
+
 HIFIASM=/g/data/ox63/install/hifiasm-0.22.0/hifiasm
+GFATOOLS=/g/data/ox63/ira/adaptive_assembly/gfatools/gfatools
+
 THREADS=${PBS_NCPUS}
 
 #########################################
@@ -69,33 +72,33 @@ THREADS=${PBS_NCPUS}
 echo "Running hifiasm with ${THREADS} threads, outprefix ${ASM}, and input fastq list ${FASTQ_LIST}" > hifiasm.log
 
 ## generate assembly with hifiasm
-/usr/bin/time -v ${HIFIASM} --ont -t ${THREADS} --hg-size 3g -o ${ASM} ${FASTQ_LIST}
+/usr/bin/time -v ${HIFIASM} --ont -t ${THREADS} --hg-size 3g -o ${ASM} ${FASTQ_LIST} || die "hifiasm failed"
 echo "hifiasm completed" >> hifiasm.log
 
 ## convert assembly graph to FASTA format
-${GFATOOLS} gfa2fa ${ASM}.bp.p_ctg.gfa > ${ASM}.fasta
-${GFATOOLS} gfa2fa ${ASM}.bp.hap1.p_ctg.gfa > ${ASM}.hap1.fasta
-${GFATOOLS} gfa2fa ${ASM}.bp.hap2.p_ctg.gfa > ${ASM}.hap2.fasta
+${GFATOOLS} gfa2fa ${ASM}.bp.p_ctg.gfa > ${ASM}.fasta || die "gfa2fa failed"
+${GFATOOLS} gfa2fa ${ASM}.bp.hap1.p_ctg.gfa > ${ASM}.hap1.fasta || die "gfa2fa failed"
+${GFATOOLS} gfa2fa ${ASM}.bp.hap2.p_ctg.gfa > ${ASM}.hap2.fasta || die "gfa2fa failed"
 echo "gfa2fa completed" >> hifiasm.log
 
-## index the assembly FASTA
-samtools faidx ${ASM}.fasta
-minimap2 -d ${ASM}.fasta.idx ${ASM}.fasta
-echo "indexing completed" >> hifiasm.log
+# ## index the assembly FASTA
+# samtools faidx ${ASM}.fasta
+# minimap2 -d ${ASM}.fasta.idx ${ASM}.fasta
+# echo "indexing completed" >> hifiasm.log
 
-## generate CHROMBED and CHROMSIZES files
-${FLATTEN} -tab ${ASM}.fasta | awk '{print $1"\t0\t"length($2)}' | sort -k3,3nr > ${CHROMBED}
-cat ${CHROMBED} | awk '{print $1"\t"$3}' > ${CHROMSIZES}
+# ## generate CHROMBED and CHROMSIZES files
+# ${FLATTEN} -tab ${ASM}.fasta | awk '{print $1"\t0\t"length($2)}' | sort -k3,3nr > ${CHROMBED}
+# cat ${CHROMBED} | awk '{print $1"\t"$3}' > ${CHROMSIZES}
 
 ## run quast to evaluate assemblies
 ASMPATH=`realpath ${ASM}.fasta`
-quast.py -t ${THREADS} -o ${ASM}.quast_out -l ${ASM} --large ${ASMPATH}
-echo "quast completed" >> hifiasm.log
+qsub -v ASM=${ASMPATH},OUT=${ASM}.quast_out ${QUAST_SCRIPT} || die "quast submission failed"
+echo "quast.pbs.sh submitted" >> hifiasm.log
 
 ## run hasindu chromosomes stats script
-qsub -v REF=${REFERENCE},ASM=${ASMPATH} ${GETSTAT_SCRIPT}
+qsub -v REF=${REFERENCE},ASM=${ASMPATH} ${GETSTAT_SCRIPT} || die "getstat submission failed"
 echo "getstat.pbs.sh submitted" >> hifiasm.log
 
 ## run generate panel script
-qsub -v FISH_NOW=${FISH_NOW},PREFIX=${OUT_PREFIX} ${GENERATE_PANEL_SCRIPT}
+qsub -v FISH_NOW=${FISH_NOW},PREFIX=${OUT_PREFIX} ${GENERATE_PANEL_SCRIPT} || die "generate_panel submission failed"
 echo "generate_panel.pbs.sh submitted" >> hifiasm.log
