@@ -94,11 +94,25 @@ echo "gfa2fa completed" >> hifiasm.log
 ## run quast to evaluate assemblies
 ASMPATH=`realpath ${ASM}.fasta`
 qsub -v ASM=${ASMPATH},OUT_DIR=${ASM}.quast_out ${QUAST_SCRIPT} || die "quast submission failed"
-echo "quast.pbs.sh submitted" >> hifiasm.log
+echo "quast.pbs.sh submitted for primary" >> hifiasm.log
+
+HAP1_PATH=`realpath ${ASM}.hap1.fasta`
+qsub -v ASM=${HAP1_PATH},OUT_DIR=${ASM}.hap1.quast_out ${QUAST_SCRIPT} || die "quast submission failed"
+echo "quast.pbs.sh submitted for hap 1" >> hifiasm.log
+
+HAP2_PATH=`realpath ${ASM}.hap2.fasta`
+qsub -v ASM=${HAP2_PATH},OUT_DIR=${ASM}.hap2.quast_out ${QUAST_SCRIPT} || die "quast submission failed"
+echo "quast.pbs.sh submitted for hap 2" >> hifiasm.log
 
 ## run hasindu chromosomes stats script
 qsub -v REF=${REFERENCE},ASM=${ASMPATH} ${GETSTAT_SCRIPT} || die "getstat submission failed"
-echo "getstat.pbs.sh submitted" >> hifiasm.log
+echo "getstat.pbs.sh submitted for primary" >> hifiasm.log
+
+qsub -v REF=${REFERENCE},ASM=${HAP1_PATH} ${GETSTAT_SCRIPT} || die "getstat submission failed"
+echo "getstat.pbs.sh submitted for hap 1" >> hifiasm.log
+
+qsub -v REF=${REFERENCE},ASM=${HAP2_PATH} ${GETSTAT_SCRIPT} || die "getstat submission failed"
+echo "getstat.pbs.sh submitted for hap 2" >> hifiasm.log
 
 ## run generate panel script
 if [ -z "${FISH_NOW}" ]; then

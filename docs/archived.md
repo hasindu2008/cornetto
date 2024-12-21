@@ -1,4 +1,4 @@
-## Cornetto 2 Pannel
+## Old Cornetto 2 Pannel
 
 1. print all interesting windows with :
    - low coverage: [<0.5x] genome average
@@ -59,7 +59,7 @@ fi
 done < boring_ctg.tmp > boringbits_cornetto2.bed
 ```
 
-### cornetto 3 panel
+### old cornetto 3 panel
 
 ```
 #1# get contigs longer than 1Mbase and make BED file covering whole contig excluding 200kb at each end
@@ -75,8 +75,6 @@ cat lowQ-5kbplus.bed | awk '{print $1"\t"$2-50000"\t"$3+50000}' | awk -vOFS='\t'
 bedtools subtract -a long_contigs.200kb-excluded.bed -b lowQ-5kbplus_extended.bed > boringbits_cornetto3.bed
 
 ```
-
-
 
 ### t2t-aware fishembly
 
