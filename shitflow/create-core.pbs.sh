@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -P ox63
 #PBS -q normal
-#PBS -N cornetto
+#PBS -N create-cornetto
 #PBS -l walltime=3:00:00
 #PBS -l storage=gdata/ox63+scratch/ox63+scratch/if89+gdata/if89
 #PBS -l mem=64GB
