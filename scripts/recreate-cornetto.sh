@@ -15,8 +15,8 @@ test -f ${FASTA} || die "Assembly FASTA not found"
 BASENAME=$(basename ${FASTA})
 PREFIX=${FASTA%.fasta}
 
-## generate CHROMBED file
-test -f ${FASTA}.fai || sammtools faidx ${FASTA} || die "samtools faidx failed"
+## generate CHROMBED fileawk '{if(($3-$2)>200000) {print $1"\t0\t200000\n"$1"\t"$3-200000"\t"$3}}' ${PREFIX}.chroms.bed >> funbits.bed
+test -f ${FASTA}.fai || samtools faidx ${FASTA} || die "samtools faidx failed"
 awk '{print $1"\t0\t"$2}' ${FASTA}.fai | sort -k3,3nr > ${PREFIX}.chroms.bed || die "awk failed"
 
 #1# get regions longer than 7.5kb which were labelled by hifiasm as "low quality" (not sure what the definition of this is exactly)
@@ -32,7 +32,7 @@ awk '{if(($3-$2)>200000) {print $1"\t0\t200000\n"$1"\t"$3-200000"\t"$3}}' ${PREF
 bedtools sort -i funbits.bed | bedtools merge -d 200000 > funbits_merged.bed
 
 #5# subtract merged windows from (4) from the whole genome assembly
-bedtools subtract -a ${PREFIX}.chroms.bed -b noboringbits_merged.bed > boringbits_tmp.bed
+bedtools subtract -a ${PREFIX}.chroms.bed -b funbits_merged.bed > boringbits_tmp.bed
 
 #6# subtract any contigs shorter than 1Mbase
 awk '{if(($3-$2)<1000000) print $0}' ${PREFIX}.chroms.bed > short.bed
@@ -53,7 +53,7 @@ do
 done < boring_ctg.tmp > ${PREFIX}.boringbits.bed
 
 #8# print the size of the boring_bits panel as a % of human genome size
-# cat ${PREFIX}.boringbits.bed | awk '{sum+=($3-$2)}END{print sum/1975000000*100}'
+cat ${PREFIX}.boringbits.bed | awk '{sum+=($3-$2)}END{print sum/3100000000*100}'
 
 #9# create readfish targets
 cat ${PREFIX}.boringbits.bed | awk '{print $1","$2","$3",+"}' > plus_tmp
