@@ -104,7 +104,7 @@ if [ -z "${FISH_NOW}" ]; then
 	qsub -v FQ=${BASE_FASTQ},ASM=${ASM} ${CREATE_PANEL_SCRIPT} || die "create-launch submission failed"
 	echo "create-launch.pbs.sh submitted" >> hifiasm.log
 else
-	qsub -v FISH_NOW=${FISH_NOW},PREFIX=${OUT_PREFIX},ASM=${ASM} ${RECREATE_PANEL_SCRIPT} || die "recreate submission failed"
+	qsub -v ASM=${ASM} ${RECREATE_PANEL_SCRIPT} || die "recreate submission failed"
 	echo "recreate.pbs.sh submitted" >> hifiasm.log
 fi
 

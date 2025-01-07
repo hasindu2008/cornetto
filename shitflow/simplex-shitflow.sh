@@ -7,7 +7,7 @@ die() {
 
 ## On fridge: run inside a screen session
 
-#PREFIX=A_1
+#PREFIX=D_1
 #SAMPLE=QGXHXX240275
 
 BASE_FASTQ=
@@ -15,7 +15,7 @@ FISH_PREV=
 OUT_PREFIX=
 
 usage(){
-    echo "Usage: $0 [-b /path/to/RGBX240039_HG002.hifi.fastq.gz -p A_1_QGXHXX240275:A_2_QGXHXX240279 -o hg002-cornetto-A_3] <A_3> <QGXHXX240283>"
+    echo "Usage: $0 [-b /path/to/D_0.fastq -p D_1_QGXHXX240275:D_2_QGXHXX240279 -o hg002-cornetto-D_3] <D_3> <QGXHXX240283>"
     echo "Options:"
     echo "  -b  Base fastq file"
     echo "  -p  Previous fish data"
@@ -38,10 +38,10 @@ PREFIX=$1
 SAMPLE=$2
 
 FRIDGE_TMP=/data3/cornetto
-BRENNER_SCRIPT=/home/hasgam/hasindu2008.git/cornetto/shitflow/duplex/brenner-shitflow.sh
-BRENNER_DATA=/directflow/KCCGGenometechTemp/projects/iradev/operation_cornetto/shitflow_hasindu/
+GTA100_SCRIPT=/home/hasindu/hasindu2008.git/cornetto/shitflow/simplex/basecall-gta100.sh
+GTA100_DATA=/data/hasindu/shitflow/
 GADI_DATA=/g/data/ox63/hasindu/cornetto/shitflow
-GADI_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/hifiasm.pbs.sh
+GADI_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/hifiasm-ont.pbs.sh
 
 NAME=${PREFIX}_${SAMPLE}
 GADI_PBS_ARGS=
@@ -49,9 +49,9 @@ echo "Launching shitflow for ${NAME}"
 
 checkshit() {
     test -d ${FRIDGE_TMP} || die "${FRIDGE_TMP} not found on fridge"
-    ssh brenner-fpga "test -x ${BRENNER_SCRIPT}" || die "${BRENNER_SCRIPT} not found on brenner-fpga"
-    ssh brenner-fpga "test -d ${BRENNER_DATA}" || die "${BRENNER_DATA} not found on brenner-fpga"
-    ssh brenner-fpga "test -d ${BRENNER_DATA}/${NAME}" && die "${BRENNER_DATA}/${NAME} already exists on brenner-fpga. Delete that shit first"
+    ssh gta100 "test -x ${GTA100_SCRIPT}" || die "${GTA100_SCRIPT} not found on gta100"
+    ssh gta100 "test -d ${GTA100_DATA}" || die "${GTA100_DATA} not found on gta100"
+    ssh gta100 "test -d ${GTA100_DATA}/${NAME}" && die "${GTA100_DATA}/${NAME} already exists on gta100. Delete that shit first"
     ssh gadi "test -d ${GADI_DATA}" || die "${GADI_DATA} not found on gadi"
     ssh gadi "test -d ${GADI_DATA}/${NAME}" && die "${GADI_DATA}/${NAME} already exists on gadi. Delete that shit first"
     ssh gadi "test -x ${GADI_SCRIPT}" || die "${GADI_SCRIPT} not found on gadi"
@@ -63,8 +63,8 @@ checkshit() {
     fi
     if [ -n "${FISH_PREV}" ]; then
         LIST=$(echo "$FISH_PREV" | tr ':' ' ' )
-        for DUPLEX in ${LIST}; do
-            DUP=${GADI_DATA}/${DUPLEX}/${DUPLEX}.duplex_reads.fastq
+        for SIMPLEX in ${LIST}; do
+            DUP=${GADI_DATA}/${SIMPLEX}/${SIMPLEX}.fastq
             ssh gadi "test -e ${DUP}" || die "${DUP} not found on gadi"
         done
         GADI_PBS_ARGS=${GADI_PBS_ARGS}",FISH_PREV="${FISH_PREV}
@@ -84,8 +84,8 @@ cd ${FRIDGE_TMP} || die "Could not cd to ${FRIDGE_TMP}"
 slow5tools merge /data/${SAMPLE}/*/*/slow5/ -o ${PREFIX}_${SAMPLE}.blow5 || die "Could not merge slow5 files"
 slow5tools stats ${PREFIX}_${SAMPLE}.blow5 || die "Could not get stats"
 
-COMMAND="source /etc/profile; screen -S shitflow_${PREFIX}_${SAMPLE} -d -m -L ${BRENNER_SCRIPT} ${NAME} ${GADI_PBS_ARGS}"
+COMMAND="source /etc/profile; screen -S shitflow_${PREFIX}_${SAMPLE} -d -m -L ${GTA100_SCRIPT} ${NAME} ${GADI_PBS_ARGS}"
 echo "$COMMAND"
-ssh brenner-fpga "$COMMAND"
+ssh gta100 "$COMMAND"
 echo ""
-echo "Handed the work to the brenner-fpga"
+echo "Handed the work to the gta100"
