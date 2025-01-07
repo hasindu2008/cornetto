@@ -79,7 +79,7 @@ bedtools subtract -a  ${TMPOUT}/boringbits_tmp.bed -b  ${TMPOUT}/short.bed >  ${
 
 #10# if 'boring bits' are <50% of a single contig/scaffold, remove all boring bits on the whole scaffold. Use the below horrible inefficient code snippet for now
 ## i.e. if the contig is more than 50% interesting, capture the whole thing
-INPUT= ${TMPOUT}/boringbits.bed
+INPUT=${TMPOUT}/boringbits.bed
 cut -f 1 ${INPUT}  | uniq >  ${TMPOUT}/boring_ctg.tmp || die "cut failed"
 while read p;
 do
