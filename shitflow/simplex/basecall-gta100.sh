@@ -30,6 +30,7 @@ SCRIPT_PATH=$(dirname "$SCRIPT_REALPATH")
 
 test -d $GTA100_DATA || die "$GTA100_DATA not found"
 test -d $GTA100_DATA/${NAME} || die "$GTA100_DATA/${NAME} not found"
+cd $GTA100_DATA/${NAME} || die "cd failed"
 
 DEVICES=
 
