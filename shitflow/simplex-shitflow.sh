@@ -84,6 +84,9 @@ cd ${FRIDGE_TMP} || die "Could not cd to ${FRIDGE_TMP}"
 slow5tools merge /data/${SAMPLE}/*/*/slow5/ -o ${PREFIX}_${SAMPLE}.blow5 || die "Could not merge slow5 files"
 slow5tools stats ${PREFIX}_${SAMPLE}.blow5 || die "Could not get stats"
 
+ssh gta100 "mkdir ${GTA100_DATA}/${NAME}" || die "gta100 ssh failed"
+scp ${NAME}.blow5 gta100:${GTA100_DATA}/${NAME}/ || die "copying to Gadi failed"
+
 COMMAND="source /etc/profile; screen -S shitflow_${PREFIX}_${SAMPLE} -d -m -L ${GTA100_SCRIPT} ${NAME} ${GADI_PBS_ARGS}"
 echo "$COMMAND"
 ssh gta100 "$COMMAND"
