@@ -38,6 +38,7 @@ SOFTWARE.
 #include "cornetto.h"
 
 int depth_main(int argc, char* argv[]);
+int fixdir_main(int argc, char* argv[]);
 int boringbits_main(int argc, char* argv[], int8_t boring);
 
 int print_usage(FILE *fp_help){
@@ -68,6 +69,8 @@ int main(int argc, char* argv[]){
         return print_usage(stderr);
     } else if (strcmp(argv[1],"depth")==0){
         ret=depth_main(argc-1, argv+1);
+    } else if (strcmp(argv[1],"fixdir")==0){
+        ret=fixdir_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"boringbits")==0){
         ret=boringbits_main(argc-1, argv+1, 1);
     } else if (strcmp(argv[1],"noboringbits")==0){
