@@ -12,6 +12,7 @@ OBJ = $(BUILD_DIR)/main.o \
 	  $(BUILD_DIR)/misc.o \
 	  $(BUILD_DIR)/misc_p.o \
 	  $(BUILD_DIR)/error.o \
+      $(BUILD_DIR)/find_telomere.o \
 
 ifdef asan
 	CFLAGS += -fsanitize=address -fno-omit-frame-pointer
@@ -45,6 +46,9 @@ $(BUILD_DIR)/misc_p.o: src/misc_p.c src/misc.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/error.o: src/error.c src/error.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/find_telomere.o: src/find_telomere.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 # htslib/libhts.a:
