@@ -31,5 +31,8 @@ export SCRIPT_DIR=/g/data/ox63/hasindu/cornetto/cornetto/scripts
 #cd ${ONT_DATADIR}/${FISH_NOW}
 test -f ${ASM}.fasta || die "Assembly ${ASM}.fasta not found"
 minimap2 -x map-ont -d ${ASM}.fasta.idx ${ASM}.fasta || die "minimap2 failed"
-${SCRIPT_DIR}/recreate-cornetto.sh ${ASM}.fasta || die "create-cornetto.sh failed"
+${SCRIPT_DIR}/recreate-cornetto.sh ${ASM}.fasta || die "recreate-cornetto.sh failed"
 
+${SCRIPT_DIR}/recreate-hapnetto.sh ${ASM} || die "recreate-hapnetto.sh failed"
+
+echo "all done. f ya."
