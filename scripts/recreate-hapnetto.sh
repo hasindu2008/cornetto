@@ -10,19 +10,18 @@ die () {
 [ "$#" -eq 1 ] || die "1 argument required, $# provided. Usage: create_hapnetto.sh <assembly prefix>"
 
 
-TMPOUT=tmp_create_hapnetto
+TMPOUT=tmp_recreate_hapnetto
 test -d ${TMPOUT} && die "Directory ${TMPOUT} already exists. Please remove it before running this script or change to a different working directory"
 mkdir ${TMPOUT} || die "mkdir failed"
 
-TMPOUT_PREV=tmp_create_cornetto
-test -d ${TMPOUT_PREV} || die "Directory ${TMPOUT_PREV} not found. Did you run create cornetto under the current directory?"
+TMPOUT_PREV=tmp_recreate_cornetto
+test -d ${TMPOUT_PREV} || die "Directory ${TMPOUT_PREV} not found. Did you run recreate cornetto under the current directory?"
 
 ASSNAME=$1
 FASTA=${ASSNAME}.fasta
 ASSBED=${TMPOUT_PREV}/${FASTA}.bed
-test -f ${FASTA} || die "File ${FASTA} not found. Did you run create cornetto and are inside a directory inside that?"
+test -f ${FASTA} || die "File ${FASTA} not found. Did you run recreate cornetto and are inside a directory inside that?"
 test -f ${ASSBED} || die "File ${ASSBED} not found. Did you run create cornetto4 and are inside a directory inside that?"
-test -f ${TMPOUT_PREV}/3_tmp.bed || die "File ${TMPOUT_PREV}/3_tmp.bed not found. Did you run create cornetto4 and are inside a directory inside that?"
 test -f ${TMPOUT_PREV}/lowQ_tmp.bed || die "File ${TMPOUT_PREV}/lowQ_tmp.bed not found. Did you run create cornetto4 and are inside a directory inside that?"
 
 test -f ${ASSNAME}.hap1.fasta || die "File ${ASSNAME}.hap1.fasta not found."
@@ -62,7 +61,7 @@ cat ${TMPOUT}/hap1_funbits.bed ${TMPOUT}/hap2_funbits.bed | bedtools sort | bedt
 
 # now do the rest from cornetto4
 #5# combine the funbits from (3) and (4) and extend them by +40kb in either direction
-cat ${TMPOUT_PREV}/3_tmp.bed ${TMPOUT_PREV}/lowQ_tmp.bed  ${TMPOUT}/hap1_hap2_funbits.bed | sort -k1,1 -k2,2n | awk '{if($2>40000){print $1"\t"$2-40000"\t"$3+40000} else {print $0}}' >  ${TMPOUT}/funbits.bed || die "awk failed"
+cat ${TMPOUT_PREV}/lowQ_tmp.bed  ${TMPOUT}/hap1_hap2_funbits.bed | sort -k1,1 -k2,2n | awk '{if($2>40000){print $1"\t"$2-40000"\t"$3+40000} else {print $0}}' >  ${TMPOUT}/funbits.bed || die "awk failed"
 
 #6# add new windows to the file from (5), which are 200kb intervals at the left edge and right edge of the contig
 awk '{if(($3-$2)>200000) {print $1"\t0\t200000\n"$1"\t"$3-200000"\t"$3}}' ${ASSBED} >>  ${TMPOUT}/funbits.bed || die "awk failed"
