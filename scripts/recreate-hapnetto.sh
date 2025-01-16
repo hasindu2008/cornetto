@@ -19,7 +19,7 @@ test -d ${TMPOUT_PREV} || die "Directory ${TMPOUT_PREV} not found. Did you run r
 
 ASSNAME=$1
 FASTA=${ASSNAME}.fasta
-ASSBED=${TMPOUT_PREV}/${FASTA}.bed
+ASSBED=${TMPOUT_PREV}/${ASSNAME}.chroms.bed
 test -f ${FASTA} || die "File ${FASTA} not found. Did you run recreate cornetto and are inside a directory inside that?"
 test -f ${ASSBED} || die "File ${ASSBED} not found. Did you run create cornetto4 and are inside a directory inside that?"
 test -f ${TMPOUT_PREV}/lowQ_tmp.bed || die "File ${TMPOUT_PREV}/lowQ_tmp.bed not found. Did you run create cornetto4 and are inside a directory inside that?"
