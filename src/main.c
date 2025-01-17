@@ -41,7 +41,7 @@ int depth_main(int argc, char* argv[]);
 int boringbits_main(int argc, char* argv[], int8_t boring);
 int find_telomere_main(int argc, char* argv[]);
 int telomere_windows_main(int argc, char* argv[]);
-int telomere_breaks_main(int argc, char* argv[]);
+//int telomere_breaks_main(int argc, char* argv[]);
 
 int print_usage(FILE *fp_help){
 
@@ -82,7 +82,7 @@ int main(int argc, char* argv[]){
         if (argc > 2 && strcmp(argv[2],"--windows")==0) {
             ret=telomere_windows_main(argc-2, argv+2);
         } else if (argc > 2 && strcmp(argv[2],"--breaks")==0) {
-            ret=telomere_breaks_main(argc-2, argv+2);
+            //ret=telomere_breaks_main(argc-2, argv+2);
         } else if (argc > 2 && strcmp(argv[2],"--patterns")==0) {
             ret=find_telomere_main(argc-2, argv+2);
         } else {
