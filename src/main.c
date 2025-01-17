@@ -40,6 +40,8 @@ SOFTWARE.
 int depth_main(int argc, char* argv[]);
 int boringbits_main(int argc, char* argv[], int8_t boring);
 int find_telomere_main(int argc, char* argv[]);
+int telomere_windows_main(int argc, char* argv[]);
+int telomere_breaks_main(int argc, char* argv[]);
 
 int print_usage(FILE *fp_help){
 
@@ -47,7 +49,9 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"command:\n");
     fprintf(fp_help,"         boringbits      print boring bits in an assembly (deprecated)\n");
     fprintf(fp_help,"         noboringbits    print no boring bits in an assembly\n");
-    fprintf(fp_help,"         find_telomere   find telomere sequences in a fasta file\n");
+    fprintf(fp_help,"         telomere --windows   analyze telomere windows in a fasta file\n");
+    fprintf(fp_help,"         telomere --breaks    find telomere breaks in a fasta file\n");
+    fprintf(fp_help,"         telomere --patterns   find telomere sequences in a fasta file\n");
     //fprintf(fp_help,"         subtool2      do something\n");
 
     if(fp_help==stderr){
@@ -74,8 +78,17 @@ int main(int argc, char* argv[]){
         ret=boringbits_main(argc-1, argv+1, 1);
     } else if (strcmp(argv[1],"noboringbits")==0){
         ret=boringbits_main(argc-1, argv+1, 0);
-    } else if (strcmp(argv[1],"find_telomere")==0) {
-        ret=find_telomere_main(argc-1, argv+1);
+    } else if (strcmp(argv[1],"telomere")==0) {
+        if (argc > 2 && strcmp(argv[2],"--windows")==0) {
+            ret=telomere_windows_main(argc-2, argv+2);
+        } else if (argc > 2 && strcmp(argv[2],"--breaks")==0) {
+            ret=telomere_breaks_main(argc-2, argv+2);
+        } else if (argc > 2 && strcmp(argv[2],"--patterns")==0) {
+            ret=find_telomere_main(argc-2, argv+2);
+        } else {
+            fprintf(stderr,"[cornetto] Unrecognised telomere command %s\n",argv[2]);
+            return print_usage(stderr);
+        }
     } else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"cornetto %s\n",CORNETTO_VERSION);
         exit(EXIT_SUCCESS);
