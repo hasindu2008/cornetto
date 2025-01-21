@@ -54,3 +54,6 @@ See [Evaluation](docs/eval.md) for more details.
 
 see [here](shitflow/README.md).
 
+## Acknowledgement
+
+- minidot programme in src/minidot is from https://github.com/lh3/miniasm/ under the MIT license

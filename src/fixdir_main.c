@@ -1,6 +1,6 @@
 /**
  * @file fixdir_main.c
- * @brief entry point to fixdir 
+ * @brief entry point to fixdir
  * @author Kavindu Jayasooriya (k.jayasooriya@unsw.edu.au)
 
 MIT License
@@ -39,7 +39,6 @@ SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <htslib/faidx.h>
 #include <zlib.h>
 #include "kseq.h"
 
@@ -187,7 +186,7 @@ int fixdir_main(int argc, char* argv[]) {
         if (absent == 1) {
             new_ctg = (ctg_t *)malloc(sizeof(ctg_t));
             new_ctg->id = rec->rid;
-            new_ctg->sump = 0; 
+            new_ctg->sump = 0;
             new_ctg->sumn = 0;
             kh_value(h, k) = new_ctg;
         } else if (absent == -1) {
