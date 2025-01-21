@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -P ox63
 #PBS -q normal
-#PBS -N cornetto
+#PBS -N create-cornetto
 #PBS -l walltime=3:00:00
 #PBS -l storage=gdata/ox63+scratch/ox63+scratch/if89+gdata/if89
 #PBS -l mem=64GB
@@ -35,8 +35,7 @@ bedtools --version || die "Could not find bedtools"
 ${CORNETTO_BIN} --version || die "Could not find cornetto"
 
 ${SCRIPT_DIR}/create-cornetto.sh ${ASM}.fasta|| die "create-cornetto.sh failed"
-mkdir diploid || die "mkdir failed"
-cd diploid || die "cd failed"
+
 ${SCRIPT_DIR}/create-hapnetto.sh ${ASM} || die "create-hapnetto.sh failed"
 
 echo "all done. f ya."

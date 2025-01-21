@@ -1,31 +1,54 @@
 # shitflow (shell-based internode transfer flow)
 
-## Base assembly and creating the panel
+## Base assembly and creating the first panel
 
-On gadi:
+On Gadi launch the following:
+```
+qsub -v BASE_FASTQ=/path/to/D_0_PGXXSX240470.fastq,OUT_PREFIX=hg002-cornetto-D_1 shitflow/hifiasm-ont.pbs.sh
+```
 
-```
-qsub -v BASE_FASTQ=/path/to/A0_XX.fastq,OUT_PREFIX=hg002-cornetto-A_1 shitflow/hifiasm-ont.pbs.sh
-```
+Then copy the panel and in the index to the fridge and launch fishing.
 
 ##  Adaptive assembly and recreating the panel
 
+On fridge:
+
+```
+# first iteration
+shitflow/simplex-shitflow.sh -b /gadi/path/to/D_0_PGXXSX240470.fastq -o hg002-cornetto-D_1 D_1 PGXXXX240596
+
+# second iteration
+shitflow/simplex-shitflow.sh -b /gadi/path/to/D_0_PGXXSX240470.fastq -p D_1_PGXXXX240596 -o hg002-cornetto-D_2 D_2 PGXXXX250005
+
+# third iteration
+shitflow/simplex-shitflow.sh -b /gadi/path/to/D_0_PGXXSX240470.fastq -p D_1_PGXXXX240596:D_2_PGXXXX250005 -o hg002-cornetto-D_3 D_3 PGXXXX250015
+```
+
+Some intermediate steps if need to intervene
+
+On Gadi if FASTQ data is already copied to the shitflow directory `/g/data/ox63/hasindu/cornetto/shitflow`:
 ```
 # first one
-qsub -v BASE_FASTQ=/path/to/A0_XX.fastq,FISH_NOW=A_1_QGXHXX240275,OUT_PREFIX=hg002-cornetto-A_3 ./hifiasm-ont.pbs.sh
+qsub -v BASE_FASTQ=/path/to/D_0_PGXXSX240470.fastq,FISH_NOW=D_1_PGXXXX240596,OUT_PREFIX=hg002-cornetto-D_1 ./hifiasm-ont.pbs.sh
+
+# second one
+qsub -v BASE_FASTQ=/path/to/D_0_PGXXSX240470.fastq,FISH_PREV=D_1_PGXXXX240596,FISH_NOW=D_2_PGXXXX250005,OUT_PREFIX=hg002-cornetto-D_2 ./hifiasm-ont.pbs.sh
 
 # onwards
-qsub -v BASE_FASTQ=/path/to/A0_XX.fastq,FISH_PREV=A_1_QGXHXX240275:A_2_QGXHXX240279,FISH_NOW=A_3_QGXHXX240283,OUT_PREFIX=hg002-cornetto-A_3 ./hifiasm-ont.pbs.sh
+qsub -v BASE_FASTQ=/path/to/D_0_PGXXSX240470.fastq,FISH_PREV=D_1_PGXXXX240596:D_2_PGXXXX250005,FISH_NOW=D_3_QGXHXX240283,OUT_PREFIX=hg002-cornetto-D_3 ./hifiasm-ont.pbs.sh
+```
+
+
+On gta100 if the blow5 is already copied to the shitflow directory `/data/hasindu/shitflow/`
+
+```
+# example for second iteration
+shitflow/simplex/basecall-gta100.sh D2_PGXXXX250005 BASE_FASTQ=/g/data/ox63/hasindu/cornetto/data/D_0_PGXXSX240470_pass_sup_500.fastq,FISH_PREV=D_1_PGXXXX240596,FISH_NOW=D2_PGXXXX250005,OUT_PREFIX=hg002-cornetto-D_2
 ```
 
 ## pacbio base, followed by ont-duplex
 
-On fridge:
-```
-shitflow/duplex-shitflow.sh -b /g/data/ox63/cornetto/cichlid/GSU_1.fastq.gz -o cichlid-cornetto-C_1 C_1 QGXHXX240408
-shitflow/duplex-shitflow.sh -b /g/data/ox63/cornetto/cichlid/GSU_1.fastq.gz -p C_1_QGXHXX240408 -o cichlid-cornetto-C_2 C_2 QGXHXX240418
-shitflow/duplex-shitflow.sh -b /g/data/ox63/cornetto/cichlid/GSU_1.fastq.gz -p C_1_QGXHXX240408:C_2_QGXHXX240418 -o cichlid-cornetto-C_3 C_3 QGXHXX240421
-shitflow/duplex-shitflow.sh -b /g/data/ox63/cornetto/cichlid/GSU_1.fastq.gz -p C_1_QGXHXX240408:C_2_QGXHXX240418:C_3_QGXHXX240421  -o cichlid-cornetto-C_4 C_4 QGXHXX240440
-```
+See [here](duplex/README.md)
 
-On gadi use, `hifiasm.pbs.sh`, similar to above.
+
+

@@ -62,7 +62,7 @@ GFATOOLS=/g/data/ox63/ira/adaptive_assembly/gfatools/gfatools
 FLATTEN=/g/data/te53/ontsv/sv_parsing/scripts/flattenFasta.pl
 REFERENCE=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
 GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/getstat.pbs.sh
-CREATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/create.pbs.sh
+CREATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/create-launch.pbs.sh
 RECREATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/recreate.pbs.sh
 QUAST_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/quast.pbs.sh
 THREADS=${PBS_NCPUS}
@@ -104,7 +104,7 @@ if [ -z "${FISH_NOW}" ]; then
 	qsub -v FQ=${BASE_FASTQ},ASM=${ASM} ${CREATE_PANEL_SCRIPT} || die "create-launch submission failed"
 	echo "create-launch.pbs.sh submitted" >> hifiasm.log
 else
-	qsub -v FISH_NOW=${FISH_NOW},PREFIX=${OUT_PREFIX} ${RECREATE_PANEL_SCRIPT} || die "recreate submission failed"
+	qsub -v ASM=${ASM} ${RECREATE_PANEL_SCRIPT} || die "recreate submission failed"
 	echo "recreate.pbs.sh submitted" >> hifiasm.log
 fi
 
