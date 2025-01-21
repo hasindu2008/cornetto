@@ -7,6 +7,7 @@ BINARY = cornetto
 OBJ = $(BUILD_DIR)/main.o \
       $(BUILD_DIR)/cornetto.o \
       $(BUILD_DIR)/depth_main.o \
+      $(BUILD_DIR)/fixdir_main.o \
       $(BUILD_DIR)/boringbits_main.o \
       $(BUILD_DIR)/thread.o \
 	  $(BUILD_DIR)/misc.o \
@@ -30,6 +31,9 @@ $(BUILD_DIR)/cornetto.o: src/cornetto.c src/misc.h src/error.h src/cornetto.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/depth_main.o: src/depth_main.c src/error.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/fixdir_main.o: src/fixdir_main.c src/khash.h src/error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/boringbits_main.o: src/boringbits_main.c src/error.h
