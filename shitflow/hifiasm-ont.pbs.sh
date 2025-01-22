@@ -59,7 +59,7 @@ module load quast/5.1.0rc1 || die "loading quast/5.1.0rc1 module failed"
 REFERENCE=/g/data/ox63/cornetto/data/reference/hg002v1.0.1_pat.fa
 
 GETSTAT_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/getstat.pbs.sh
-CREATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/create.pbs.sh
+CREATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/create-launch.pbs.sh
 RECREATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/recreate.pbs.sh
 QUAST_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/quast.pbs.sh
 

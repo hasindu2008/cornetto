@@ -15,10 +15,13 @@ On fridge:
 
 ```
 # first iteration
-shitflow/simplex-shitflow.sh -b /gadi/path/to/D_0_PGXXSX240470.fastq -o hg002-cornetto-D_1 D1 PGXXXX240596
+shitflow/simplex-shitflow.sh -b /gadi/path/to/D_0_PGXXSX240470.fastq -o hg002-cornetto-D_1 D_1 PGXXXX240596
 
 # second iteration
-shitflow/simplex-shitflow.sh -b /gadi/path/to/D_0_PGXXSX240470.fastq -p D_1_PGXXXX240596 -o hg002-cornetto-D_2 D2 PGXXXX250005
+shitflow/simplex-shitflow.sh -b /gadi/path/to/D_0_PGXXSX240470.fastq -p D_1_PGXXXX240596 -o hg002-cornetto-D_2 D_2 PGXXXX250005
+
+# third iteration
+shitflow/simplex-shitflow.sh -b /gadi/path/to/D_0_PGXXSX240470.fastq -p D_1_PGXXXX240596:D_2_PGXXXX250005 -o hg002-cornetto-D_3 D_3 PGXXXX250015
 ```
 
 Some intermediate steps if need to intervene
@@ -29,10 +32,10 @@ On Gadi if FASTQ data is already copied to the shitflow directory `/g/data/ox63/
 qsub -v BASE_FASTQ=/path/to/D_0_PGXXSX240470.fastq,FISH_NOW=D_1_PGXXXX240596,OUT_PREFIX=hg002-cornetto-D_1 ./hifiasm-ont.pbs.sh
 
 # second one
-qsub -v BASE_FASTQ=/path/to/D_0_PGXXSX240470.fastq,FISH_PREV=D_1_PGXXXX240596,FISH_NOW=D2_PGXXXX250005,OUT_PREFIX=hg002-cornetto-D_2 ./hifiasm-ont.pbs.sh
+qsub -v BASE_FASTQ=/path/to/D_0_PGXXSX240470.fastq,FISH_PREV=D_1_PGXXXX240596,FISH_NOW=D_2_PGXXXX250005,OUT_PREFIX=hg002-cornetto-D_2 ./hifiasm-ont.pbs.sh
 
 # onwards
-qsub -v BASE_FASTQ=/path/to/D_0_PGXXSX240470.fastq,FISH_PREV=D_1_PGXXXX240596:D2_PGXXXX250005,FISH_NOW=D_3_QGXHXX240283,OUT_PREFIX=hg002-cornetto-D_3 ./hifiasm-ont.pbs.sh
+qsub -v BASE_FASTQ=/path/to/D_0_PGXXSX240470.fastq,FISH_PREV=D_1_PGXXXX240596:D_2_PGXXXX250005,FISH_NOW=D_3_QGXHXX240283,OUT_PREFIX=hg002-cornetto-D_3 ./hifiasm-ont.pbs.sh
 ```
 
 
