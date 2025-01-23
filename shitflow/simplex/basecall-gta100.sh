@@ -37,8 +37,8 @@ DEVICES=
 GET_FREE_GPU () {
 
     nvidia-smi || die "nvidia-smi command failed"
-    DEVICES=$(nvidia-smi --query-gpu=index --format=csv,noheader | paste -sd "," -)
-    [ -z "$DEVICES" ] && die "No GPU found using nvidia-smi --query-gpu=index --format=csv,noheader"
+    DEVICES_ALL=$(nvidia-smi --query-gpu=index --format=csv,noheader | paste -sd "," -)
+    [ -z "$DEVICES_ALL" ] && die "No GPU found using nvidia-smi --query-gpu=index --format=csv,noheader"
 
     while [ -z "$DEVICES" ]; do
         DEVICES=$(nvidia-smi --query-gpu=index,utilization.gpu,utilization.memory --format=csv,noheader,nounits | awk -F',' '{if($2 == 0 && $3==0){print $1}}' | paste -sd ',')
