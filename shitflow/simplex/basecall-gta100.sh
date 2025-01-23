@@ -43,7 +43,7 @@ GET_FREE_GPU () {
 
     while [ -z "$DEVICES" ]; do
         # this needs some beautification and catch errors
-        DEVICES=$(for i in {1..5}; do nvidia-smi --query-gpu=index,utilization.gpu,utilization.memory --format=csv,noheader,nounits; sleep 1; done | awk -F',' '{gpu[$1]+=$2; mem[$1]+=$3} END{for(i=0; i<length(gpu); i++){if(gpu[i]==0 && mem[i]==0) print i} }' | paste -sd ',')
+        DEVICES=$(for i in {1..50}; do nvidia-smi --query-gpu=index,utilization.gpu,utilization.memory --format=csv,noheader,nounits; sleep 1; done | awk -F',' '{gpu[$1]+=$2; mem[$1]+=$3} END{for(i=0; i<length(gpu); i++){if(gpu[i]==0 && mem[i]==0) print i} }' | paste -sd ',')
         if [ -z "$DEVICES" ]; then
             echo "No free GPU. Waiting for 5 minutes"
             sleep 300
