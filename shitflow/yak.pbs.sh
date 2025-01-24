@@ -21,6 +21,7 @@ die () {
 }
 
 YAK=/g/data/ox63/install/yak/yak
+THREADS=${PBS_NCPUS}
 
 #input assembly
 [ -z "${ASM}" ] && usage
@@ -31,6 +32,6 @@ ${YAK} version || die "yak not found"
 test -e ${ASM} || die "Assembly file not found: ${ASM}"
 test -e ${REF} || die "Reference file not found: ${REF}"
 
-test -e ${REF}.yak || ${YAK} count -K1.5g -t32 ${REF} -o ${REF}.yak || die "yak count failed"
+test -e ${REF}.yak || ${YAK} count -K1.5g -t ${THREADS} ${REF} -o ${REF}.yak || die "yak count failed"
 
-/usr/bin/time -v ${YAK} qv ${REF}.yak ${ASM} > ${ASM}.yak.txt || die "yak qv failed"
+/usr/bin/time -v ${YAK} qv ${REF}.yak ${ASM} -t ${THREADS} > ${ASM}.yak.txt || die "yak qv failed"
