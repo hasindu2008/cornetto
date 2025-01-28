@@ -27,7 +27,7 @@ THREADS=${PBS_NCPUS}
 # creating yak index ${YAK} count -K1.5g -t ${THREADS} ${REF} -o ${REF}.yak
 #input assembly
 [ -z "${ASM}" ] && usage
-[ -z "${REF}" ] && REF=/g/data/ox63/hasindu/cornetto/ref/hg002v1.0.1.fasta.gz.yak/hg002v1.0.1.fasta.gz.yak
+[ -z "${REF}" ] && REF=/g/data/ox63/hasindu/cornetto/ref/hg002v1.0.1.fasta.gz.yak
 [ -z "${MAT}" ] && MAT=/g/data/ox63/hasindu/cornetto/ref/hg002_parents/mat.HG004.yak
 [ -z "${PAT}" ] && PAT=/g/data/ox63/hasindu/cornetto/ref/hg002_parents/pat.HG004.yak
 
