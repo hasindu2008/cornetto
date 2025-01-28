@@ -39,6 +39,6 @@ test -e ${MAT} || die "Maternal yak not found: ${MAT}"
 test -e ${PAT} || die "Paternal yak not found: ${PAT}"
 
 
-/usr/bin/time -v ${YAK} qv ${REF}.yak ${ASM} -t ${THREADS} > ${ASM}.yak.txt || die "yak qv failed"
+/usr/bin/time -v ${YAK} qv ${REF} ${ASM} -t ${THREADS} > ${ASM}.yak.txt || die "yak qv failed"
 
 /usr/bin/time -v ${YAK} trioeval ${PAT} ${MAT} ${ASM} -t ${THREADS} >> ${ASM}.yak.txt || die "yak hamming failed"
