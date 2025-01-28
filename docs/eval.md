@@ -91,9 +91,12 @@ tar xf HG002.pat.hapmers.meryl.tar.gz
 
 ### Hamming errors
 
-Need trio fastq it seems?
+Need trio fastq to create the yaks: https://hifiasm.readthedocs.io/en/latest/trio-assembly.html.
+You can download the yak for trio HG002 as suggested in https://github.com/chhylp123/hifiasm/issues/262, at https://s3-us-west-2.amazonaws.com/human-pangenomics/index.html?prefix=submissions/6040D518-FE32-4CEB-B55C-504A05E4D662--HG002_PARENTAL_YAKS/HG002_PARENTS_FULL/.
 
-https://hifiasm.readthedocs.io/en/latest/trio-assembly.html
+```
+yak trioeval -t16 pat.yak mat.yak assembly.fa
+```
 
 ### Gene stuff
 
