@@ -29,7 +29,7 @@ THREADS=${PBS_NCPUS}
 [ -z "${ASM}" ] && usage
 [ -z "${REF}" ] && REF=/g/data/ox63/hasindu/cornetto/ref/hg002v1.0.1.fasta.gz.yak
 [ -z "${MAT}" ] && MAT=/g/data/ox63/hasindu/cornetto/ref/hg002_parents/mat.HG004.yak
-[ -z "${PAT}" ] && PAT=/g/data/ox63/hasindu/cornetto/ref/hg002_parents/pat.HG004.yak
+[ -z "${PAT}" ] && PAT=/g/data/ox63/hasindu/cornetto/ref/hg002_parents/pat.HG003.yak
 
 ${YAK} version || die "yak not found"
 
