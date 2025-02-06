@@ -8,7 +8,7 @@ ASM=hg002-cornetto-A
 for EACH in ${LIST}
 do
     cd ${EACH}
-    qsub -v REF=${REF},ASM=${ASM}.fasta ~/cornetto-hasindu/cornetto/shitflow/yak.pbs.sh
+    qsub -v REF=${REF},ASM=${ASM}.fasta ~/cornetto-hasindu/cornetto/shitflow/yak-qv.pbs.sh
     cd ..
 done
 
