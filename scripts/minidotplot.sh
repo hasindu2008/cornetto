@@ -33,8 +33,8 @@ do
     grep $p ${PREFIX}.tmp.paf | awk 'BEGIN{sump=0;sumn=0} {if($5=="-"){sumn+=($9-$8)}else{sump+=($9-$8)}} END{if(sump>sumn){print $1"\t+"}else{print $1"\t-"}}'
 done < ${PREFIX}.tmp.ctg.list > ${PREFIX}.tmp.dir.txt
 
-grep "+" ${PREFIX}.tmp.dir.txt | cut -f 1 > ${PREFIX}.tmp.ctg_plus.txt || die "grep failed"
-grep "-" ${PREFIX}.tmp.dir.txt | cut -f 1 > ${PREFIX}.tmp.ctg_mins.txt || die "grep failed"
+grep -w "+" ${PREFIX}.tmp.dir.txt | cut -f 1 > ${PREFIX}.tmp.ctg_plus.txt || die "grep failed"
+grep -w "-" ${PREFIX}.tmp.dir.txt | cut -f 1 > ${PREFIX}.tmp.ctg_mins.txt || die "grep failed"
 
 $SAMTOOLS faidx  ${PREFIX} -r ${PREFIX}.tmp.ctg_plus.txt > ${PREFIX}.tmp.fix.fasta || die "samtools failed"
 $SAMTOOLS faidx  ${PREFIX} -r ${PREFIX}.tmp.ctg_mins.txt  -i >> ${PREFIX}.tmp.fix.fasta || die "samtools failed"
