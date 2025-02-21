@@ -78,7 +78,8 @@ bedtools subtract -a long_contigs.200kb-excluded.bed -b lowQ-5kbplus_extended.be
 
 ### t2t-aware fishembly
 
-Ref based:
+Based on the reference genome (e.g. HG002), remove any reads mapping to an already formed T2T contig:
+
 ```
 scp gadi:/g/data/ox63/cornetto/HG002/evaluation/mapping_to_reference/PGXHXX240192_0.5.duplex_reads_out/PGXHXX240192_0.5.duplex_reads.hg002v1.0.1_pat.bam .
 samtools index PGXHXX240192_0.5.duplex_reads.hg002v1.0.1_pat.bam
@@ -93,7 +94,7 @@ grep -v -F -f  t2t_rid_uniq.txt all_reads.txt > good.txt
 samtools fqidx -r good.txt PGXHXX240192_0.5.duplex_reads.fastq  > PGXHXX240192_0.5.duplex_reads_good2.fastq
 ```
 
-Ass based:
+Based on the assembly, remove any reads mapping to an already formed T2T contig:
 ```
 scp gadi:/g/data/ox63/cornetto/data/gtg_internal/HG002/PGXHXX240192_0.5.duplex_reads.fastq .
 samtools fqidx PGXHXX240192_0.5.duplex_reads.fastq
@@ -110,7 +111,7 @@ grep -v -F -f  t2t_rid_uniq.txt all_reads.txt > good.txt
 samtools fqidx -r good.txt PGXHXX240192_0.5.duplex_reads.fastq  > PGXHXX240192_0.5.duplex_reads_good.fastq
 ```
 
-Ass based remove all telo reads:
+Based on the assembly, remove any reads mapping to any telomere region in the corner of a contig:
 ```
 HiFi FASTQ (A_0):
 /g/data/ox63/cornetto/data/gtg_internal/HG002/RGBX240039_HG002.hifi.fastq.gz

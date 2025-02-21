@@ -1,10 +1,10 @@
 #!/bin/bash
 #PBS -P ox63
-#PBS -q normal
+#PBS -q hugemem
 #PBS -N hifiasm
 #PBS -l walltime=12:00:00
 #PBS -l storage=gdata/ox63+scratch/ox63+scratch/if89+gdata/if89+gdata/te53
-#PBS -l mem=192GB
+#PBS -l mem=1470GB
 #PBS -l ncpus=48
 #PBS -l wd
 

@@ -16,6 +16,9 @@ OBJ = $(BUILD_DIR)/main.o \
       $(BUILD_DIR)/find_telomere.o \
       $(BUILD_DIR)/telomere_windows.o \
       $(BUILD_DIR)/telomere_breaks.o \
+	  $(BUILD_DIR)/dotter.o \
+	  $(BUILD_DIR)/paf.o \
+	  $(BUILD_DIR)/sdict.o
 
 ifdef asan
 	CFLAGS += -fsanitize=address -fno-omit-frame-pointer
@@ -61,6 +64,14 @@ $(BUILD_DIR)/telomere_windows.o: src/telomere_windows.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/telomere_breaks.o: src/telomere_breaks.c
+# minidot
+$(BUILD_DIR)/dotter.o: src/minidot/dotter.c src/minidot/eps.h  src/minidot/kvec.h  src/minidot/paf.h  src/minidot/sdict.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/paf.o: src/minidot/paf.c src/minidot/kseq.h  src/minidot/paf.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/sdict.o: src/minidot/sdict.c src/minidot/sdict.h  src/minidot/khash.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 # htslib/libhts.a:

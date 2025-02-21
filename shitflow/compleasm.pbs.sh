@@ -43,3 +43,5 @@ test -e ${OUT_DIR} && die "Output directory already there. Delete that first: ${
 #########################################
 
 /usr/bin/time -v compleasm run -a ${ASM} -o ${OUT_DIR} -t 8 -l ${LINEAGE} -L /g/data/ox63/install/compleasm-0.2.6/mb_downloads
+
+#cat busco/summary.txt | grep "^[SDFM]" |  awk -F":" '{print $2}' | awk -F"," '{print $1}' | paste -sd "\t" -

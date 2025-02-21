@@ -39,6 +39,7 @@ SOFTWARE.
 
 int depth_main(int argc, char* argv[]);
 int fixdir_main(int argc, char* argv[]);
+int minidot_main(int argc, char* argv[]);
 int boringbits_main(int argc, char* argv[], int8_t boring);
 int find_telomere_main(int argc, char* argv[]);
 int telomere_windows_main(int argc, char* argv[]);
@@ -92,6 +93,8 @@ int main(int argc, char* argv[]){
             fprintf(stderr,"[cornetto] Unrecognised telomere command %s\n",argv[2]);
             return print_usage(stderr);
         }
+    } else if (strcmp(argv[1],"minidot")==0){
+        ret=minidot_main(argc-1, argv+1);
     } else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"cornetto %s\n",CORNETTO_VERSION);
         exit(EXIT_SUCCESS);
