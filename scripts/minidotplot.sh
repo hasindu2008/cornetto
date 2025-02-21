@@ -30,7 +30,7 @@ cut -f 1 ${PREFIX}.tmp.paf | sort -u > ${PREFIX}.tmp.ctg.list
 
 while read p;
 do
-    grep $p ${PREFIX}.tmp.paf | awk 'BEGIN{sump=0;sumn=0} {if($5=="-"){sumn+=($9-$8)}else{sump+=($9-$8)}} END{if(sump>sumn){print $1"\t+"}else{print $1"\t-"}}'
+    grep -w $p ${PREFIX}.tmp.paf | awk 'BEGIN{sump=0;sumn=0} {if($5=="-"){sumn+=($9-$8)}else{sump+=($9-$8)}} END{if(sump>sumn){print $1"\t+"}else{print $1"\t-"}}'
 done < ${PREFIX}.tmp.ctg.list > ${PREFIX}.tmp.dir.txt
 
 grep -w "+" ${PREFIX}.tmp.dir.txt | cut -f 1 > ${PREFIX}.tmp.ctg_plus.txt || die "grep failed"
@@ -42,7 +42,7 @@ $SAMTOOLS faidx  ${PREFIX} -r ${PREFIX}.tmp.ctg_mins.txt  -i >> ${PREFIX}.tmp.fi
 cat ${PREFIX}.tmp.ctg_plus.txt ${PREFIX}.tmp.ctg_mins.txt  | while read p;
 do
 echo -n -e "${p}\t"
-grep $p ${PREFIX}.tmp.paf | cut -f 6 | sort | uniq -c | sort -k1,1 -rn | head -1 | awk '{print $2}' | awk -F'_' '{print $1}'
+grep -w $p ${PREFIX}.tmp.paf | cut -f 6 | sort | uniq -c | sort -k1,1 -rn | head -1 | awk '{print $2}' | awk -F'_' '{print $1}'
 done  > ${PREFIX}.chr.annotate.txt || die "grep failed"
 
 awk '{count[$2]++; if (count[$2] > 1) {print $1"\t"$2 "_" count[$2]-1} else {print $1"\t"$2 "_0"}}' ${PREFIX}.chr.annotate.txt > ${PREFIX}.chr.rename.txt || die "awk failed"
