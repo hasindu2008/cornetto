@@ -13,6 +13,9 @@ OBJ = $(BUILD_DIR)/main.o \
 	  $(BUILD_DIR)/misc.o \
 	  $(BUILD_DIR)/misc_p.o \
 	  $(BUILD_DIR)/error.o \
+      $(BUILD_DIR)/find_telomere.o \
+      $(BUILD_DIR)/telomere_windows.o \
+      $(BUILD_DIR)/telomere_breaks.o \
 	  $(BUILD_DIR)/dotter.o \
 	  $(BUILD_DIR)/paf.o \
 	  $(BUILD_DIR)/sdict.o
@@ -54,6 +57,13 @@ $(BUILD_DIR)/misc_p.o: src/misc_p.c src/misc.h
 $(BUILD_DIR)/error.o: src/error.c src/error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
+$(BUILD_DIR)/find_telomere.o: src/find_telomere.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/telomere_windows.o: src/telomere_windows.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/telomere_breaks.o: src/telomere_breaks.c
 # minidot
 $(BUILD_DIR)/dotter.o: src/minidot/dotter.c src/minidot/eps.h  src/minidot/kvec.h  src/minidot/paf.h  src/minidot/sdict.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
