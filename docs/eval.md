@@ -87,6 +87,8 @@ tar xf HG002.pat.hapmers.meryl.tar.gz
 
 /install/merqury/merqury.sh HG002.k21.meryl HG002.mat.hapmers.meryl pat.hapmers.meryl RGBX240039_HG002.hifiasm.primary_asm.fasta RGBX240039_HG002_meryl
 
+# qv only
+/install/merqury/eval/qv.sh HG002.k21.meryl assembly_scaffolds.haplotype1+assembly_scaffolds.haplotype2.fasta out
 ```
 
 ### Hamming errors
