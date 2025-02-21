@@ -38,6 +38,8 @@ SOFTWARE.
 #include "cornetto.h"
 
 int depth_main(int argc, char* argv[]);
+int fixdir_main(int argc, char* argv[]);
+int minidot_main(int argc, char* argv[]);
 int boringbits_main(int argc, char* argv[], int8_t boring);
 
 int print_usage(FILE *fp_help){
@@ -68,10 +70,14 @@ int main(int argc, char* argv[]){
         return print_usage(stderr);
     } else if (strcmp(argv[1],"depth")==0){
         ret=depth_main(argc-1, argv+1);
+    } else if (strcmp(argv[1],"fixdir")==0){
+        ret=fixdir_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"boringbits")==0){
         ret=boringbits_main(argc-1, argv+1, 1);
     } else if (strcmp(argv[1],"noboringbits")==0){
         ret=boringbits_main(argc-1, argv+1, 0);
+    } else if (strcmp(argv[1],"minidot")==0){
+        ret=minidot_main(argc-1, argv+1);
     } else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"cornetto %s\n",CORNETTO_VERSION);
         exit(EXIT_SUCCESS);
