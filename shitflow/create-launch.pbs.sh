@@ -54,7 +54,7 @@ samtools faidx ${ASM}.fasta || die "samtools faidx failed"
 minimap2 -x map-ont -d ${ASM}.fasta.idx ${ASM}.fasta || die "minimap2 failed"
 
 ## generate CHROMBED and CHROMSIZES files
-awk '{print $1"\t0\t"$2}' ${FASTA}.fai | sort -k3,3nr > ${CHROMBED} || die "awk failed"
+awk '{print $1"\t0\t"$2}' ${ASM}.fasta.fai | sort -k3,3nr > ${CHROMBED} || die "awk failed"
 cat ${CHROMBED} | awk '{print $1"\t"$3}' > ${CHROMSIZES} || die "awk failed"
 
 ## align starting hifi FASTQ reads back to the assembly they generated
