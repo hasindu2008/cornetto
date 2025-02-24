@@ -4,7 +4,7 @@
 
 On Gadi launch the following:
 ```
-qsub -v BASE_FASTQ=/path/to/D_0_PGXXSX240470.fastq,OUT_PREFIX=hg002-cornetto-D_1 shitflow/hifiasm-ont.pbs.sh
+qsub -v BASE_FASTQ=/path/to/D_0_PGXXSX240470.fastq,OUT_PREFIX=hg002-cornetto-D_0 shitflow/hifiasm-ont.pbs.sh
 ```
 
 Then copy the panel and in the index to the fridge and launch fishing.
