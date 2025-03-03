@@ -27,7 +27,7 @@ INDEX_DIR=/g/data/te53/ontsv/Figures/Review/microbial_contamination/database/
 REPORT=${ASM}.centrifuge_report.tsv
 CLASSIFICATION=${ASM}.centrifuge_classification.tsv
 
-#$CENTRIFUGE_HOME/centrifuge -p ${THREADS} -f -x ${INDEX_DIR}/p_compressed+h+v -U ${ASM}.fasta -S ${CLASSIFICATION} --report-file ${REPORT}
+$CENTRIFUGE_HOME/centrifuge -p ${THREADS} -f -x ${INDEX_DIR}/p_compressed+h+v -U ${ASM}.fasta -S ${CLASSIFICATION} --report-file ${REPORT}
 
 export PATH=$PATH:/g/data/te53/ontsv/sv_parsing/scripts/
 FLATTEN=/g/data/te53/ontsv/sv_parsing/scripts/flattenFasta.pl
@@ -43,15 +43,15 @@ FQ_REPORT=${FASTQ}.centrifuge_fastq_report.tsv
 FQ_CLASS=${FASTQ}.centrifuge_fastq_classification.tsv
 
 ## identify nonhuman species with minimum 100 reads
-cat ${FQ_REPORT} | sed 's/ /-/g' | sort -k5,5nr | awk '$2 != 9606' | awk '$5 >= 100' | cut -f 2 | sort -u | awk '$1 != "taxID"' > nonhuman_species_high_count.txt || die "Failed to identify nonhuman species"
+cat ${FQ_REPORT} | sed 's/ /-/g' | sort -k5,5nr | awk '$2 != 9606' | awk '$5 >= 100' | cut -f 2 | sort -u | awk '$1 != "taxID"' > ${ASM}_nonhuman_species_high_count.txt || die "Failed to identify nonhuman species"
 
 ## find the contigs that correspond to nonhuman species those nonhuman species
-${FETCH} ${FA_CLASS} nonhuman_species_high_count.txt 3 1 | cut -f 1 | sort -u > nonhuman_species_high_count_contig_ids.txt || die "Failed to fetch nonhuman contigs"
+${FETCH} ${FA_CLASS} ${ASM}_nonhuman_species_high_count.txt 3 1 | cut -f 1 | sort -u > ${ASM}_nonhuman_species_high_count_contig_ids.txt || die "Failed to fetch nonhuman contigs"
 
 ## fetch the contig sequences for those species and create a FASTA file just those contigs
-${FLATTEN} -tab ${ASM}.fasta > tmp.tab || die "Failed to flatten ${ASM}.fasta"
-${FETCH} tmp.tab nonhuman_species_high_count_contig_ids.txt 1 1 > nonhuman_contig_seqs.tab || die "Failed to fetch nonhuman contigs"
-${FLATTEN} -fa nonhuman_contig_seqs.tab > ${ASM}.nonhuman_contigs.fasta || die "Failed to create ${ASM}.nonhuman_contigs.fasta"
+${FLATTEN} -tab ${ASM}.fasta > ${ASM}_tmp.tab || die "Failed to flatten ${ASM}.fasta"
+${FETCH} ${ASM}_tmp.tab ${ASM}_nonhuman_species_high_count_contig_ids.txt 1 1 > ${ASM}_nonhuman_contig_seqs.tab || die "Failed to fetch nonhuman contigs"
+${FLATTEN} -fa ${ASM}_nonhuman_contig_seqs.tab > ${ASM}.nonhuman_contigs.fasta || die "Failed to create ${ASM}.nonhuman_contigs.fasta"
 
 ## create a BED file covering full contigs for each nonhuman contig to be excluded during readfish
 cat nonhuman_contig_seqs.tab | awk '{print $1"\t0\t"length($2)}' > ${ASM}.nonhuman_contigs.bed || die "Failed to create ${ASM}.nonhuman_contigs.bed"
