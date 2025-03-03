@@ -2,7 +2,7 @@
 #PBS -P ox63
 #PBS -q normal
 #PBS -N centrifuge
-#PBS -l walltime=8:00:00
+#PBS -l walltime=48:00:00
 #PBS -l storage=gdata/ox63+scratch/ox63+scratch/if89+gdata/if89+gdata/te53
 #PBS -l mem=190GB
 #PBS -l ncpus=48
@@ -29,12 +29,11 @@ INDEX_DIR=/g/data/te53/ontsv/Figures/Review/microbial_contamination/database/
 REPORT=${ASM}.centrifuge_report.tsv
 CLASSIFICATION=${ASM}.centrifuge_classification.tsv
 
-$CENTRIFUGE_HOME/centrifuge -p ${THREADS} -f -x ${INDEX_DIR}/p_compressed+h+v -U ${ASM}.fasta -S ${CLASSIFICATION} --report-file ${REPORT}
+$CENTRIFUGE_HOME/centrifuge -p ${THREADS} -f -x ${INDEX_DIR}/p_compressed+h+v -U ${ASM}.fasta -S ${CLASSIFICATION} --report-file ${REPORT} || die "Failed to run centrifuge"
 
 export PATH=$PATH:/g/data/te53/ontsv/sv_parsing/scripts/
 FLATTEN=/g/data/te53/ontsv/sv_parsing/scripts/flattenFasta.pl
 FETCH=/g/data/te53/ontsv/sv_parsing/scripts/fetchSubset.pl
-
 
 ## centrifuge files
 FA_REPORT=${ASM}.centrifuge_report.tsv
