@@ -17,6 +17,8 @@ usage() {
 }
 
 module load samtools/1.19
+ASM=${ASM_PREFIX}
+FASTQ=${FASTQ_PREFIX}
 
 CHROMBED=${ASM}.chroms.bed
 CHROMSIZES=${ASM}.chromsizes.tsv
@@ -33,8 +35,6 @@ export PATH=$PATH:/g/data/te53/ontsv/sv_parsing/scripts/
 FLATTEN=/g/data/te53/ontsv/sv_parsing/scripts/flattenFasta.pl
 FETCH=/g/data/te53/ontsv/sv_parsing/scripts/fetchSubset.pl
 
-ASM=${ASM_PREFIX}
-FASTQ=${FASTQ_PREFIX}
 
 ## centrifuge files
 FA_REPORT=${ASM}.centrifuge_report.tsv
