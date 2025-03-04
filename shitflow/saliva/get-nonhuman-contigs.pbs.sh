@@ -15,6 +15,7 @@ usage() {
 	echo
 	exit 1
 }
+set -o pipefail
 
 module load samtools/1.19
 ASM=${ASM_PREFIX}

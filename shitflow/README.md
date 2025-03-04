@@ -7,6 +7,23 @@ On Gadi launch the following:
 qsub -v BASE_FASTQ=/path/to/D_0_PGXXSX240470.fastq,OUT_PREFIX=hg002-cornetto-D_0 shitflow/hifiasm-ont.pbs.sh
 ```
 
+
+If saliva, On gadi:
+```
+# get human-only reads
+qsub -v FASTQ=/path/to/Q_O_PGXXXX250135_saliva.fastq shitflow/saliva/get-human-reads.pbs.sh
+# assembly with human-only reads
+qsub -v BASE_FASTQ=/path/to/Q_O_PGXXXX250135_saliva_human_reads.fastq,OUT_PREFIX=saliva-Q_0 shitflow/hifiasm-ont.pbs.sh
+
+# assembly with all reads
+qsub -v BASE_FASTQ=/path/to/Q_O_PGXXXX250135_saliva.fastq,OUT_PREFIX=saliva-Q_0 shitflow/hifiasm-ont.pbs.sh
+# get all non-human contigs
+qsub -v ASM_PREFIX=saliva-Q_0,FASTQ_PREFIX=~/cornetto-hasindu/data/saliva/Q_O_PGXXXX250135_pass_sup_500_saliva shitflow/saliva/get-nonhuman-contigs.pbs.sh
+
+# combine
+qsub -v HUMAN=human-only/,NONHUMAN=all-crap/centrifuge/,ASM=saliva-Q_0 ./create-combined-panel.pbs.sh
+```
+
 Then copy the panel and in the index to the fridge and launch fishing.
 
 ##  Adaptive assembly and recreating the panel
