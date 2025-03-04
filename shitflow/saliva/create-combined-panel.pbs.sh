@@ -37,7 +37,7 @@ COMBINED_BORING_BED=${ASM}_dip.boringbits.plus_nonhuman_ctg.bed
 COMBINED_BORING_TXT=${ASM}_dip.boringbits.plus_nonhuman_ctg.txt
 
 flattenFasta.pl -tab ${NONHUMAN_CTG_FA} | awk '{print $1"_nonhuman\t"$2}' > tmp1.tab || die "Failed to flatten ${NONHUMAN_CTG_FA}"
-flattenFasta.pl -fa tmp1.tab > ${ASM}_nonhuman_ctg_renamed.fasta || die "Failed to create ${ASM}_nonhuman_ctg_renamed
+flattenFasta.pl -fa tmp1.tab > ${ASM}_nonhuman_ctg_renamed.fasta || die "Failed to create ${ASM}_nonhuman_ctg_renamed"
 
 cat ${NONHUMAN_CTG_BED} | awk '{print $1"_nonhuman\t"$2"\t"$3}' > ${ASM}_nonhuman_ctg_renamed.bed || die "Failed to create ${ASM}_nonhuman_ctg_renamed.bed"
 
