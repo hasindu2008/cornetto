@@ -32,6 +32,6 @@ ${YAK} version || die "yak not found"
 test -e ${ASM} || die "Assembly file not found: ${ASM}"
 test -e ${REF} || die "Reference file not found: ${REF}"
 
-test -e ${REF}.k21.yak || ${YAK} count -K1.5g -t ${THREADS} ${REF} -o ${REF}.k21.yak || die "yak count failed"
+test -e ${REF}.k21.yak || ${YAK} count -k 21 -K1.5g -t ${THREADS} ${REF} -o ${REF}.k21.yak || die "yak count failed"
 
 /usr/bin/time -v ${YAK} qv ${REF}.k21.yak ${ASM} -t ${THREADS} > ${ASM}.yak.k21.txt || die "yak qv failed"
