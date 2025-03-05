@@ -21,7 +21,7 @@ die () {
 export PATH=$PATH:/g/data/te53/ontsv/sv_parsing/scripts/
 
 usage() {
-	echo "Usage: qsub -v HUMAN_ASM=saliva-Q_1,NONHUMAN_PREFIX=/path/to/all-crap/saliva-Q_0, ./script.pbs.sh" >&2
+	echo "Usage: qsub -v ASM=saliva-Q_1,NONHUMAN_PREFIX=/path/to/all-crap/saliva-Q_0 ./script.pbs.sh" >&2
 	echo
 	exit 1
 }
@@ -31,7 +31,6 @@ die () {
 	exit 1
 }
 
-ASM=${HUMAN_ASM}
 HUMAN=../
 
 mkdir -p human_plus_nonhuman || die "Failed to create human_plus_nonhuman"
