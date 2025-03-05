@@ -15,6 +15,12 @@ usage() {
 	echo
 	exit 1
 }
+
+die () {
+	echo >&2 "$@"
+	exit 1
+}
+
 set -o pipefail
 
 module load samtools/1.19
@@ -54,5 +60,5 @@ ${FETCH} ${ASM}_tmp.tab ${ASM}_nonhuman_species_high_count_contig_ids.txt 1 1 > 
 ${FLATTEN} -fa ${ASM}_nonhuman_contig_seqs.tab > ${ASM}.nonhuman_contigs.fasta || die "Failed to create ${ASM}.nonhuman_contigs.fasta"
 
 ## create a BED file covering full contigs for each nonhuman contig to be excluded during readfish
-cat nonhuman_contig_seqs.tab | awk '{print $1"\t0\t"length($2)}' > ${ASM}.nonhuman_contigs.bed || die "Failed to create ${ASM}.nonhuman_contigs.bed"
+cat ${ASM}_nonhuman_contig_seqs.tab | awk '{print $1"\t0\t"length($2)}' > ${ASM}.nonhuman_contigs.bed || die "Failed to create ${ASM}.nonhuman_contigs.bed"
 

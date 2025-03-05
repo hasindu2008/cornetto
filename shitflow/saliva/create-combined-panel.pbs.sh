@@ -21,7 +21,7 @@ die () {
 export PATH=$PATH:/g/data/te53/ontsv/sv_parsing/scripts/
 
 usage() {
-	echo "Usage: qsub -v HUMAN=human-only/,NONHUMAN=all-crap/centrifuge/,ASM=saliva-Q_0 ./xcript.pbs.sh" >&2
+	echo "Usage: qsub -v HUMAN=human-only/,NONHUMAN=all-crap/,ASM=saliva-Q_0 ./xcript.pbs.sh" >&2
 	echo
 	exit 1
 }
