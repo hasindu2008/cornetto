@@ -4,7 +4,7 @@ Cornetto is a method for adaptive genome assembly using nanopore sequencing. Thi
 
 ## Prerequisites
 
-* This assumes that you are well-versed in nanopore bioinformatics and genome assembly. Thus, not every tiny step is explained in details.
+* This documentation assumes that you are well-versed in nanopore bioinformatics and genome assembly. Thus, not every tiny step is explained in details.
 
 * This documentation also assumes that you have an ONT nanopore sequencer connected to a Linux host installed with MinKNOW software.
 
@@ -22,6 +22,8 @@ Cornetto is a method for adaptive genome assembly using nanopore sequencing. Thi
 
 - For evaluating assemblies, you may use methods that you may wish. our method requires the following software:
     - quast
+    - compleasm
+    - yak
 
 ### Compiling the cornetto C programme
 
@@ -60,7 +62,7 @@ minimap2 -t 24 --secondary=no --MD -ax map-hifi/map-ont asm.fasta hifi-run-0.fas
 samtools index -o asm.realigned.bam
 ```
 
-## get per base coverage tracks for total alignments (MQ>=0) and unique alignments (MQ>=20)
+Get per base coverage tracks for total alignments (MQ>=0) and unique alignments (MQ>=20)
 ```bash
 samtools faidx asm.fasta
 awk '{print $1"\t0\t"$2}' asm.fasta.fai | sort -k3,3nr > asm.chroms.bed
@@ -115,36 +117,27 @@ Now repeat ^^
 
 ## Evaluating assemblies
 
+```
+scripts/minidotplot.sh ref.fasta assembly.fasta
+scripts/telostat.sh assembly.fasta
+scripts/asmstats.sh assembly.fasta
+```
 
+See [Evaluation](docs/eval.md) for more details.
 
-
-
-
-
-## Usage of C programme
-
-See [C programme commands and options](docs/command.md).
-
-
-## Shell scripts
-
+## Post analysis
 
 ## t2t-aware iterative assembly
 
 Launch `scripts/fisht2t.pbs.sh`.
 For cumulative assemblies, you may use `scripts/postcall_all/run_fisht2t_all.sh`.
 
-The older methods can be found under [archived](archived.md)
+The older methods can be found under [archived](archived.md).
 
-### Evaluating
+## Usage of C programme
 
-```
-scripts/minidotplot.sh ref.fasta assembly.fasta
-scripts/telostat.sh assembly.fasta
-scripts/assembly.fasta
-```
+See [C programme commands and options](docs/command.md).
 
-See [Evaluation](docs/eval.md) for more details.
 
 ## shitflow (shell-based internode transfer flow)
 
