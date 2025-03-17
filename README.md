@@ -5,21 +5,15 @@ Cornetto is a method for adaptive genome assembly using nanopore sequencing. Thi
 ## Prerequisites
 
 * This documentation assumes that you are well-versed in nanopore bioinformatics and genome assembly. Thus, not every tiny step is explained in details.
-
 * This documentation also assumes that you have an ONT nanopore sequencer connected to a Linux host installed with MinKNOW software.
-
 * For adaptive sampling, we will use the open-source [readfish](https://github.com/LooseLab/readfish) software, so get it installed on the host running MinKNOW. ONT MInKNOW's inbuilt adaptive sampling also should work, but we sticked to the open-source readfish.
-
 * Get the cornetto C programme compiled as instructed in the section [below](#compiling-the-cornetto-c-programme).
-
 * For assembling the genomes, you will need [hifiasm](https://github.com/chhylp123/hifiasm). For ONT-only assemblies, make sure you have a newer version that supports ONT data.
-
 * For the creating the cornetto readfish panels, we need the following software
     - gfatools
     - minimap2
     - samtools
     - bedtools
-
 - For evaluating assemblies, you may use methods that you may wish. our method requires the following software:
     - quast
     - compleasm
@@ -60,6 +54,7 @@ gfatools gfa2fa asm-0.bp.hap1.p_ctg.gfa > asm-0.hap1.fasta
 gfatools gfa2fa asm-0.bp.hap2.p_ctg.gfa > asm-0.hap2.fasta
 ```
 
+You may want to evaluate the quality of the assembly to see if it is sane. For this please refer to the section on [evaluation](#evaluating-assemblies).
 
 ### Step 2: generating the cornetto panel
 
@@ -140,18 +135,20 @@ no_map = "proceed"
 
 ## Running a cornetto iteration
 
-Run readfish
+Step 1: Run adaptive sampling using readfish
 
+Do the sequencing and run readfish with the `asm-1_dip.boringbits.toml` we created above. Example command is given below. You will have to change parameters as appropriate.
 
-
-
-Create the readfish toml file:
-
+```bash
+readfish targets --device ${DEVICE_ID} --experiment-name asm-1_dip.boringbits --toml asm-1_dip.boringbits.toml --port 9502 --cache-size 3000 --batch-size 3000 --channels 1 3000 --log-file my.log
 ```
 
-```
+Step 2:  Basecall your data
 
-Now repeat ^^
+Step 3: Assemble
+
+Step 4: Create the next cornetto panel
+
 
 ## Evaluating assemblies
 
