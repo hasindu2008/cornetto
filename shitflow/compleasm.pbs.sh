@@ -10,7 +10,7 @@
 
 usage() {
 	echo "Usage: qsub -v ASM=/path/to/asm.fa,LINEAGE=lineage,OUT_DIR=busco/ ./compleasm.pbs.sh" >&2
-	ecgo "       linage: primates for human, actinopterygii_odb10 for cichlid, tetrapoda_odb10 for birds" >&2
+	ecgo "       linage: primates for human, actinopterygii_odb10 for cichlid, tetrapoda_odb10 for birds & turtle" >&2
 	echo
 	exit 1
 }
