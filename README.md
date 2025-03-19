@@ -197,14 +197,79 @@ Now repeat from step 1 [above](#running-a-cornetto-iteration) to start another c
 
 ## Evaluating assemblies
 
-[todo]
+In this section we document the methods you may use for evaluating the assemblies and some scripts are provided where relevant.
 
+### Evaluating BUSCO completeness
+
+We used [compleasm](https://github.com/huangnengCSU/compleasm/) for getting the BUSCO scores. The command we used was:
 ```
-scripts/minidotplot.sh ref.fasta assembly.fasta
-scripts/telostat.sh assembly.fasta
-scripts/asmstats.sh assembly.fasta
+compleasm run -a asm.fasta -o asm.busco_out -t 8 -l ${LINEAGE} -L /path/to/mb_downloads
+# LINEAGE: primates for human, actinopterygii_odb10 for cichlid, tetrapoda_odb10 for birds and turtles
 ```
 
+### Evaluating using Quast
+
+You can use quast as follows:
+```
+quast.py -t 24 -o asm.quast_out -l asm.fasta --large asm.fasta
+```
+
+### Further evaluations for HG002
+
+If the sample is HG002, there is a lot of reference data that we can use to evaluate our assemblies.
+
+First download the Q100 HG002 assembly and extract the two haplotypes:
+
+```bash
+# dowload and index
+wget https://s3-us-west-2.amazonaws.com/human-pangenomics/T2T/HG002/assemblies/hg002v1.0.1.fasta.gz
+samtools faidx hg002v1.0.1.fasta.gz
+
+# paternal haplotype
+grep "PATERNAL\|chrEBV\|chrM\|chrX\|chrY" hg002v1.0.1.fasta.gz.fai | cut -f 1 > paternal.txt
+samtools faidx hg002v1.0.1.fasta.gz -r paternal.txt -o hg002v1.0.1_pat.fa
+
+# maternal haplotype
+grep "MATERNAL\|chrEBV\|chrM\|chrX\|chrY" hg002v1.0.1.fasta.gz.fai | cut -f 1 > maternal.txt
+samtools faidx hg002v1.0.1.fasta.gz -r maternal.txt -o hg002v1.0.1_mat.fa
+```
+
+To generate the dotplot use the `scripts/minidotplot.sh`. This script requires minimap2, samtools and `minidot` from [miniasm](https://github.com/lh3/miniasm) package. For your convenience, we are in the process of integrating `minidot` to the `cornetto` C programme.
+
+```bash
+scripts/minidotplot.sh hg002v1.0.1_pat.fa asm.fasta
+```
+
+To get the telomere statistics use the `scripts/telostat.sh`. This script requires the [teleomere analysis scripts from the VGP project](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere). For your convenience, we are in the process of integrating the functionality of these VGP telomere scripts to the cornetto C programme.
+
+```bash
+scripts/telostat.sh asm.fasta
+```
+
+To get per-chromosome statistics use the `scripts/asmstats.sh`. Make sure you have already run `scripts/minidotplot.sh` and `scripts/telostat.sh` before running this script. This is because the files generated in those steps are reused by this script. We plan to make the functionality of this bash script into the cornetto programme in future.
+
+```bash
+scripts/asmstats.sh asm.fasta
+```
+
+To calculate the QV for the assembly, we can use yak.
+
+```bash
+# create the yak index using the HG002 Q100 assembly, with a k-mer size of 21
+yak count -k 21 -K1.5g -t 16 hg002v1.0.1.fasta.gz -o hg002v1.0.1.k21.yak
+# to get the QV of primary ASM
+yak qv hg002v1.0.1.k21.yak asm.fasta -t 24
+
+# to get the QV of the combined haplotypes
+cat asm.hap1.fasta asm.hap2.fasta > asm.hap1+hap2.fasta
+yak qv hg002v1.0.1.k21.yak asm.hap1+hap2.fasta -t 24
+```
+
+To calculate the Hamming and switch error, we can use yak too. But first we need parental yak indexes for HG002. We downloaded them from the [human-pangenomics project](https://s3-us-west-2.amazonaws.com/human-pangenomics/index.html?prefix=submissions/6040D518-FE32-4CEB-B55C-504A05E4D662--HG002_PARENTAL_YAKS/HG002_PARENTS_FULL/) mentioned [here](https://github.com/chhylp123/hifiasm/issues/262#issuecomment-1081303007). After doing so, you can do:
+
+``` bash
+yak trioeval pat.HG003.yak mat.HG004.yak asm.hap1+hap2.fasta -t 16
+```
 
 ## Post analysis
 
@@ -213,14 +278,11 @@ scripts/asmstats.sh assembly.fasta
 ## t2t-aware iterative assembly
 
 Launch `scripts/fisht2t.pbs.sh`.
-For cumulative assemblies, you may use `scripts/postcall_all/run_fisht2t_all.sh`.
 
 
 ## Usage of C programme
 
-[todo]
-
-See [C programme commands and options](docs/command.md).
+Our cornetto C programme contains a number of subtools that are used by the above explained scripts. If you want to use those subtools in your scripts, see the [manual page](docs/command.md).
 
 
 ## shitflow (shell-based internode transfer flow)
@@ -231,7 +293,9 @@ The [shitflow](shitflow/README.md) directory in the repository contains the scri
 ## Notes
 
 - Our scripts and the C programme is not tested on non Linux platforms, so might need some adjustments.
+- A very useful article that explains various assembly-related terms: [concepts-in-phased-assemblies](https://lh3.github.io/2021/04/17/concepts-in-phased-assemblies)
 
 ## Acknowledgement
 
-- minidot programme in src/minidot is from https://github.com/lh3/miniasm/ under the MIT license
+- minidot programme in [src/minidot](src/minidot) is from https://github.com/lh3/miniasm under the MIT license
+
