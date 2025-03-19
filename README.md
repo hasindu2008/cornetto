@@ -155,9 +155,9 @@ Now launch hifiasm with the base FASTQ and the fastq from the cornetto iteration
 
 ```bash
 # if pacbio base + ONT duplex cornetto
-hifiasm -t 48 --hg-size 3g -o asm-0 reads-0.fastq reads-1.fastq
+hifiasm -t 48 --hg-size 3g -o asm-1 reads-0.fastq reads-1.fastq
 # if ONT simplex for the base and cornetto
-hifiasm --ont -t 48 --hg-size 3g -o asm-0 reads-0.fastq reads-1.fastq
+hifiasm --ont -t 48 --hg-size 3g -o asm-1 reads-0.fastq reads-1.fastq
 ```
 
 Now convert the assemblies from gfa format to fasta, using commands similar to what we used for base assembly. Let us say out primary assembly is `asm-1.fasta` and the haplotype assemblies are `asm-1.hap1.fasta` and `asm-1.hap2.fasta`.
@@ -166,16 +166,38 @@ You may want to evaluate the quality of the assembly to see if it has improved. 
 
 ### Step 4: Create the cornetto panel for the new cornetto iteration
 
+Now to create the cornetto panel for the next iteration, you can launch the script at [scripts/recreate-cornetto.sh](scripts/recreate-cornetto.sh):
+
+```bash
+scripts/recreate-cornetto.sh asm-1.fasta
+```
+
+See comments inside [scripts/recreate-cornetto.sh](scripts/create-cornetto.sh) to understand what the script is doing.
+Running this script will generate two files `asm-1.boringbits.bed` and `asm-1.boringbits.txt`.
+
+
 ### Step 5: Creating the diploid cornetto panel for the new cornetto iteration
+
+This step is only required for diploid assemblies using ONT simplex data (ONT simplex for both the base assembly and cornetto iterations). Note that you should have already run step 4 above, before running this step. For primary assembly using pacbio data for the base assembly, followed by ONT duplex cornetto iterations, this step can be skipped.
+
+Run the script at [scripts/recreate-hapnetto.sh](scripts/recreate-hapnetto.sh):
+
+```
+scripts/create-hapnetto.sh asm-1
+```
+
+See comments inside [scripts/recreate-hapnetto.sh](scripts/recreate-hapnetto.sh) to understand what the script is doing. The final outputs we want are the two files `asm-1_dip.boringbits.bed ` and `asm-1_dip.boringbits.txt`.
 
 ### Step 6: configuring readfish
 
-Just as before when configuring readfish for the base assembly above, now create the minimap2 index for the primary assembly `asm-1.fasta` to be used with readfish. Then similarly create a readfish configuration for the next iteration (`asm-2.boringbits.toml`) with `asm-1_dip.boringbits.txt` or `asm-1_dip.boringbits.txt` created with step 4/5 above.
+Just as before when configuring readfish for the base assembly [above](#step-4-configuring-readfish), now create the minimap2 index for the primary assembly `asm-1.fasta` to be used with readfish. Then similarly create a readfish configuration for the next iteration (`asm-2.boringbits.toml`) with `asm-1_dip.boringbits.txt` or `asm-1_dip.boringbits.txt` created with step 4/5 above.
 
-Now repeat from step 1 above to start another cornetto iteration (asm-2, asm-3, and so on). For assembling at each iteration, use the base FASTQ file and the FASTQ files from all previous iterations.
+Now repeat from step 1 [above](#running-a-cornetto-iteration) to start another cornetto iteration (asm-2, asm-3, and so on). For assembling at each iteration, use the base FASTQ file and the FASTQ files from all previous iterations.
 
 
 ## Evaluating assemblies
+
+[todo]
 
 ```
 scripts/minidotplot.sh ref.fasta assembly.fasta
@@ -183,25 +205,28 @@ scripts/telostat.sh assembly.fasta
 scripts/asmstats.sh assembly.fasta
 ```
 
-See [Evaluation](docs/eval.md) for more details.
 
 ## Post analysis
+
+[todo]
 
 ## t2t-aware iterative assembly
 
 Launch `scripts/fisht2t.pbs.sh`.
 For cumulative assemblies, you may use `scripts/postcall_all/run_fisht2t_all.sh`.
 
-The older methods can be found under [archived](archived.md).
 
 ## Usage of C programme
+
+[todo]
 
 See [C programme commands and options](docs/command.md).
 
 
 ## shitflow (shell-based internode transfer flow)
 
-see [here](shitflow/README.md).
+The [shitflow](shitflow/README.md) directory in the repository contains the scripts we used semi-automate the execution and analysis on a combination of in-house computer systems and the Australia NCI Gadi supercomputer nodes. These scripts are for our own use with various hardcoded paths, so you better keep away. Just documenting here in case one is curious what the heck this is.
+
 
 ## Notes
 
