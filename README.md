@@ -2,6 +2,19 @@
 
 Cornetto is a method for adaptive genome assembly using nanopore sequencing. This repository documents the cornetto bioinformatics protocol and contains the source code for cornetto (a collection of shell scripts and a C programme).
 
+## Table of Contents
+
+# Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Creating a base assembly and initial cornetto panel](#creating-a-base-assembly-and-initial-cornetto-panel)
+- [Running a cornetto iteration](#running-a-cornetto-iteration)
+- [Evaluating assemblies](#evaluating-assemblies)
+- [Usage of C programme](#usage-of-c-programme)
+- [shitflow (shell-based internode transfer flow)](#shitflow-shell-based-internode-transfer-flow)
+- [Notes](#notes)
+- [Acknowledgement](#acknowledgement)
+
 ## Prerequisites
 
 * This documentation assumes that you are well-versed in nanopore bioinformatics and genome assembly. Thus, not every tiny step is explained in details.
