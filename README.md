@@ -271,14 +271,6 @@ To calculate the Hamming and switch error, we can use yak too. But first we need
 yak trioeval pat.HG003.yak mat.HG004.yak asm.hap1+hap2.fasta -t 16
 ```
 
-## Post analysis
-
-[todo]
-
-## t2t-aware iterative assembly
-
-Launch `scripts/fisht2t.pbs.sh`.
-
 
 ## Usage of C programme
 
