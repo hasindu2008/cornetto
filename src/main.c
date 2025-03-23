@@ -72,7 +72,7 @@ int main(int argc, char* argv[]){
         ret=depth_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"fixdir")==0){
         ret=fixdir_main(argc-1, argv+1);
-    } else if (strcmp(argv[1],"boringbits")==0){
+    } else if (strcmp(argv[1],"boringbits")==0){ //deprecated (this was never used)
         ret=boringbits_main(argc-1, argv+1, 1);
     } else if (strcmp(argv[1],"noboringbits")==0){
         ret=boringbits_main(argc-1, argv+1, 0);

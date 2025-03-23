@@ -446,6 +446,21 @@ void print_fun_bits(asm_reg_t *asm_reg, int thresh_low_depth, int thresh_high_de
 }
 
 
+/*
+boringbits subtool: print_boring_bits is deprecated - it was never used to begin with
+
+It prints windows that meet 1, 2 and 2
+1. contigs must be > [1MBase] in size
+2. excluding [100kb] edge regions at each
+3. Does not fall into any of the below category
+   - windows with low coverage: [<0.6x] genome average
+   - windows with high coverage: [>1.6x] genome average
+   - windows with low mappability: [mean MQ20 cov for window is < 0.6 x mean coverage for the window]
+
+To merge the windows that are overlapping or adjacent (within 500bp), you may use bedtools as follows:
+./cornetto boringbits test/cov-total.bg -q test/cov-mq20.bg  | cut -f 1,2,3 | bedtools sort | bedtools merge -d 500 > boringbits.bed
+*/
+
 void print_boring_bits(asm_reg_t *asm_reg, int thresh_low_depth, int thresh_high_depth, float low_mq_cov_thresh, int edge_len, int min_ctg_len){
     for(int i=0;i<asm_reg->num_ctg;i++){
         ctg_reg_t *ctg_reg = &asm_reg->ctg_reg[i];
