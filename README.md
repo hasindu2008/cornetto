@@ -4,8 +4,6 @@ Cornetto is a method for adaptive genome assembly using nanopore sequencing. Thi
 
 ## Table of Contents
 
-# Table of Contents
-
 - [Prerequisites](#prerequisites)
 - [Creating a base assembly and initial cornetto panel](#creating-a-base-assembly-and-initial-cornetto-panel)
 - [Running a cornetto iteration](#running-a-cornetto-iteration)
