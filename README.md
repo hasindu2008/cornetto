@@ -1,6 +1,6 @@
 # cornetto
 
-Cornetto is a method for adaptive genome assembly using nanopore sequencing. This repository documents the cornetto bioinformatics protocol and contains the source code for cornetto (a collection of shell scripts and a C programme).
+Cornetto is a method for adaptive genome assembly using nanopore sequencing. This repository documents the cornetto bioinformatics protocol and contains the source code for Cornetto (a programme written in C and a collection of shell scripts).
 
 ## Table of Contents
 
@@ -8,6 +8,7 @@ Cornetto is a method for adaptive genome assembly using nanopore sequencing. Thi
 - [Creating a base assembly and initial cornetto panel](#creating-a-base-assembly-and-initial-cornetto-panel)
 - [Running a cornetto iteration](#running-a-cornetto-iteration)
 - [Evaluating assemblies](#evaluating-assemblies)
+- [Further refinements](#further-refinements)
 - [Usage of C programme](#usage-of-c-programme)
 - [shitflow (shell-based internode transfer flow)](#shitflow-shell-based-internode-transfer-flow)
 - [Notes](#notes)
@@ -16,19 +17,24 @@ Cornetto is a method for adaptive genome assembly using nanopore sequencing. Thi
 ## Prerequisites
 
 * This documentation assumes that you are well-versed in nanopore bioinformatics and genome assembly. Thus, not every tiny step is explained in details.
-* This documentation also assumes that you have an ONT nanopore sequencer connected to a Linux host installed with MinKNOW software.
-* For adaptive sampling, we will use the open-source [readfish](https://github.com/LooseLab/readfish) software, so get it installed on the host running MinKNOW. ONT MInKNOW's inbuilt adaptive sampling also should work, but we sticked to the open-source readfish.
+* It is expected that you have an ONT nanopore sequencer connected to a Linux host installed with MinKNOW software.
+* It is expected that you have read the cornetto manuscript thoroughly, as information there has not been repeated here.
+* For adaptive sampling, we use the open-source [readfish](https://github.com/LooseLab/readfish) software, so get it installed on the host running MinKNOW. ONT MInKNOW's inbuilt adaptive sampling also should work, but we sticked to the open-source readfish.
 * Get the cornetto C programme compiled as instructed in the section [below](#compiling-the-cornetto-c-programme).
-* For assembling the genomes, you will need [hifiasm](https://github.com/chhylp123/hifiasm). For ONT-only assemblies, make sure you have a newer version that supports ONT data (`--ont` option).
-* For the creating the cornetto readfish panels, we need the following software
+* For assembling the genomes, you will need [hifiasm](https://github.com/chhylp123/hifiasm). For ONT-only assemblies, make sure you have a newer version (>= 0.22.0) that supports ONT data (`--ont` option).
+* For creating the cornetto readfish panels, we need following software.
     - [gfatools](https://github.com/lh3/gfatools)
     - [minimap2](https://github.com/lh3/minimap2/)
     - [samtools](https://www.htslib.org/download/)
     - [bedtools](https://github.com/arq5x/bedtools2)
-- For evaluating assemblies, you may use methods that you may wish. Our method requires the following software:
+    - [seqkit](https://bioinf.shenwei.me/seqkit) (only for ONT-only simplex)
+    - [centifuge](https://ccb.jhu.edu/software/centrifuge) (only for saliva samples)
+- For evaluating assemblies, you may use methods of your choice. Our suggested method requires following software:
     - [quast](https://quast.sourceforge.net)
     - [compleasm](https://github.com/huangnengCSU/compleasm)
     - [yak](https://github.com/lh3/yak)
+    - [VGP telomere scripts](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere)
+    - [minidot](https://github.com/lh3/miniasm)
 
 ### Compiling the cornetto C programme
 
@@ -44,7 +50,7 @@ make
 
 ### Step 1: generating the base assembly
 
-Use hifiasm to generate the base assembly. Depending on the type of your input data for the initial assembly, pick the example command below. Make sure to change the parameters such as the number of threads and the genome size as necessary.
+Use hifiasm to generate the base assembly. Depending on the type of your input data for the initial assembly, pick the example command below. Make sure to change the parameters such as the number of threads and the genome size as necessary. If your sample is saliva, make sure you first remove non-human reads by following steps [here](docs/saliva.md#removing-non-human-reads-from-saliva-samples)
 
 ```bash
 # If based on pacbio hifi data
@@ -53,7 +59,12 @@ hifiasm -t 48 --hg-size 3g -o asm-0 reads-0.fastq
 hifiasm --ont -t 48 --hg-size 3g -o asm-0 reads-0.fastq
 ```
 
-Now convert the assemblies from gfa format to fasta:
+For ONT simplex data, the command we used for basecalling was:
+```bash
+slow5-dorado basecaller -x cuda:all dna_r10.4.1_e8.2_400bps_sup@v5.0.0 reads-0.blow5 --emit-fastq --min-qscore 10  > reads-0.fastq
+```
+
+Once the assembly is done, convert the assemblies from gfa format to fasta format:
 
 ```bash
 # primary assembly
@@ -66,6 +77,7 @@ gfatools gfa2fa asm-0.bp.hap2.p_ctg.gfa > asm-0.hap2.fasta
 ```
 
 You may want to evaluate the quality of the assembly to see if it is sane. For this, please refer to the section on [evaluation](#evaluating-assemblies).
+
 
 ### Step 2: generating the cornetto panel
 
@@ -109,9 +121,16 @@ Run the script at [scripts/create-hapnetto.sh](scripts/create-hapnetto.sh):
 scripts/create-hapnetto.sh asm-0
 ```
 
-See comments inside [scripts/create-hapnetto.sh](scripts/create-hapnetto.sh) to understand what the script is doing. The final outputs we want are the two files `asm-0_dip.boringbits.bed ` and `asm-0_dip.boringbits.txt`.
+See comments inside [scripts/create-hapnetto.sh](scripts/create-hapnetto.sh) to understand what the script is doing. The final outputs we want are the two files `asm-0_dip.boringbits.bed` and `asm-0_dip.boringbits.txt`.
 
-### Step 4: configuring readfish
+## step 4: Only for human saliva samples
+
+We need to append any non-human contigs to the panel if we are using a human saliva sample. First, follow the additional instructions [here](docs/saliva.md#get-the-non-human-contigs) to generate two files `asm-all-0.nonhuman_contigs.fasta` and `asm-all-0.nonhuman_contigs.bed`.
+
+Then, append the `asm-all-0.nonhuman_contigs.fasta` to primary assembly `asm-0.fasta`. Append the `asm-all-0.nonhuman_contigs.bed` to the `asm-0.boringbits.bed` or `asm-0_dip.boringbits.bed` based on what you are after. Generate the `asm-0.boringbits.txt` or `asm-0_dip.boringbits.txt`based on the bed file.
+
+
+### Step 5: configuring readfish
 
 Now create the minimap2 index for the primary assembly `asm-0.fasta` to be used with readfish:
 ```bash
@@ -156,13 +175,20 @@ readfish targets --device ${DEVICE_ID} --experiment-name asm-1 --toml asm-1.bori
 
 ### Step 2: Basecall your data
 
-If you are using pacbio base + ONT duplex cornetto, basecall your data with the duplex super accuracy basecalling model. Then extract only the duplex reads in to a file called `reads-1.fastq`.
+If you are using pacbio base + ONT duplex cornetto, basecall your data with the duplex super accuracy basecalling model. Then extract only the duplex reads in to a file called `reads-1.fastq`. The command we used for duplex basecalling was:
+```bash
+slow5-dorado duplex dna_r10.4.1_e8.2_400bps_sup@v4.2.0 reads-1.blow5  > reads-1.bam
+```
 
-If you are using ONT simplex for the base and cornetto, basecall your data with the simplex super accuracy basecalling model. Then extract reads which are longer than a threshold (30 kbases) into a file called `reads-1.fastq`.
+If you are using ONT simplex for the base and cornetto, basecall your data with the simplex super accuracy basecalling model. Then extract reads which are longer than a threshold (30 kbases) into a file called `reads-1.fastq`. The commands we used for simplex basecalling was:
+```bash
+slow5-dorado basecaller -x cuda:all dna_r10.4.1_e8.2_400bps_sup@v5.0.0 reads-1.blow5 --emit-fastq --min-qscore 10  > reads-1_all.fastq
+seqkit seq -m 30000 reads-1_all.fastq -o reads-1.fastq
+```
 
 ### Step 3: Assemble
 
-Now launch hifiasm with the base FASTQ and the fastq from the cornetto iteration. Commands are very similar to what we used before when generating the base assembly:
+Now launch hifiasm with the base FASTQ and the FASTQ from the cornetto iteration. Commands are very similar to what we used before when generating the base assembly:
 
 ```bash
 # if pacbio base + ONT duplex cornetto
@@ -197,11 +223,15 @@ Run the script at [scripts/recreate-hapnetto.sh](scripts/recreate-hapnetto.sh):
 scripts/create-hapnetto.sh asm-1
 ```
 
-See comments inside [scripts/recreate-hapnetto.sh](scripts/recreate-hapnetto.sh) to understand what the script is doing. The final outputs we want are the two files `asm-1_dip.boringbits.bed ` and `asm-1_dip.boringbits.txt`.
+See comments inside [scripts/recreate-hapnetto.sh](scripts/recreate-hapnetto.sh) to understand what the script is doing. The final outputs we want are the two files `asm-1_dip.boringbits.bed`  and `asm-1_dip.boringbits.txt`.
 
-### Step 6: configuring readfish
+### step 6: Only for human saliva samples
 
-Just as before when configuring readfish for the base assembly [above](#step-4-configuring-readfish), now create the minimap2 index for the primary assembly `asm-1.fasta` to be used with readfish. Then similarly create a readfish configuration for the next iteration (`asm-2.boringbits.toml`) with `asm-1_dip.boringbits.txt` or `asm-1_dip.boringbits.txt` created with step 4/5 above.
+Append the non-human contigs we generated in [step 4 of creating the base assembly](#step-4-only-for-human-saliva-samples), into the `asm-1.fasta`, `asm-1.boringbits.bed`/`asm-1_dip.boringbits.bed` and `asm-1.boringbits.txt`/`asm-1_dip.boringbits.txt`
+
+### Step 7: configuring readfish
+
+Just as before when configuring readfish for the base assembly [above](#step-5-configuring-readfish), now create the minimap2 index for the primary assembly `asm-1.fasta` to be used with readfish. Then similarly create a readfish configuration for the next iteration (`asm-2.boringbits.toml`) with `asm-1_dip.boringbits.txt` or `asm-1_dip.boringbits.txt` created with step 4/5 above.
 
 Now repeat from step 1 [above](#running-a-cornetto-iteration) to start another cornetto iteration (asm-2, asm-3, and so on). For assembling at each iteration, use the base FASTQ file and the FASTQ files from all previous iterations.
 
@@ -227,7 +257,7 @@ quast.py -t 24 -o asm.quast_out -l asm.fasta --large asm.fasta
 
 ### Further evaluations for HG002
 
-If the sample is HG002, there is a lot of reference data that we can use to evaluate our assemblies.
+If the sample is HG002, there is high quality reference data that we can use to evaluate our assemblies.
 
 First download the Q100 HG002 assembly and extract the two haplotypes:
 
@@ -282,6 +312,9 @@ To calculate the Hamming and switch error, we can use yak too. But first we need
 yak trioeval pat.HG003.yak mat.HG004.yak asm.hap1+hap2.fasta -t 16
 ```
 
+## Further refinements
+
+If you are focused on primary assemblies, you may use following the approach documented [here](docs/refine.md) for further refinements.
 
 ## Usage of C programme
 
@@ -290,15 +323,15 @@ Our cornetto C programme contains a number of subtools that are used by the abov
 
 ## shitflow (shell-based internode transfer flow)
 
-The [shitflow](shitflow/README.md) directory in the repository contains the scripts we used semi-automate the execution and analysis on a combination of in-house computer systems and the Australia NCI Gadi supercomputer nodes. These scripts are for our own use with various hardcoded paths, so you better keep away. Just documenting here in case one is curious what the heck this is.
+The [shitflow](shitflow/README.md) directory in the repository contains the scripts we used semi-automate the execution and analysis on a combination of in-house computer systems and the Australia NCI Gadi supercomputer nodes. These scripts are for our own use with various hardcoded paths, so you better keep away. Just documenting here in case one is curious what the heck this is and for the sake of exact reproducibility.
 
 
 ## Notes
 
-- Our scripts and the C programme is not tested on non Linux platforms, so might need some adjustments.
+- Our scripts and the C programme is not tested on non-Linux platforms, so might need some adjustments.
 - A very useful article that explains various assembly-related terms: [concepts-in-phased-assemblies](https://lh3.github.io/2021/04/17/concepts-in-phased-assemblies)
 
-## Acknowledgement
+<!-- ## Acknowledgement
 
-- minidot programme in [src/minidot](src/minidot) is from https://github.com/lh3/miniasm under the MIT license
+- minidot programme in [src/minidot](src/minidot) is from https://github.com/lh3/miniasm under the MIT license -->
 
