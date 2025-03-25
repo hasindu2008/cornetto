@@ -2,7 +2,7 @@
 
 ### noboringbits
 
-**This programme loads the whole depth file to memory, thus would need tens of gigabytes of RAM. Not memory optimised because the assembly process anyway needs a couple of hundred gigabytes of RAM and thus the user would have access to a computer with large amount of RAM.
+**This programme loads the whole depth file to memory, thus would need tens of gigabytes of RAM. It is not memory-optimized because the assembly process already requires several hundred gigabytes of RAM. Therefore, the user is expected to have access to a computer with a large amount of RAM.
 **
 
 Options:
@@ -16,17 +16,17 @@ Options:
 * `-m INT`:        minimum contig length [default: 1000000]
 * `-e INT`:        edge length to ignore [default: 100000]
 * `-h`:            help
-* `--verbose INT`: verbosity level [4]
+* `--verbose INT`: verbosity level [default: 4]
 * `--version`:     print version
 
 
-Cornetto noboringbits prints coordinate windows that meet any of the following
-1. contigs < 1MBase in size
+Cornetto noboringbits prints coordinate windows that meet any of the following:
+1. contigs < 1Mbase in size
 2. 100kbase edge regions at each
-3. Windows that meet any of the following criteria
+3. Windows that meet any of the following criteria:
    - windows with low coverage: <0.6x genome average
    - windows with high coverage: >1.6x genome average
-   - windows with low mappability: mean MQ20 cov for window is < 0.6 x mean coverage for the window
+   - windows with low mappability: mean MAPQ 20 coverage for window is < 0.6 x mean coverage for the window
 
 
 Example usage:
