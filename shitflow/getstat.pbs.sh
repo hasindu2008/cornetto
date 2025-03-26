@@ -63,6 +63,6 @@ test -e ${FILENAME} ||  die "Assembly file not available in the current director
 
 ${SCRIPT_DIR}/minidotplot.sh ${REF} ${FILENAME}  || die "Failed to run minidotplot"
 
-${SCRIPT_DIR}/telostas.sh ${FILENAME} > ${FILENAME}.telostas.txt || die "Failed to run telostas"
+${SCRIPT_DIR}/telostats.sh ${FILENAME} > ${FILENAME}.telostats.txt || die "Failed to run telostats"
 
 ${SCRIPT_DIR}/asmstats.sh ${FILENAME} > ${FILENAME}.asmstats.txt || die "Failed to run asmstats"
