@@ -281,13 +281,13 @@ To generate the dotplot use the `scripts/minidotplot.sh`. This script requires m
 scripts/minidotplot.sh hg002v1.0.1_pat.fasta asm.fasta
 ```
 
-To get the telomere statistics use the `scripts/telostat.sh`. This script requires the [teleomere analysis scripts from the VGP project](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere). For your convenience, we are in the process of integrating the functionality of these VGP telomere scripts to the cornetto C programme.
+To get the telomere statistics use the `scripts/telostats.sh`. This script requires the [teleomere analysis scripts from the VGP project](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere). For your convenience, we are in the process of integrating the functionality of these VGP telomere scripts to the cornetto C programme.
 
 ```bash
-scripts/telostat.sh asm.fasta
+scripts/telostats.sh asm.fasta
 ```
 
-To get per-chromosome statistics use the `scripts/asmstats.sh`. Make sure you have already run `scripts/minidotplot.sh` and `scripts/telostat.sh` before running this script. This is because the files generated in those steps are reused by this script. We plan to make the functionality of this bash script into the cornetto programme in future.
+To get per-chromosome statistics use the `scripts/asmstats.sh`. Make sure you have already run `scripts/minidotplot.sh` and `scripts/telostats.sh` before running this script. This is because the files generated in those steps are reused by this script. We plan to make the functionality of this bash script into the cornetto programme in future.
 
 ```bash
 scripts/asmstats.sh asm.fasta
