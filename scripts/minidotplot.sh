@@ -29,7 +29,7 @@ test -e $MINIDOT  > /dev/null 2>&1 || die "minidot not found"
 ${MINIMAP2} -t16 --eqx -cx asm5 $REF $ASM > ${PREFIX}.tmp.paf || die "minimap2 failed"
 cut -f 1 ${PREFIX}.tmp.paf | sort -u > ${PREFIX}.tmp.ctg.list
 
-${CORNETTO} fixdir ${ASM} ${PREFIX}.tmp.fix.fasta || die "cornetto failed" # TODO:direct fixdir output to stdout instead of corrected_contigs.fasta
+${CORNETTO} fixdir ${ASM} ${PREFIX}.tmp.paf || die "cornetto failed" # TODO:direct fixdir output to stdout instead of corrected_contigs.fasta
 
 grep '^>' corrected_contigs.fasta | sed 's/^>//' | while read p;
 do
