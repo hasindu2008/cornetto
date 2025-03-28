@@ -2,7 +2,7 @@
 
 For primary assemblies, you may use the following algorithm to further refine your assemblies.
 
-Suppose your base assembly is called `asm-0.fasta` and the cornetto iterations are named `asm-1.fasta`, `asm-2.fasta`, `asm-3.fasta`, ..., `asm-n.fasta`.
+Suppose your base assembly is called `asm-0.fasta` and the Cornetto iterations are named `asm-1.fasta`, `asm-2.fasta`, `asm-3.fasta`, ..., `asm-n.fasta`.
 
 1. Starting from `asm-1.fasta`, go through `asm-2.fasta`, `asm-3.fasta`, ..., `asm-n.fasta` until any contigs are found longer than the expected minimum chromosome size and have telomeres in both ends (let us call them near-complete chromosomes). Suppose we found such in `asm-k.fasta`. Now extract such contigs from `asm-k.fasta` into a file called `asm.fasta`.
 

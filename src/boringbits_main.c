@@ -541,9 +541,9 @@ void the_boring_bits(const char* covtotalfile, const char *covmqfile, optp_t *op
 void init_optp(optp_t *opt){
     opt->window_size = 2500;
     opt->window_inc = 50;
-    opt->low_cov_thresh = 0.6;
-    opt->high_cov_thresh = 1.6;
-    opt->low_mq_cov_thresh = 0.6;
+    opt->low_cov_thresh = 0.4;
+    opt->high_cov_thresh = 2.5;
+    opt->low_mq_cov_thresh = 0.4;
     opt->min_ctg_len = 1000000;
     opt->edge_len = 100000;
 
