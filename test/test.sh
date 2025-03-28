@@ -22,7 +22,7 @@ ex() {
 }
 
 echo "Test 1"
-ex  ./cornetto boringbits test/cov-total.bg -q test/cov-mq20.bg -m 10000 -e 1000 > test/tmp.txt  || die "Running the tool failed"
+ex  ./cornetto boringbits test/cov-total.bg -q test/cov-mq20.bg -m 10000 -e 1000 -L 0.6 -Q 0.6 -H 1.6 > test/tmp.txt  || die "Running the tool failed"
 diff -q test/example_boring_t1.exp test/tmp.txt || die "diff failed"
 
 echo "Test 2"
