@@ -12,7 +12,6 @@ die() {
 MINIMAP2=minimap2
 SAMTOOLS=samtools
 CORNETTO=cornetto
-test -z ${MINIDOT} && MINIDOT=/install/miniasm/minidot
 
 REF=$1
 ASM=$2
@@ -24,7 +23,6 @@ PREFIX=$(basename ${ASM})
 
 $MINIMAP2 --version > /dev/null 2>&1 || die "minimap2 not found"
 $SAMTOOLS --version > /dev/null 2>&1 || die "samtools not found"
-test -e $MINIDOT  > /dev/null 2>&1 || die "minidot not found"
 
 ${MINIMAP2} -t16 --eqx -cx asm5 $REF $ASM > ${PREFIX}.tmp.paf || die "minimap2 failed"
 cut -f 1 ${PREFIX}.tmp.paf | sort -u > ${PREFIX}.tmp.ctg.list
@@ -43,6 +41,6 @@ awk '{print "s/"$1"/"$2"/g"}' ${PREFIX}.chr.rename.txt | sed -f - corrected_cont
 
 $MINIMAP2 -t16 --eqx -cx asm5 $REF ${PREFIX}.tmp.renamed.fasta > ${PREFIX}.fix.tmp.paf || die "minimap2 failed"
 
-${MINIDOT} ${PREFIX}.fix.tmp.paf -f 2  > ${PREFIX}.eps || die "minidot failed"
+${CORNETTO} minidot ${PREFIX}.fix.tmp.paf -f 2  > ${PREFIX}.eps || die "minidot failed"
 
 echo "yey, all done"
