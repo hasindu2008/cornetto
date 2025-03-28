@@ -64,6 +64,7 @@ $(BUILD_DIR)/telomere_windows.o: src/telomere_windows.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/telomere_breaks.o: src/telomere_breaks.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 # minidot
 $(BUILD_DIR)/dotter.o: src/minidot/dotter.c src/minidot/eps.h  src/minidot/kvec.h  src/minidot/paf.h  src/minidot/sdict.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@

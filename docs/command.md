@@ -33,5 +33,47 @@ Example usage:
 ./cornetto noboringbits test/cov-total.bg -q test/cov-mq20.bg > noboringbits.txt
 ```
 
+---
 
+### fixdir
 
+**This programme processes a FASTA file and a PAF alignment file to fix the direction of contigs based on the total base length being more positive or negative. It outputs the corrected FASTA to `stdout` and logs missing sequences to `stderr`.**
+
+Options:
+
+* `<incorrect_assembly.fa>`: Input FASTA file containing the assembly to be corrected.
+* `<a.paf>`: Input PAF file containing alignments of the assembly to a reference.
+
+**Output:**
+
+- Corrected FASTA is written to `stdout`.
+- Missing sequences are logged to `stderr`.
+
+**Algorithm:**
+
+1. Parse the PAF file to calculate the total positive and negative alignment lengths for each contig.
+2. Reverse complement contigs with a higher negative alignment length.
+3. Write the corrected contigs to `stdout`.
+4. Log sequences missing from the PAF file to `stderr`.
+
+**Example usage:**
+
+```bash
+./cornetto fixdir incorrect_assembly.fa a.paf > corrected_contigs.fasta 2> missing_sequences.log
+```
+
+**Output example:**
+
+- `stdout` (corrected FASTA):
+  ```
+  >contig1
+  ATCGTACGATCG
+  >contig2
+  CGTACGATCGTA
+  ```
+
+- `stderr` (missing sequences log):
+  ```
+  contig3
+  contig4
+  ```
