@@ -37,7 +37,7 @@ Example usage:
 
 ### fixdir
 
-**This programme processes a FASTA file and a PAF alignment file to fix the direction of contigs based on the total base length being more positive or negative. It outputs a corrected FASTA file and logs missing sequences.**
+**This programme processes a FASTA file and a PAF alignment file to fix the direction of contigs based on the total base length being more positive or negative. It outputs the corrected FASTA to `stdout` and logs missing sequences to `stderr`.**
 
 Options:
 
@@ -46,25 +46,25 @@ Options:
 
 **Output:**
 
-- `corrected_contigs.fasta`: Corrected FASTA file with contigs oriented based on alignment.
-- `missing_sequences.log`: Log file listing sequences missing from the PAF file.
+- Corrected FASTA is written to `stdout`.
+- Missing sequences are logged to `stderr`.
 
 **Algorithm:**
 
 1. Parse the PAF file to calculate the total positive and negative alignment lengths for each contig.
 2. Reverse complement contigs with a higher negative alignment length.
-3. Write the corrected contigs to the output FASTA file.
-4. Log sequences missing from the PAF file.
+3. Write the corrected contigs to `stdout`.
+4. Log sequences missing from the PAF file to `stderr`.
 
 **Example usage:**
 
 ```bash
-./cornetto fixdir incorrect_assembly.fa a.paf
+./cornetto fixdir incorrect_assembly.fa a.paf > corrected_contigs.fasta 2> missing_sequences.log
 ```
 
 **Output example:**
 
-- `corrected_contigs.fasta`:
+- `stdout` (corrected FASTA):
   ```
   >contig1
   ATCGTACGATCG
@@ -72,7 +72,7 @@ Options:
   CGTACGATCGTA
   ```
 
-- `missing_sequences.log`:
+- `stderr` (missing sequences log):
   ```
   contig3
   contig4

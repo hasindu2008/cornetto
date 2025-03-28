@@ -190,7 +190,7 @@ int fixdir_main(int argc, char* argv[]) {
             new_ctg->sumn = 0;
             kh_value(h, k) = new_ctg;
         } else if (absent == -1) {
-            printf("Error: failed to insert key\n");
+            fprintf(stderr, "Error: failed to insert key\n");
             perror("kh_put");
         } else {
             free(rec->rid);
@@ -209,24 +209,12 @@ int fixdir_main(int argc, char* argv[]) {
     }
     fclose(fp);
 
-    // Read FASTA file and create corrected FASTA
+    // Read FASTA file and write corrected FASTA to stdout
     gzFile fp_fasta = gzopen(fastafile, "r");
     F_CHK(fp_fasta, fastafile);
 
     kseq_t *seq = kseq_init(fp_fasta);
     MALLOC_CHK(seq);
-
-    FILE *fp_corrected_fasta = fopen("corrected_contigs.fasta", "w");
-    if (!fp_corrected_fasta) {
-        perror("fopen");
-        exit(EXIT_FAILURE);
-    }
-
-    FILE *fp_missing_seq = fopen("missing_sequences.log", "w");
-    if (!fp_missing_seq) {
-        perror("fopen");
-        exit(EXIT_FAILURE);
-    }
 
     int missing=0, total = 0, neg = 0;
     while (kseq_read(seq) >= 0) {
@@ -237,19 +225,18 @@ int fixdir_main(int argc, char* argv[]) {
                 reverse_complement(seq);
                 neg++;
             }
-            fprintf(fp_corrected_fasta, ">%s\n%s\n", seq->name.s, seq->seq.s);
+            fprintf(stdout, ">%s\n%s\n", seq->name.s, seq->seq.s);
             total++;
-        }else{
-            fprintf(fp_missing_seq, "%s\n", seq->name.s);
+        } else {
+            fprintf(stderr, "%s\n", seq->name.s);
             missing++;
         }
     }
-    printf("total: %d\nnegative: %d\nmissing: %d\n", total, neg, missing);
+    fprintf(stderr, "total: %d\nnegative: %d\nmissing: %d\n", total, neg, missing);
 
     // Clean up
     kseq_destroy(seq);
     gzclose(fp_fasta);
-    fclose(fp_corrected_fasta);
     for(khiter_t k = kh_begin(h); k != kh_end(h); ++k) {
         if (kh_exist(h, k)) {
             free((void *)kh_value(h, k)->id);
