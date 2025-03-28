@@ -44,17 +44,20 @@ int boringbits_main(int argc, char* argv[], int8_t boring);
 int find_telomere_main(int argc, char* argv[]);
 int telomere_windows_main(int argc, char* argv[]);
 int telomere_breaks_main(int argc, char* argv[]);
+int sdust_main(int argc, char *argv[]);
 
 int print_usage(FILE *fp_help){
 
     fprintf(fp_help,"Usage: cornetto <command> [options]\n\n");
     fprintf(fp_help,"command:\n");
-    fprintf(fp_help,"         boringbits      print boring bits in an assembly (deprecated)\n");
+    //fprintf(fp_help,"         boringbits      print boring bits in an assembly (deprecated)\n");
     fprintf(fp_help,"         noboringbits    print no boring bits in an assembly\n");
-    fprintf(fp_help,"         telomere --windows   analyze telomere windows in a fasta file\n");
-    fprintf(fp_help,"         telomere --breaks    find telomere breaks in a fasta file\n");
-    fprintf(fp_help,"         telomere --patterns   find telomere sequences in a fasta file\n");
-    //fprintf(fp_help,"         subtool2      do something\n");
+    fprintf(fp_help,"         fixdir          fix the direction of contigs in an assembly\n");
+    fprintf(fp_help,"         telowin         analyse telomere windows in a fasta file\n");
+    fprintf(fp_help,"         telobreaks      find telomere breaks in a fasta file\n");
+    fprintf(fp_help,"         teloseq         find telomere sequences in a fasta file\n");
+    fprintf(fp_help,"         minidot         create dot plot (from https://github.com/lh3/miniasm)\n");
+    fprintf(fp_help,"         sdust           symmetric DUST (https://github.com/lh3/sdust)\n");
 
     if(fp_help==stderr){
         return(EXIT_FAILURE);
@@ -95,6 +98,8 @@ int main(int argc, char* argv[]){
         }
     } else if (strcmp(argv[1],"minidot")==0){
         ret=minidot_main(argc-1, argv+1);
+    } else if (strcmp(argv[1],"sdust")==0){
+        ret=sdust_main(argc-1, argv+1);
     } else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"cornetto %s\n",CORNETTO_VERSION);
         exit(EXIT_SUCCESS);
