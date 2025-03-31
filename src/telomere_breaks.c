@@ -148,6 +148,7 @@ int telomere_breaks_main(int argc, char* argv[]) {
                     while (end < scaffold->length && get_bit(scaffold->bitset, end)) {
                         ++end;
                     }
+                    i=i-1 < 0 ? 0 : i-1;
                     printf("Found telomere positions %d to %d is a telomere in %s of length %d\n", i, end - 1, scaffold->name, scaffold->length);
                     i = end;
                 }
