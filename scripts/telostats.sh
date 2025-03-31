@@ -11,13 +11,43 @@ die(){
 
 FILE=$1
 
-test -z ${TELO_SCRIPT_PATH} && TELO_SCRIPT_PATH=/install/vgp-pipeline/telomere/telomere_analysis.sh
-
 test -f $FILE || die "File $FILE not found"
-PREFIX=$(basename $FILE .fasta)
-BED=${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed
+PREFIX=$(basename $FILE .fa)
+BED=${PREFIX}.windows.0.4.50kb.ends.bed
 
-${TELO_SCRIPT_PATH} ${PREFIX} 0.4 50000 ${FILE}
+threshold=0.4
+ends=50000
+
+mkdir -p $PREFIX
+cd $PREFIX
+
+echo "genome: $PREFIX"
+echo "threshold: $threshold"
+echo "ends: $ends"
+echo "asm: $FILE"
+
+ln -s $FILE 2> /dev/null
+
+cornetto telomere --patterns $FILE | awk '{print $1"\t"$(NF-4)"\t"$(NF-3)"\t"$(NF-2)"\t"$(NF-1)"\t"$NF}' - > $PREFIX.telomere
+cornetto sdust $FILE > $PREFIX.sdust
+
+test -f ${PREFIX}.fa.fai || samtools faidx ${PREFIX}.fa || die "samtools faidx on ${PREFIX}.fa failed"
+awk '{print $1"\t"$2}' ${PREFIX}.fa.fai > ${PREFIX}.lens  || die "awk failed"
+
+cornetto telomere --windows $PREFIX.telomere 99.9 0.1 > $PREFIX.windows
+cornetto telomere --breaks $PREFIX.lens $PREFIX.sdust $PREFIX.telomere > $PREFIX.breaks
+cornetto telomere --windows $PREFIX.telomere 99.9 $threshold > $PREFIX.windows.$threshold
+
+echo "Merge telomere motifs in 100bp"
+cat $PREFIX.windows.$threshold | awk '{print $2"\t"$(NF-2)"\t"$(NF-1)}' | sed 's/>//g' | bedtools merge -d 100  > $PREFIX.windows.$threshold.bed
+echo
+
+echo "Find those at end of scaffolds, within < $ends"
+cat $PREFIX.lens | awk -v ends=$ends '{if ($2>(ends*2)) {print $1"\t0\t"ends"\n"$1"\t"($NF-ends)"\t"$NF} else {print $1"\t0\t"$NF}}' > asm.ends.bed
+
+ends=`echo $ends | awk '{printf "%.0f", $1/1000}'`"kb"
+bedtools intersect -wa -a $PREFIX.windows.$threshold.bed -b asm.ends.bed > $PREFIX.windows.$threshold.$ends.ends.bed
+
 test -e ${BED} || die "telomere_analysis.sh failed"
 
 echo -e "FILE\t${FILE}"
