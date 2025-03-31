@@ -13,6 +13,7 @@ FILE=$1
 
 test -f $FILE || die "File $FILE not found"
 PREFIX=$(basename $FILE .fa)
+PREFIX=$(basename $PREFIX .fasta)
 BED=${PREFIX}.windows.0.4.50kb.ends.bed
 
 THRESHOLD=0.4
@@ -31,8 +32,8 @@ ln -s $FILE 2> /dev/null
 cornetto telomere --patterns $FILE | awk '{print $1"\t"$(NF-4)"\t"$(NF-3)"\t"$(NF-2)"\t"$(NF-1)"\t"$NF}' - > $PREFIX.telomere
 cornetto sdust $FILE > $PREFIX.sdust
 
-test -f ${PREFIX}.fa.fai || samtools faidx ${PREFIX}.fa || die "samtools faidx on ${PREFIX}.fa failed"
-awk '{print $1"\t"$2}' ${PREFIX}.fa.fai > ${PREFIX}.lens  || die "awk failed"
+test -f ${FILE}.fai || samtools faidx ${FILE} || die "samtools faidx on ${FILE} failed"
+awk '{print $1"\t"$2}' ${FILE}.fai > ${PREFIX}.lens  || die "awk failed"
 
 cornetto telomere --windows $PREFIX.telomere 99.9 0.1 > $PREFIX.windows
 cornetto telomere --breaks $PREFIX.lens $PREFIX.sdust $PREFIX.telomere > $PREFIX.breaks
