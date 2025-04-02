@@ -12,7 +12,7 @@ Cornetto is a method for adaptive genome assembly using nanopore sequencing from
 - [Usage of C programme](#usage-of-c-programme)
 - [shitflow (shell-based internode transfer flow)](#shitflow-shell-based-internode-transfer-flow)
 - [Notes](#notes)
-<!-- - [Acknowledgement](#acknowledgement) -->
+- [Acknowledgement](#acknowledgement)
 
 ## Prerequisites
 
@@ -331,7 +331,12 @@ The [shitflow](shitflow/README.md) directory in the repository contains the scri
 - Our scripts and the C programme is not tested on non-Linux platforms, so might need some adjustments.
 - A very useful article that explains various assembly-related terms: [concepts-in-phased-assemblies](https://lh3.github.io/2021/04/17/concepts-in-phased-assemblies)
 
-<!-- ## Acknowledgement
+## Acknowledgement
 
-- minidot programme in [src/minidot](src/minidot) is from https://github.com/lh3/miniasm under the MIT license -->
+- cornetto uses klib [https://github.com/attractivechaos/klib] which is under the MIT license
+- minidot programme in [src/minidot](src/minidot) is from https://github.com/lh3/miniasm under the MIT license
+- sdust programme in [src/sdust](src/sdust) is from https://github.com/lh3/sdust
+
+
+
 
