@@ -9,6 +9,7 @@ OBJ = $(BUILD_DIR)/main.o \
       $(BUILD_DIR)/depth_main.o \
       $(BUILD_DIR)/fixdir_main.o \
       $(BUILD_DIR)/boringbits_main.o \
+	  $(BUILD_DIR)/bigenough_main.o \
       $(BUILD_DIR)/thread.o \
 	  $(BUILD_DIR)/misc.o \
 	  $(BUILD_DIR)/misc_p.o \
@@ -40,6 +41,9 @@ $(BUILD_DIR)/fixdir_main.o: src/fixdir_main.c src/khash.h src/error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/boringbits_main.o: src/boringbits_main.c src/error.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/bigenough_main.o: src/bigenough_main.c src/error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/thread.o: src/thread.c src/cornetto.h

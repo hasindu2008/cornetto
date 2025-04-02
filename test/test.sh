@@ -29,4 +29,8 @@ echo "Test 2"
 ex  ./cornetto noboringbits -H 2.5 -L 0.5 -Q 0.5 test/cov-total.bg -q test/cov-mq20.bg -m 10000 -e 1000 > test/tmp.txt  || die "Running the tool failed"
 diff -q test/example_fun_t2.exp test/tmp.txt || die "diff failed"
 
+echo "bigenough test"
+ ./cornetto bigenough test/bigenough/hg002-cornetto-E_3/chroms.bed test/bigenough/hg002-cornetto-E_3/in.boringbits.bed  > a.bed || die "Running the tool failed"
+diff -q test/bigenough/hg002-cornetto-E_3/out.boringbits.bed a.bed || die "diff failed"
+
 echo "Tests passed"

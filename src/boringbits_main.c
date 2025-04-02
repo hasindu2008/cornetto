@@ -1,6 +1,6 @@
 /**
- * @file depth.c
- * @brief entry point to depth
+ * @file boringbits_main.c
+ * @brief entry point to boringbits_main
  * @author Hasindu Gamaarachchi (hasindu@unsw.edu.au)
 
 MIT License
@@ -538,7 +538,7 @@ void the_boring_bits(const char* covtotalfile, const char *covmqfile, optp_t *op
 
 
 
-void init_optp(optp_t *opt){
+static void init_optp(optp_t *opt){
     opt->window_size = 2500;
     opt->window_inc = 50;
     opt->low_cov_thresh = 0.4;

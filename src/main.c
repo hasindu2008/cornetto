@@ -41,6 +41,7 @@ int depth_main(int argc, char* argv[]);
 int fixdir_main(int argc, char* argv[]);
 int minidot_main(int argc, char* argv[]);
 int boringbits_main(int argc, char* argv[], int8_t boring);
+int bigenough_main(int argc, char* argv[]);
 
 int print_usage(FILE *fp_help){
 
@@ -48,6 +49,7 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"command:\n");
     fprintf(fp_help,"         boringbits      print boring bits in an assembly (deprecated)\n");
     fprintf(fp_help,"         noboringbits    print no boring bits in an assembly\n");
+    fprintf(fp_help,"         bigenough       \n");
     //fprintf(fp_help,"         subtool2      do something\n");
 
     if(fp_help==stderr){
@@ -78,6 +80,8 @@ int main(int argc, char* argv[]){
         ret=boringbits_main(argc-1, argv+1, 0);
     } else if (strcmp(argv[1],"minidot")==0){
         ret=minidot_main(argc-1, argv+1);
+    } else if (strcmp(argv[1],"bigenough")==0){
+        ret=bigenough_main(argc-1, argv+1);
     } else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"cornetto %s\n",CORNETTO_VERSION);
         exit(EXIT_SUCCESS);
