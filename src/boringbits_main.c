@@ -103,7 +103,6 @@ static inline void print_help_msg(FILE *fp_help, optp_t opt){
     fprintf(fp_help,"   -h                         help\n");
     //fprintf(fp_help,"   -o FILE                    output to file [stdout]\n");
     fprintf(fp_help,"   --verbose INT              verbosity level [%d]\n",(int)get_log_level());
-    fprintf(fp_help,"   --version                  print version\n");
 
     //fprintf(fp_help,"\nadvanced options:\n");
     //fprintf(fp_help,"   --debug-break INT          break after processing the specified no. of batches\n");

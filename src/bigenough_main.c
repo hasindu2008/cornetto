@@ -52,24 +52,26 @@ static struct option long_options[] = {
     {"help", no_argument, 0, 'h'},                 //4
     {"version", no_argument, 0, 'V'},              //5
     {"threshold", required_argument, 0, 'T'},      //6 threshold
+    {"readfish", required_argument, 0, 'r'},       //7 also output in readfish format
     {0, 0, 0, 0}};
 
 typedef struct {
     int threshold;
+    const char *outreadfish;
 } optp_t;
 
 
 static inline void print_help_msg(FILE *fp_help, optp_t opt){
     fprintf(fp_help,"Usage: cornetto bigenough [options] <assembly.bed> <boring.bed>\n");
-    fprintf(fp_help,"   -T INT                     threshold for bigenough [0-100]\n");
+    fprintf(fp_help,"   -T INT                     percentage threshold to consider as sufficient boring bits on a contig [0-100]\n");
+    fprintf(fp_help,"   -r FILE                    also output in readfish format to FILE\n");
     fprintf(fp_help,"   -v INT                     verbosity level [%d]\n",(int)get_log_level());
     fprintf(fp_help,"   -h                         help\n");
-    fprintf(fp_help,"   --version                  print version\n");
-
 }
 
 static void init_optp(optp_t *opt){
     opt->threshold = 50;
+    opt->outreadfish = NULL;
 }
 
 
@@ -130,7 +132,9 @@ void update_covlen(khash_t(chr_map) *h, const char *bedfile){
 }
 
 
-void print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, int threshold){
+void print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, optp_t *opt){
+
+    int threshold = opt->threshold;
 
     FILE *bedfp = fopen(bedfile,"r");
     F_CHK(bedfp,bedfile);
@@ -141,6 +145,12 @@ void print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, int threshol
     size_t bufferSize = 100;
     ssize_t readlinebytes = 0;
     int64_t line_no = 0;
+
+    FILE *outfp = NULL;
+    if(opt->outreadfish != NULL){
+        outfp = fopen(opt->outreadfish,"w");
+        F_CHK(outfp,opt->outreadfish);
+    }
 
     while ((readlinebytes = getline(&buffer, &bufferSize, bedfp)) != -1) {
 
@@ -176,6 +186,10 @@ void print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, int threshol
 
         if(r->covlen > (r->end - r->start) * threshold / 100){
             printf("%s\t%ld\t%ld\n", ref, beg, end);
+            if(opt->outreadfish != NULL){
+                fprintf(outfp, "%s,%ld,%ld,+\n", ref, beg, end);
+                fprintf(outfp, "%s,%ld,%ld,-\n", ref, beg, end);
+            }
         }
 
         free(ref);
@@ -184,7 +198,11 @@ void print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, int threshol
 
     fclose(bedfp);
     free(buffer);
-    //*count = reg_i;
+
+    if(opt->outreadfish != NULL){
+        fclose(outfp);
+    }
+
     return;
 }
 
@@ -273,7 +291,7 @@ void bigenough_boringbits(const char *assbed, const char *boringbed, optp_t *opt
 
     update_covlen(h, boringbed);
 
-    print_bigenough_bits(h, boringbed, opt->threshold);
+    print_bigenough_bits(h, boringbed, opt);
 
     destroy_hashmap(h);
 
@@ -282,7 +300,7 @@ void bigenough_boringbits(const char *assbed, const char *boringbed, optp_t *opt
 
 int bigenough_main(int argc, char* argv[]) {
 
-    const char* optstring = "T:v:hV";
+    const char* optstring = "T:v:r:hV";
 
     int longindex = 0;
     int32_t c = -1;
@@ -304,6 +322,9 @@ int bigenough_main(int argc, char* argv[]) {
                 ERROR("Threshold should be between 0 and 100. You entered %d",threshold);
                 exit(EXIT_FAILURE);
             }
+            opt.threshold = threshold;
+        } else if (c=='r'){
+            opt.outreadfish = optarg;
         } else if (c=='v'){
             int v = atoi(optarg);
             set_log_level((enum log_level_opt)v);
