@@ -29,15 +29,15 @@ echo "asm: $FILE"
 
 ln -s $FILE 2> /dev/null
 
-cornetto telomere --patterns $FILE | awk '{print $1"\t"$(NF-4)"\t"$(NF-3)"\t"$(NF-2)"\t"$(NF-1)"\t"$NF}' - > $PREFIX.telomere
+cornetto teltelofind $FILE | awk '{print $1"\t"$(NF-4)"\t"$(NF-3)"\t"$(NF-2)"\t"$(NF-1)"\t"$NF}' - > $PREFIX.telomere
 cornetto sdust $FILE > $PREFIX.sdust
 
 test -f ${FILE}.fai || samtools faidx ${FILE} || die "samtools faidx on ${FILE} failed"
 awk '{print $1"\t"$2}' ${FILE}.fai > ${PREFIX}.lens  || die "awk failed"
 
-cornetto telomere --windows $PREFIX.telomere 99.9 0.1 > $PREFIX.windows
-cornetto telomere --breaks $PREFIX.lens $PREFIX.sdust $PREFIX.telomere > $PREFIX.breaks
-cornetto telomere --windows $PREFIX.telomere 99.9 $THRESHOLD > $PREFIX.windows.$THRESHOLD
+cornetto telowin --windows $PREFIX.telomere 99.9 0.1 > $PREFIX.windows
+cornetto telobreak --breaks $PREFIX.lens $PREFIX.sdust $PREFIX.telomere > $PREFIX.breaks
+cornetto telowin --windows $PREFIX.telomere 99.9 $THRESHOLD > $PREFIX.windows.$THRESHOLD
 
 echo "Merge telomere motifs in 100bp"
 cat $PREFIX.windows.$THRESHOLD | awk '{print $2"\t"$(NF-2)"\t"$(NF-1)}' | sed 's/>//g' | bedtools merge -d 100  > $PREFIX.windows.$THRESHOLD.bed

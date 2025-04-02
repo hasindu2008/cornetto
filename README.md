@@ -5,12 +5,11 @@ Cornetto is a method for adaptive genome assembly using nanopore sequencing from
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
-- [Creating a base assembly and initial cornetto panel](#creating-a-base-assembly-and-initial-cornetto-panel)
+- [Creating the base assembly and initial Cornetto panel](#creating-the-base-assembly-and-initial-cornetto-panel)
 - [Running a Cornetto iteration](#running-a-cornetto-iteration)
 - [Evaluating assemblies](#evaluating-assemblies)
 - [Additional refinements](#additional-refinements)
 - [Usage of C programme](#usage-of-c-programme)
-- [shitflow (shell-based internode transfer flow)](#shitflow-shell-based-internode-transfer-flow)
 - [Notes](#notes)
 - [Acknowledgement](#acknowledgement)
 
@@ -22,19 +21,17 @@ Cornetto is a method for adaptive genome assembly using nanopore sequencing from
 * For adaptive sampling, we use the open-source [readfish](https://github.com/LooseLab/readfish) software, so get it installed on the host running MinKNOW. ONT MinKNOW's inbuilt adaptive sampling also should work, but we relied on the open-source readfish.
 * Get the Cornetto C programme compiled as instructed in the section [below](#compiling-the-cornetto-c-programme).
 * For assembling the genomes, you will need [hifiasm](https://github.com/chhylp123/hifiasm). For ONT-only assemblies, make sure you have a newer version (>= 0.22.0) that supports ONT data (`--ont` option).
-* For creating the Cornetto readfish panels, we need following software.
+* For creating the Cornetto readfish panels, we need following additional software.
     - [gfatools](https://github.com/lh3/gfatools)
     - [minimap2](https://github.com/lh3/minimap2/)
     - [samtools](https://www.htslib.org/download/)
     - [bedtools](https://github.com/arq5x/bedtools2)
     - [seqkit](https://bioinf.shenwei.me/seqkit) (only for ONT-only simplex)
     - [centrifuge](https://ccb.jhu.edu/software/centrifuge) (only for saliva samples)
-- For evaluating assemblies, you may use methods of your choice. Our suggested method requires following software:
+- For evaluating assemblies, you may use methods of your choice. Our suggested method requires following additional software:
     - [quast](https://quast.sourceforge.net)
     - [compleasm](https://github.com/huangnengCSU/compleasm)
     - [yak](https://github.com/lh3/yak)
-    - [VGP telomere scripts](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere)
-    - [minidot](https://github.com/lh3/miniasm)
 
 ### Compiling the Cornetto C programme
 
@@ -275,13 +272,14 @@ grep "MATERNAL\|chrEBV\|chrM\|chrX\|chrY" hg002v1.0.1.fasta.gz.fai | cut -f 1 > 
 samtools faidx hg002v1.0.1.fasta.gz -r maternal.txt -o hg002v1.0.1_mat.fasta
 ```
 
-To generate the dotplot use the `scripts/minidotplot.sh`. This script requires minimap2, samtools and `minidot` from [miniasm](https://github.com/lh3/miniasm) package. For your convenience, we are in the process of integrating `minidot` to the Cornetto C programme.
+To generate the dotplot use the `scripts/minidotplot.sh`. This script requires minimap2, samtools.
 
 ```bash
 scripts/minidotplot.sh hg002v1.0.1_pat.fasta asm.fasta
 ```
 
-To get the telomere statistics use the `scripts/telostats.sh`. This script requires the [teleomere analysis scripts from the VGP project](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere). For your convenience, we are in the process of integrating the functionality of these VGP telomere scripts to the Cornetto C programme.
+To get the telomere statistics use the `scripts/telostats.sh`. This script uses cornetto subcommands that implements  functionality of [teleomere analysis scripts from the VGP project](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere).
+
 
 ```bash
 scripts/telostats.sh asm.fasta
@@ -320,12 +318,6 @@ If you are focused on primary assemblies, you may use following the approach doc
 
 Our Cornetto C programme contains a number of subtools that are used by the above explained scripts. If you want to use those subtools in your scripts, see the [manual page](docs/command.md).
 
-
-## Shitflow (**Sh**ell-based **i**nternode **t**ransfer **f**low)
-
-The [shitflow](shitflow/README.md) directory in the repository contains the scripts we used semi-automate the execution and analysis on a combination of in-house computer systems and the Australia NCI Gadi supercomputer nodes. These scripts are for our own use with various hardcoded paths, so you better keep away. Just documenting here in case one is curious what the heck this is and for the sake of exact reproducibility.
-
-
 ## Notes
 
 - Our scripts and the C programme is not tested on non-Linux platforms, so might need some adjustments.
@@ -334,8 +326,10 @@ The [shitflow](shitflow/README.md) directory in the repository contains the scri
 ## Acknowledgement
 
 - cornetto uses klib [https://github.com/attractivechaos/klib] which is under the MIT license
-- minidot programme in [src/minidot](src/minidot) is from https://github.com/lh3/miniasm under the MIT license
-- sdust programme in [src/sdust](src/sdust) is from https://github.com/lh3/sdust
+- `minidot` from [miniasm](https://github.com/lh3/miniasm) package (MIT license) has been integrated as `cornetto minidot` at [src/minidot](src/minidot).
+- `sdust` programme from https://github.com/lh3/sdust is integrated as `cornetto sdust` at [src/sdust](src/sdust).
+- `telofind`, `telobreaks` and `telowin` subcommands are implemented based on [VGP telomere scripts](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere)
+
 
 
 

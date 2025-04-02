@@ -50,17 +50,20 @@ int sdust_main(int argc, char *argv[]);
 int print_usage(FILE *fp_help){
 
     fprintf(fp_help,"Usage: cornetto <command> [options]\n\n");
-    fprintf(fp_help,"command:\n");
+    fprintf(fp_help,"commands:\n");
+    fprintf(fp_help,"   create panel:\n");
     //fprintf(fp_help,"         boringbits      print boring bits in an assembly (deprecated)\n");
-    fprintf(fp_help,"         noboringbits    print no boring bits in an assembly\n");
-    fprintf(fp_help,"         bigenough       \n");
+    fprintf(fp_help,"       noboringbits    print no boring bits in an assembly\n");
+    fprintf(fp_help,"       bigenough       find contigs that have sufficient boring bits\n");
     //fprintf(fp_help,"         subtool2      do something\n");
-    fprintf(fp_help,"         fixdir          fix the direction of contigs in an assembly\n");
-    fprintf(fp_help,"         telowin         analyse telomere windows in a fasta file\n");
-    fprintf(fp_help,"         telobreaks      find telomere breaks in a fasta file\n");
-    fprintf(fp_help,"         teloseq         find telomere sequences in a fasta file\n");
-    fprintf(fp_help,"         minidot         create dot plot (from https://github.com/lh3/miniasm)\n");
-    fprintf(fp_help,"         sdust           symmetric DUST (https://github.com/lh3/sdust)\n");
+    fprintf(fp_help,"   dotplot:\n");
+    fprintf(fp_help,"       fixdir          fix the direction of contigs in an assembly\n");
+    fprintf(fp_help,"       minidot         create dot plot (from https://github.com/lh3/miniasm)\n");
+    fprintf(fp_help,"   telomere eval:\n");
+    fprintf(fp_help,"       telowin         analyse telomere windows in a fasta file\n");
+    fprintf(fp_help,"       telobreaks      find telomere breaks in a fasta file\n");
+    fprintf(fp_help,"       telofind        find telomere sequences in a fasta file\n");
+    fprintf(fp_help,"       sdust           symmetric DUST (https://github.com/lh3/sdust)\n");
 
     if(fp_help==stderr){
         return(EXIT_FAILURE);
@@ -88,17 +91,12 @@ int main(int argc, char* argv[]){
         ret=boringbits_main(argc-1, argv+1, 1);
     } else if (strcmp(argv[1],"noboringbits")==0){
         ret=boringbits_main(argc-1, argv+1, 0);
-    } else if (strcmp(argv[1],"telomere")==0) {
-        if (argc > 2 && strcmp(argv[2],"--windows")==0) {
-            ret=telomere_windows_main(argc-2, argv+2);
-        } else if (argc > 2 && strcmp(argv[2],"--breaks")==0) {
-            ret=telomere_breaks_main(argc-2, argv+2);
-        } else if (argc > 2 && strcmp(argv[2],"--patterns")==0) {
-            ret=find_telomere_main(argc-2, argv+2);
-        } else {
-            fprintf(stderr,"[cornetto] Unrecognised telomere command %s\n",argv[2]);
-            return print_usage(stderr);
-        }
+    } else if (strcmp(argv[1],"telowin")==0) {
+        ret=telomere_windows_main(argc-2, argv+1);
+    } else if (strcmp(argv[1],"telobreaks")==0) {
+        ret=telomere_breaks_main(argc-2, argv+1);
+    } else if (strcmp(argv[1],"telofind")==0) {
+        ret=find_telomere_main(argc-2, argv+1);
     } else if (strcmp(argv[1],"minidot")==0){
         ret=minidot_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"bigenough")==0){

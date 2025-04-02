@@ -1,4 +1,7 @@
-# shitflow (shell-based internode transfer flow)
+# Shitflow (**Sh**ell-based **i**nternode **t**ransfer **f**low)
+
+This directory contains the scripts we used semi-automate the execution and analysis on a combination of in-house computer systems and the Australia NCI Gadi supercomputer nodes. These scripts are for our own use with various hardcoded paths, so you better keep away. Just documenting here in case one is curious what the heck this.
+
 
 ## Base assembly and creating the first panel
 
