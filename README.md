@@ -223,7 +223,7 @@ This step is only required for diploid assemblies using ONT simplex data (ONT si
 Run the script at [scripts/recreate-hapnetto.sh](scripts/recreate-hapnetto.sh):
 
 ```
-scripts/create-hapnetto.sh asm-1
+scripts/recreate-hapnetto.sh asm-1
 ```
 
 See comments inside [scripts/recreate-hapnetto.sh](scripts/recreate-hapnetto.sh) to understand what the script is doing. The final outputs we want are the two files `asm-1_dip.boringbits.bed`  and `asm-1_dip.boringbits.txt`.
