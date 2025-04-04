@@ -9,9 +9,10 @@ die () {
 
 [ "$#" -eq 1 ] || die "1 argument required, $# provided. Usage: create_cornetto.sh <assembly.fa>"
 
-test -z ${CORNETTO_BIN} && CORNETTO_BIN=cornetto
-#CORNETTO_BIN=/home/hasindu/hasindu2008.git/cornetto/cornetto
-${CORNETTO_BIN} --version || die "cornetto executable not found! Either put cornetto under path or set CORNETTO_BIN variable, e.g.,export CORNETTO_BIN=/path/to/cornetto"
+test -z ${CORNETTO} && CORNETTO=cornetto
+${CORNETTO} --version || die "cornetto executable not found! Either put cornetto under path or set CORNETTO variable, e.g.,export CORNETTO=/path/to/cornetto"
+test -z ${BEDTOOLS} && BEDTOOLS=bedtools
+$BEDTOOLS --version > /dev/null 2>&1 || die "bedtools not found!. Either put bedtools under path or set BEDTOOLS variable, e.g.,export BEDTOOLS=/path/to/bedtools"
 
 FASTA=$1
 BGTOTAL=${FASTA%.fasta}.cov-total.bg
@@ -36,10 +37,10 @@ awk '{print $1"\t0\t"$2}' ${FASTA}.fai > ${ASSBED} || die "awk failed"
 # low coverage: [<0.4x] genome average
 # high coverage: [>2.5x] genome average
 # low mappability: [mean MQ20 cov for window is < 0.4 x mean coverage for the window]
-${CORNETTO_BIN} noboringbits -H 2.5 -L 0.4 -Q 0.4 ${BGTOTAL} -q ${BGMQ20} | awk '{if ($4!=".") print $1"\t"$2"\t"$3}' > ${TMPOUT}/1_tmp.bed || die "cornetto failed"
+${CORNETTO} noboringbits -H 2.5 -L 0.4 -Q 0.4 ${BGTOTAL} -q ${BGMQ20} | awk '{if ($4!=".") print $1"\t"$2"\t"$3}' > ${TMPOUT}/1_tmp.bed || die "cornetto failed"
 
 #2# merge these interesting windows - overlapping or adjacent (within 1000bp)
-cat ${TMPOUT}/1_tmp.bed | sort -k1,1 -k2,2n | bedtools merge -d 1000 > ${TMPOUT}/2_tmp.bed || die "bedtools merge failed"
+cat ${TMPOUT}/1_tmp.bed | sort -k1,1 -k2,2n | ${BEDTOOLS} merge -d 1000 > ${TMPOUT}/2_tmp.bed || die "bedtools merge failed"
 
 #3# remove any merged intervals from (2) that are shorter than <30kb
 awk '($3-$2)>=30000' ${TMPOUT}/2_tmp.bed > ${TMPOUT}/3_tmp.bed || die "awk failed"
@@ -54,17 +55,17 @@ cat ${TMPOUT}/3_tmp.bed ${TMPOUT}/lowQ_tmp.bed | sort -k1,1 -k2,2n | awk '{if($2
 awk '{if(($3-$2)>200000) {print $1"\t0\t200000\n"$1"\t"$3-200000"\t"$3}}' ${ASSBED} >> ${TMPOUT}/funbits.bed || die "awk failed"
 
 #7# merge any overlapping or adjacent (within 200kb) intervals from (6)
-bedtools sort -i ${TMPOUT}/funbits.bed | bedtools merge -d 200000 > ${TMPOUT}/funbits_merged.bed || die "bedtools merge failed"
+${BEDTOOLS} sort -i ${TMPOUT}/funbits.bed | ${BEDTOOLS} merge -d 200000 > ${TMPOUT}/funbits_merged.bed || die "bedtools merge failed"
 
 #8# subtract merged windows from (7) from the whole genome assembly
-bedtools subtract -a ${ASSBED} -b ${TMPOUT}/funbits_merged.bed > ${TMPOUT}/boringbits_tmp.bed || die "bedtools subtract failed"
+${BEDTOOLS} subtract -a ${ASSBED} -b ${TMPOUT}/funbits_merged.bed > ${TMPOUT}/boringbits_tmp.bed || die "bedtools subtract failed"
 
 #9# subtract any contigs shorter than 800Mbase
 awk '{if(($3-$2)<800000) print $0}' ${ASSBED} > ${TMPOUT}/short.bed || die "awk failed"
-bedtools subtract -a ${TMPOUT}/boringbits_tmp.bed -b ${TMPOUT}/short.bed > ${TMPOUT}/boringbits.bed || die "bedtools subtract failed"
+${BEDTOOLS} subtract -a ${TMPOUT}/boringbits_tmp.bed -b ${TMPOUT}/short.bed > ${TMPOUT}/boringbits.bed || die "bedtools subtract failed"
 
 #10# if 'boring bits' are <50% of a single contig/scaffold, remove all boring bits on the whole scaffold.   Then create readfish targets
-./cornetto bigenough ${ASSBED} ${TMPOUT}/boringbits.bed -r ${BASENAME%.fasta}.boringbits.txt > ${BASENAME%.fasta}.boringbits.bed || die "cornetto bigenough failed"
+${CORNETTO} bigenough ${ASSBED} ${TMPOUT}/boringbits.bed -r ${BASENAME%.fasta}.boringbits.txt > ${BASENAME%.fasta}.boringbits.bed || die "cornetto bigenough failed"
 
 # old crappy code to do the same thing. Remove after testing
 #10# if 'boring bits' are <50% of a single contig/scaffold, remove all boring bits on the whole scaffold. Use the below horrible inefficient code snippet for now

@@ -33,14 +33,14 @@ module load samtools/1.19 || die "loading samtools/1.19 module failed"
 module load kentutils/0.0 || die "loading kentutils/0.0 module failed"
 module load bedtools/2.28.0 || die "loading bedtools/2.28.0 module failed"
 
-export CORNETTO_BIN=/g/data/ox63/hasindu/cornetto/cornetto/cornetto
+export CORNETTO=/g/data/ox63/hasindu/cornetto/cornetto/cornetto
 export SF_SCRIPT_DIR=/g/data/ox63/hasindu/cornetto/cornetto/shitflow
 
 minimap2 --version || die "Could not find minimap2"
 samtools --version || die "Could not find samtools"
 bedtools --version || die "Could not find bedtools"
 which bedGraphToBigWig  || die "Could not find bedGraphToBigWig"
-${CORNETTO_BIN} --version || die "Could not find cornetto"
+${CORNETTO} --version || die "Could not find cornetto"
 
 THREADS=24
 BAM=${ASM}.realigned.bam

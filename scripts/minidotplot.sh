@@ -21,8 +21,13 @@ PREFIX=$(basename ${ASM})
 [ ! -f $REF ] && die "Reference $REF not found"
 [ ! -f $ASM ] && die "Assembly $ASM not found"
 
-$MINIMAP2 --version > /dev/null 2>&1 || die "minimap2 not found"
-$SAMTOOLS --version > /dev/null 2>&1 || die "samtools not found"
+test -z ${CORNETTO} && CORNETTO=cornetto
+${CORNETTO} --version > /dev/null 2>&1 || die "cornetto executable not found! Either put cornetto under path or set CORNETTO variable, e.g.,export CORNETTO=/path/to/cornetto"
+
+test -z ${MINIMAP2} && MINIMAP2=minimap2
+$MINIMAP2 --version > /dev/null 2>&1 || die "minimap2 not found!. Either put minimap2 under path or set MINIMAP2 variable, e.g.,export MINIMAP2=/path/to/minimap2"
+test -z ${SAMTOOLS} && SAMTOOLS=samtools
+$SAMTOOLS --version > /dev/null 2>&1 || die "samtools not found!. Either put samtools under path or set SAMTOOLS variable, e.g.,export SAMTOOLS=/path/to/samtools"
 
 ${MINIMAP2} -t16 --eqx -cx asm5 $REF $ASM > ${PREFIX}.tmp.paf || die "minimap2 failed"
 cut -f 1 ${PREFIX}.tmp.paf | sort -u > ${PREFIX}.tmp.ctg.list

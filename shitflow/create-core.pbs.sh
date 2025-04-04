@@ -26,13 +26,13 @@ module load samtools/1.19
 module load bedtools/2.28.0
 module load minimap2/2.24
 
-export CORNETTO_BIN=/g/data/ox63/hasindu/cornetto/cornetto/cornetto
+export CORNETTO=/g/data/ox63/hasindu/cornetto/cornetto/cornetto
 export SCRIPT_DIR=/g/data/ox63/hasindu/cornetto/cornetto/scripts
 
 minimap2 --version || die "Could not find minimap2"
 samtools --version || die "Could not find samtools"
 bedtools --version || die "Could not find bedtools"
-${CORNETTO_BIN} --version || die "Could not find cornetto"
+${CORNETTO} --version || die "Could not find cornetto"
 
 ${SCRIPT_DIR}/create-cornetto.sh ${ASM}.fasta|| die "create-cornetto.sh failed"
 
