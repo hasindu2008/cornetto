@@ -272,10 +272,6 @@ samtools faidx hg002v1.0.1.fasta.gz
 # paternal haplotype
 grep "PATERNAL\|chrEBV\|chrM\|chrX\|chrY" hg002v1.0.1.fasta.gz.fai | cut -f 1 > paternal.txt
 samtools faidx hg002v1.0.1.fasta.gz -r paternal.txt -o hg002v1.0.1_pat.fasta
-
-# maternal haplotype
-grep "MATERNAL\|chrEBV\|chrM\|chrX\|chrY" hg002v1.0.1.fasta.gz.fai | cut -f 1 > maternal.txt
-samtools faidx hg002v1.0.1.fasta.gz -r maternal.txt -o hg002v1.0.1_mat.fasta
 ```
 
 To generate the dotplot use the `scripts/minidotplot.sh`. This script requires minimap2, samtools.
@@ -291,7 +287,7 @@ To get the telomere statistics use the `scripts/telostats.sh`. This script uses 
 scripts/telostats.sh asm.fasta
 ```
 
-To get per-chromosome statistics use the `scripts/asmstats.sh`. Make sure you have already run `scripts/minidotplot.sh` and `scripts/telostats.sh` before running this script. This is because the files generated in those steps are reused by this script. We plan to make the functionality of this bash script into the Cornetto programme in future.
+To get per-chromosome statistics use the `scripts/asmstats.sh`. Make sure you have already run `scripts/minidotplot.sh` and `scripts/telostats.sh` before running this script. This is because the files generated in those steps are reused by this script.
 
 ```bash
 scripts/asmstats.sh asm.fasta
