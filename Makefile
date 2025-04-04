@@ -20,7 +20,8 @@ OBJ = $(BUILD_DIR)/main.o \
 	  $(BUILD_DIR)/dotter.o \
 	  $(BUILD_DIR)/paf.o \
 	  $(BUILD_DIR)/sdict.o \
-	  $(BUILD_DIR)/sdust.o
+	  $(BUILD_DIR)/sdust.o \
+	  $(BUILD_DIR)/assbed.o
 
 ifdef asan
 	CFLAGS += -fsanitize=address -fno-omit-frame-pointer
@@ -48,6 +49,9 @@ $(BUILD_DIR)/boringbits_main.o: src/boringbits_main.c src/error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/bigenough_main.o: src/bigenough_main.c src/error.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/assbed.o: src/assbed.c src/error.h src/kseq.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/thread.o: src/thread.c src/cornetto.h

@@ -30,8 +30,9 @@ test -d ${TMPOUT} && die "Directory ${TMPOUT} already exists. Please remove it b
 mkdir ${TMPOUT} || die "mkdir failed"
 
 ASSBED=${TMPOUT}/${BASENAME}.bed
-test -f ${FASTA}.fai || samtools faidx ${FASTA} || die "samtools faidx on ${FASTA} failed"
-awk '{print $1"\t0\t"$2}' ${FASTA}.fai > ${ASSBED} || die "awk failed"
+${CORNETTO} fa2bed ${FASTA} > ${ASSBED} || die "fa2bed failed"
+# test -f ${FASTA}.fai || samtools faidx ${FASTA} || die "samtools faidx on ${FASTA} failed"
+# awk '{print $1"\t0\t"$2}' ${FASTA}.fai > ${ASSBED} || die "awk failed"
 
 #1# print all interesting windows with:
 # low coverage: [<0.4x] genome average

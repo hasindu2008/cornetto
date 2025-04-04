@@ -25,8 +25,9 @@ test -d ${TMPOUT} && die "Directory ${TMPOUT} already exists. Please remove it b
 mkdir ${TMPOUT} || die "mkdir failed"
 
 ## generate CHROMBED file
-test -f ${FASTA}.fai || samtools faidx ${FASTA} || die "samtools faidx failed"
-awk '{print $1"\t0\t"$2}' ${FASTA}.fai | sort -k3,3nr > ${TMPOUT}/${PREFIX}.chroms.bed || die "awk failed"
+${CORNETTO} fa2bed ${FASTA} | sort -k3,3nr > ${TMPOUT}/${PREFIX}.chroms.bed || die "fa2bed failed"
+# test -f ${FASTA}.fai || samtools faidx ${FASTA} || die "samtools faidx failed"
+# awk '{print $1"\t0\t"$2}' ${FASTA}.fai | sort -k3,3nr > ${TMPOUT}/${PREFIX}.chroms.bed || die "awk failed"
 
 #1# get regions longer than 7.5kb which were labelled by hifiasm as "low quality" (not sure what the definition of this is exactly)
 cat ${PREFIX}.bp.p_ctg.lowQ.bed | awk '($3-$2)>=7500' | cut -f 1-3 > ${TMPOUT}/lowQ_tmp.bed || die "awk failed"

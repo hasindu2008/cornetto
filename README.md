@@ -38,9 +38,16 @@ Cornetto is a method for adaptive genome assembly using nanopore sequencing from
 Building the Cornetto C programme requires a compiler that supports C99 standard (with X/Open 7 POSIX 2008 extensions), which is widely available. To build:
 
 ```bash
+sudo apt-get install zlib1g-dev   #install zlib development libraries
 git clone https://github.com/hasindu2008/cornetto
 cd cornetto
 make
+```
+The commands to zlib development libraries on some popular distributions :
+```bash
+On Debian/Ubuntu : sudo apt-get install zlib1g-dev
+On Fedora/CentOS : sudo dnf/yum install zlib-devel
+On OS X : brew install zlib
 ```
 
 ## Creating the base assembly and initial Cornetto panel
@@ -93,7 +100,7 @@ samtools index asm-0.realigned.bam
 Get the per base coverage information for total alignments (mapq>=0) and unique alignments (mapq>=20)
 ```bash
 samtools faidx asm-0.fasta
-awk '{print $1"\t0\t"$2}' asm-0.fasta.fai | sort -k3,3nr > asm-0.chroms.bed
+cornetto fa2bed asm-0.fasta | sort -k3,3nr > asm-0.chroms.bed
 samtools depth -@ 24 -b asm-0.chroms.bed -aa asm-0.realigned.bam  | awk '{print $1"\t"$2-1"\t"$2"\t"$3}' > asm-0.cov-total.bg
 samtools depth -@ 24 -Q 20 -b asm-0.chroms.bed -aa asm-0.realigned.bam  | awk '{print $1"\t"$2-1"\t"$2"\t"$3}' > asm-0.cov-mq20.bg
 ```
