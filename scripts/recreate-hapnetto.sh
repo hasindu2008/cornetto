@@ -34,7 +34,7 @@ minimap2 -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap2.fasta > ${TMPOUT}/${ASSNAM
 GET_HAP_X_FUN () {
     HAP=$1
 
-    # get the necessary columns from the paf file and sort (not assential, but for manual inspection if needed)
+    # get the necessary columns from the paf file and sort (not essential, but for manual inspection if needed)
     cut -f 1-10 ${TMPOUT}/${ASSNAME}_${HAP}_to_asm.paf | sort -k7,7nr -nk8,8 > ${TMPOUT}/${HAP}.txt || die "cut failed"
 
     # go through every contig in hapX assembly separately while merging them if on same target contig within 1M bp
@@ -76,25 +76,29 @@ bedtools subtract -a ${ASSBED} -b  ${TMPOUT}/funbits_merged.bed >  ${TMPOUT}/bor
 awk '{if(($3-$2)<800000) print $0}' ${ASSBED} >  ${TMPOUT}/short.bed || die "awk failed"
 bedtools subtract -a  ${TMPOUT}/boringbits_tmp.bed -b  ${TMPOUT}/short.bed >  ${TMPOUT}/boringbits.bed || die "bedtools subtract failed"
 
+#10# if 'boring bits' are <50% of a single contig/scaffold, remove all boring bits on the whole scaffold. Then create readfish targets
+./cornetto bigenough ${ASSBED} ${TMPOUT}/boringbits.bed -r ${ASSNAME}_dip.boringbits.txt > ${ASSNAME}_dip.boringbits.bed || die "cornetto bigenough failed"
+
+# old crappy code to do the same thing. Remove after testing
 #10# if 'boring bits' are <50% of a single contig/scaffold, remove all boring bits on the whole scaffold. Use the below horrible inefficient code snippet for now
-## i.e. if the contig is more than 50% interesting, capture the whole thing
-INPUT=${TMPOUT}/boringbits.bed
-cut -f 1 ${INPUT}  | uniq >  ${TMPOUT}/boring_ctg.tmp || die "cut failed"
-while read p;
-do
-ctg_len=$(grep "$p" ${ASSBED} | cut -f 3)
-ctg_boring=$(grep "$p" ${INPUT} | awk '{sum+=$3-$2}END{ print sum}')
-fac=$(echo "$ctg_boring*100/$ctg_len" | bc)
-if [ "$fac" -gt "50" ];then
-    grep "$p" ${INPUT}
-fi
-done <  ${TMPOUT}/boring_ctg.tmp >  ${ASSNAME}_dip.boringbits.bed || die "while loop failed"
+# INPUT=${TMPOUT}/boringbits.bed
+# cut -f 1 ${INPUT}  | uniq >  ${TMPOUT}/boring_ctg.tmp || die "cut failed"
+# while read p;
+# do
+# ctg_len=$(grep "$p" ${ASSBED} | cut -f 3)
+# ctg_boring=$(grep "$p" ${INPUT} | awk '{sum+=$3-$2}END{ print sum}')
+# fac=$(echo "$ctg_boring*100/$ctg_len" | bc)
+# if [ "$fac" -gt "50" ];then
+#     grep "$p" ${INPUT}
+# fi
+# done <  ${TMPOUT}/boring_ctg.tmp >  ${ASSNAME}_dip.boringbits.bed || die "while loop failed"
 
 #11# print the size of the boring_bits panel as a % of human genome size
-echo -n -e "${ASSNAME}\t"
-cat ${ASSNAME}_dip.boringbits.bed | awk '{sum+=($3-$2)}END{print sum/3100000000*100}'
+# echo -n -e "${ASSNAME}\t"
+# cat ${ASSNAME}_dip.boringbits.bed | awk '{sum+=($3-$2)}END{print sum/3100000000*100}'
 
 #12# create readfish targets
-cat ${ASSNAME}_dip.boringbits.bed  | awk '{print $1","$2","$3",+"}' > ${TMPOUT}/plus_tmp
-cat ${ASSNAME}_dip.boringbits.bed  | awk '{print $1","$2","$3",-"}' > ${TMPOUT}/minus_tmp
-cat ${TMPOUT}/plus_tmp ${TMPOUT}/minus_tmp | sort > ${ASSNAME}_dip.boringbits.txt
+# cat ${ASSNAME}_dip.boringbits.bed  | awk '{print $1","$2","$3",+"}' > ${TMPOUT}/plus_tmp
+# cat ${ASSNAME}_dip.boringbits.bed  | awk '{print $1","$2","$3",-"}' > ${TMPOUT}/minus_tmp
+# cat ${TMPOUT}/plus_tmp ${TMPOUT}/minus_tmp | sort > ${ASSNAME}_dip.boringbits.txt
+

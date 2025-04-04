@@ -77,3 +77,15 @@ Options:
   contig3
   contig4
   ```
+
+### bigenough
+
+```bash
+cornetto bigenough [options] <assembly.bed> <boring.bed>
+```
+
+For each contig, if the total length of the regions listed in <boring.bed> covers more than T% of the contig's total length in <assembly.bed>, include all of that contig’s regions from <boring.bed> in the output.
+
+Options:
+* `-r FILE`:  also output in readfish format to FILE
+* `-T INT`:   percentage threshold to consider as sufficient boring bits on a contig [default: 50]

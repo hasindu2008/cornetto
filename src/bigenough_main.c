@@ -27,6 +27,20 @@ SOFTWARE.
 
 
 ******************************************************************************/
+/*
+#10# if 'boring bits' are <50% of a single contig/scaffold, remove all boring bits on the whole scaffold.
+INPUT=${TMPOUT}/boringbits.bed
+cut -f 1 ${INPUT}  | uniq > ${TMPOUT}/boring_ctg.tmp || die "cut failed"
+while read p;
+do
+ctg_len=$(grep "$p" ${ASSBED} | cut -f 3)
+ctg_boring=$(grep "$p" ${INPUT} | awk '{sum+=$3-$2}END{ print sum}')
+fac=$(echo "$ctg_boring*100/$ctg_len" | bc)
+if [ "$fac" -gt "50" ];then
+    grep "$p" ${INPUT}
+fi
+done < ${TMPOUT}/boring_ctg.tmp > ${BASENAME%.fasta}.boringbits.bed || die "while loop failed"
+*/
 
 #define _XOPEN_SOURCE 700
 #include <stdio.h>
@@ -63,7 +77,7 @@ typedef struct {
 
 static inline void print_help_msg(FILE *fp_help, optp_t opt){
     fprintf(fp_help,"Usage: cornetto bigenough [options] <assembly.bed> <boring.bed>\n");
-    fprintf(fp_help,"   -T INT                     percentage threshold to consider as sufficient boring bits on a contig [0-100]\n");
+    fprintf(fp_help,"   -T INT                     percentage threshold to consider as sufficient boring bits on a contig [%d]\n",opt.threshold);
     fprintf(fp_help,"   -r FILE                    also output in readfish format to FILE\n");
     fprintf(fp_help,"   -v INT                     verbosity level [%d]\n",(int)get_log_level());
     fprintf(fp_help,"   -h                         help\n");
@@ -75,7 +89,7 @@ static void init_optp(optp_t *opt){
 }
 
 
-void update_covlen(khash_t(chr_map) *h, const char *bedfile){
+uint64_t update_covlen(khash_t(chr_map) *h, const char *bedfile){
 
     FILE *bedfp = fopen(bedfile,"r");
     F_CHK(bedfp,bedfile);
@@ -86,6 +100,8 @@ void update_covlen(khash_t(chr_map) *h, const char *bedfile){
     size_t bufferSize = 100;
     ssize_t readlinebytes = 0;
     int64_t line_no = 0;
+
+    uint64_t sum_len = 0;
 
     while ((readlinebytes = getline(&buffer, &bufferSize, bedfp)) != -1) {
 
@@ -121,6 +137,8 @@ void update_covlen(khash_t(chr_map) *h, const char *bedfile){
 
         r->covlen += (end - beg);
 
+        sum_len += (end - beg);
+
         free(ref);
         line_no++;
     }
@@ -128,11 +146,11 @@ void update_covlen(khash_t(chr_map) *h, const char *bedfile){
     fclose(bedfp);
     free(buffer);
     //*count = reg_i;
-    return;
+    return sum_len;
 }
 
 
-void print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, optp_t *opt){
+uint64_t print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, optp_t *opt){
 
     int threshold = opt->threshold;
 
@@ -145,6 +163,8 @@ void print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, optp_t *opt)
     size_t bufferSize = 100;
     ssize_t readlinebytes = 0;
     int64_t line_no = 0;
+
+    uint64_t sum_len = 0;
 
     FILE *outfp = NULL;
     if(opt->outreadfish != NULL){
@@ -190,6 +210,7 @@ void print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, optp_t *opt)
                 fprintf(outfp, "%s,%ld,%ld,+\n", ref, beg, end);
                 fprintf(outfp, "%s,%ld,%ld,-\n", ref, beg, end);
             }
+            sum_len += (end - beg);
         }
 
         free(ref);
@@ -203,10 +224,10 @@ void print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, optp_t *opt)
         fclose(outfp);
     }
 
-    return;
+    return sum_len;
 }
 
-void read_bed_to_hashmap(khash_t(chr_map) *h, const char *bedfile){
+uint64_t read_bed_to_hashmap(khash_t(chr_map) *h, const char *bedfile){
 
     FILE *bedfp = fopen(bedfile,"r");
     F_CHK(bedfp,bedfile);
@@ -217,6 +238,8 @@ void read_bed_to_hashmap(khash_t(chr_map) *h, const char *bedfile){
     size_t bufferSize = 100;
     ssize_t readlinebytes = 0;
     int64_t line_no = 0;
+
+    uint64_t sum_len = 0;
 
     while ((readlinebytes = getline(&buffer, &bufferSize, bedfp)) != -1) {
 
@@ -261,6 +284,8 @@ void read_bed_to_hashmap(khash_t(chr_map) *h, const char *bedfile){
         r->end = end;
         r->covlen = 0;
 
+        sum_len += (end);
+
         free(ref);
         line_no++;
     }
@@ -268,7 +293,7 @@ void read_bed_to_hashmap(khash_t(chr_map) *h, const char *bedfile){
     fclose(bedfp);
     free(buffer);
     //*count = reg_i;
-    return;
+    return sum_len;
 }
 
 void destroy_hashmap(khash_t(chr_map) *h){
@@ -287,11 +312,14 @@ void bigenough_boringbits(const char *assbed, const char *boringbed, optp_t *opt
 
     khash_t(chr_map) *h = kh_init(chr_map);
 
-    read_bed_to_hashmap(h, assbed);
-
-    update_covlen(h, boringbed);
-
-    print_bigenough_bits(h, boringbed, opt);
+    uint64_t asslen = read_bed_to_hashmap(h, assbed);
+    uint64_t boring_len = update_covlen(h, boringbed);
+    uint64_t panel_len = print_bigenough_bits(h, boringbed, opt);
+    fprintf(stderr,"Total assembly length:\t%ld\t%.2f Gbases\n",asslen, asslen/1000000000.0);
+    fprintf(stderr,"boring bits length before filtering:\t%ld\t%.2f Gbases\n",boring_len, boring_len/1000000000.0);
+    fprintf(stderr,"Final panel length:\t%ld\t%.2f Gbases\n",panel_len, panel_len/1000000000.0);
+    fprintf(stderr,"%% of panel length (over assembly):\t%.2f%%\n", (float)panel_len/(float)asslen*100);
+    fprintf(stderr,"%% of panel length (over human genome):\t%.2f%%\n", (float)panel_len/(float)3100000000*100);
 
     destroy_hashmap(h);
 

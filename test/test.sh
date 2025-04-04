@@ -30,7 +30,12 @@ ex  ./cornetto noboringbits -H 2.5 -L 0.5 -Q 0.5 test/cov-total.bg -q test/cov-m
 diff -q test/example_fun_t2.exp test/tmp.txt || die "diff failed"
 
 echo "bigenough test"
- ./cornetto bigenough test/bigenough/hg002-cornetto-E_3/chroms.bed test/bigenough/hg002-cornetto-E_3/in.boringbits.bed  > a.bed || die "Running the tool failed"
+./cornetto bigenough test/bigenough/hg002-cornetto-E_3/chroms.bed test/bigenough/hg002-cornetto-E_3/in.boringbits.bed -r a.txt > a.bed || die "Running the tool failed"
 diff -q test/bigenough/hg002-cornetto-E_3/out.boringbits.bed a.bed || die "diff failed"
+diff -q test/bigenough/hg002-cornetto-E_3/out.boringbits.csv a.txt || die "diff failed"
+
+./cornetto bigenough test/bigenough/hg002-cornetto-E_3/chroms.bed test/bigenough/hg002-cornetto-E_3/in_dip.boringbits.bed -r a.txt > a.bed || die "Running the tool failed"
+diff -q test/bigenough/hg002-cornetto-E_3/out_dip.boringbits.bed a.bed || die "diff failed"
+diff -q test/bigenough/hg002-cornetto-E_3/out_dip.boringbits.csv a.txt || die "diff failed"
 
 echo "Tests passed"

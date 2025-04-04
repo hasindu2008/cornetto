@@ -42,24 +42,27 @@ bedtools subtract -a ${TMPOUT}/${PREFIX}.chroms.bed -b ${TMPOUT}/funbits_merged.
 awk '{if(($3-$2)<1000000) print $0}' ${TMPOUT}/${PREFIX}.chroms.bed > ${TMPOUT}/short.bed
 bedtools subtract -a ${TMPOUT}/boringbits_tmp.bed -b ${TMPOUT}/short.bed > ${TMPOUT}/boringbits.bed
 
+#7# if 'boring bits' are <50% of a single contig/scaffold, remove all boring bits on the whole scaffold.  Then create readfish targets
+./cornetto bigenough ${TMPOUT}/${PREFIX}.chroms.bed ${TMPOUT}/boringbits.bed -r ${PREFIX}.boringbits.txt > ${PREFIX}.boringbits.bed || die "cornetto bigenough failed"
+
+# old crappy code to do the same thing. Remove after testing
 #7# if 'boring bits' are <50% of a single contig/scaffold, remove all boring bits on the whole scaffold. Use the below horrible inefficient code snippet for now
-## i.e. if the contig is more than 50% interesting, capture the whole thing
-INPUT=${TMPOUT}/boringbits.bed
-cut -f 1 ${INPUT}  | uniq > ${TMPOUT}/boring_ctg.tmp
-while read p;
-do
-	ctg_len=$(grep "$p" ${TMPOUT}/${PREFIX}.chroms.bed | cut -f 3)
-	ctg_boring=$(grep "$p" ${INPUT} | awk '{sum+=$3-$2}END{ print sum}')
-	fac=$(echo "$ctg_boring*100/$ctg_len" | bc)
-	if [ "$fac" -gt "50" ];then
-		    grep "$p" ${INPUT}
-	    fi
-done < ${TMPOUT}/boring_ctg.tmp > ${PREFIX}.boringbits.bed
+# INPUT=${TMPOUT}/boringbits.bed
+# cut -f 1 ${INPUT}  | uniq > ${TMPOUT}/boring_ctg.tmp
+# while read p;
+# do
+# 	ctg_len=$(grep "$p" ${TMPOUT}/${PREFIX}.chroms.bed | cut -f 3)
+# 	ctg_boring=$(grep "$p" ${INPUT} | awk '{sum+=$3-$2}END{ print sum}')
+# 	fac=$(echo "$ctg_boring*100/$ctg_len" | bc)
+# 	if [ "$fac" -gt "50" ];then
+# 		    grep "$p" ${INPUT}
+# 	fi
+# done < ${TMPOUT}/boring_ctg.tmp > ${PREFIX}.boringbits.bed
 
 #8# print the size of the boring_bits panel as a % of human genome size
-cat ${PREFIX}.boringbits.bed | awk '{sum+=($3-$2)}END{print sum/3100000000*100}'
+# cat ${PREFIX}.boringbits.bed | awk '{sum+=($3-$2)}END{print sum/3100000000*100}'
 
 #9# create readfish targets
-cat ${PREFIX}.boringbits.bed | awk '{print $1","$2","$3",+"}' > ${TMPOUT}/plus_tmp
-cat ${PREFIX}.boringbits.bed | awk '{print $1","$2","$3",-"}' > ${TMPOUT}/minus_tmp
-cat ${TMPOUT}/plus_tmp ${TMPOUT}/minus_tmp | sort > ${PREFIX}.boringbits.txt
+# cat ${PREFIX}.boringbits.bed | awk '{print $1","$2","$3",+"}' > ${TMPOUT}/plus_tmp
+# cat ${PREFIX}.boringbits.bed | awk '{print $1","$2","$3",-"}' > ${TMPOUT}/minus_tmp
+# cat ${TMPOUT}/plus_tmp ${TMPOUT}/minus_tmp | sort > ${PREFIX}.boringbits.txt
