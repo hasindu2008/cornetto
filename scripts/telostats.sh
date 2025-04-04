@@ -37,8 +37,8 @@ ln -s $FILE 2> /dev/null
 ${CORNETTO} teltelofind $FILE | awk '{print $1"\t"$(NF-4)"\t"$(NF-3)"\t"$(NF-2)"\t"$(NF-1)"\t"$NF}' - > $PREFIX.telomere || die "cornetto teltelofind failed"
 ${CORNETTO} sdust $FILE > $PREFIX.sdust || die "cornetto sdust failed"
 
-test -f ${FILE}.fai || samtools faidx ${FILE} || die "samtools faidx on ${FILE} failed"
-awk '{print $1"\t"$2}' ${FILE}.fai > ${PREFIX}.lens  || die "awk failed"
+# test -f ${FILE}.fai || samtools faidx ${FILE} || die "samtools faidx on ${FILE} failed"
+${CORNETTO} fa2bed $FILE | awk '{print $1"\t"$3}' > ${PREFIX}.lens || die "fa2bed failed"
 
 ${CORNETTO} telowin --windows $PREFIX.telomere 99.9 0.1 > $PREFIX.windows || die "cornetto telowin failed"
 ${CORNETTO} telobreak --breaks $PREFIX.lens $PREFIX.sdust $PREFIX.telomere > $PREFIX.breaks || die "cornetto telobreak failed"

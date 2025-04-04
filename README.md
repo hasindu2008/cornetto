@@ -99,7 +99,6 @@ samtools index asm-0.realigned.bam
 
 Get the per base coverage information for total alignments (mapq>=0) and unique alignments (mapq>=20)
 ```bash
-samtools faidx asm-0.fasta
 cornetto fa2bed asm-0.fasta | sort -k3,3nr > asm-0.chroms.bed
 samtools depth -@ 24 -b asm-0.chroms.bed -aa asm-0.realigned.bam  | awk '{print $1"\t"$2-1"\t"$2"\t"$3}' > asm-0.cov-total.bg
 samtools depth -@ 24 -Q 20 -b asm-0.chroms.bed -aa asm-0.realigned.bam  | awk '{print $1"\t"$2-1"\t"$2"\t"$3}' > asm-0.cov-mq20.bg
