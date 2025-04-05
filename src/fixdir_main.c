@@ -5,7 +5,8 @@
 
 MIT License
 
-Copyright (c) 2019 Kavindu Jayasooriya (k.jayasooriya@unsw.edu.au)
+Copyright (c) 2025 Kavindu Jayasooriya
+Copyright (c) 2025 Hasindu Gamaarachchi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -61,6 +62,7 @@ typedef struct {
     char* id;
     int32_t sump;
     int32_t sumn;
+
 } ctg_t;
 
 KSEQ_INIT(gzFile, gzread)

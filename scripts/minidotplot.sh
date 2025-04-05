@@ -9,10 +9,6 @@ die() {
 
 [ $# -ne 2 ] && die "Usage: $0 <reference> <myassembly>"
 
-MINIMAP2=minimap2
-SAMTOOLS=samtools
-CORNETTO=cornetto
-
 REF=$1
 ASM=$2
 
@@ -23,16 +19,12 @@ PREFIX=$(basename ${ASM})
 
 test -z ${CORNETTO} && CORNETTO=cornetto
 ${CORNETTO} --version > /dev/null 2>&1 || die "cornetto executable not found! Either put cornetto under path or set CORNETTO variable, e.g.,export CORNETTO=/path/to/cornetto"
-
 test -z ${MINIMAP2} && MINIMAP2=minimap2
 $MINIMAP2 --version > /dev/null 2>&1 || die "minimap2 not found!. Either put minimap2 under path or set MINIMAP2 variable, e.g.,export MINIMAP2=/path/to/minimap2"
-test -z ${SAMTOOLS} && SAMTOOLS=samtools
-$SAMTOOLS --version > /dev/null 2>&1 || die "samtools not found!. Either put samtools under path or set SAMTOOLS variable, e.g.,export SAMTOOLS=/path/to/samtools"
 
 ${MINIMAP2} -t16 --eqx -cx asm5 $REF $ASM > ${PREFIX}.tmp.paf || die "minimap2 failed"
-cut -f 1 ${PREFIX}.tmp.paf | sort -u > ${PREFIX}.tmp.ctg.list
 
-${CORNETTO} fixdir ${ASM} ${PREFIX}.tmp.paf > ${PREFIX}.tmp.fix.fasta 2> ${PREFIX}.missing_sequences.log || die "cornetto failed"
+${CORNETTO} fixdir ${ASM} ${PREFIX}.tmp.paf > ${PREFIX}.tmp.fix.fasta || die "cornetto failed"
 
 grep '^>' ${PREFIX}.tmp.fix.fasta | sed 's/^>//' | while read p;
 do
