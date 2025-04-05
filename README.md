@@ -26,7 +26,6 @@ Cornetto is a method for adaptive genome assembly using nanopore sequencing from
     - [minimap2](https://github.com/lh3/minimap2/)
     - [samtools](https://www.htslib.org/download/)
     - [bedtools](https://github.com/arq5x/bedtools2)
-    - [seqkit](https://bioinf.shenwei.me/seqkit) (only for ONT-only simplex)
     - [centrifuge](https://ccb.jhu.edu/software/centrifuge) (only for saliva samples)
 - For evaluating assemblies, you may use methods of your choice. Our suggested method requires following additional software:
     - [quast](https://quast.sourceforge.net)
@@ -183,10 +182,12 @@ If you are using PacBio base + ONT duplex Cornetto, basecall your data with the 
 slow5-dorado duplex dna_r10.4.1_e8.2_400bps_sup@v4.2.0 reads-1.blow5  > reads-1.bam
 ```
 
-If you are using ONT simplex for the base and Cornetto, basecall your data with the simplex super accuracy basecalling model. Then extract reads which are longer than a threshold (30 kbases) into a file called `reads-1.fastq`. The commands we used for simplex basecalling was:
+If you are using ONT simplex for the base and Cornetto, basecall your data with the simplex super accuracy basecalling model. Then extract reads which are equal or longer than a threshold (30 kbases) into a file called `reads-1.fastq`. The commands we used for simplex basecalling was:
 ```bash
+# basecall
 slow5-dorado basecaller -x cuda:all dna_r10.4.1_e8.2_400bps_sup@v5.0.0 reads-1.blow5 --emit-fastq --min-qscore 10  > reads-1_all.fastq
-seqkit seq -m 30000 reads-1_all.fastq -o reads-1.fastq
+# reads >=30 kbases
+cornetto seq -m 30000 reads-1_all.fastq > reads-1.fastq
 ```
 
 ### Step 3: Assembling
