@@ -99,11 +99,11 @@ int main(int argc, char* argv[]){
     } else if (strcmp(argv[1],"noboringbits")==0){
         ret=boringbits_main(argc-1, argv+1, 0);
     } else if (strcmp(argv[1],"telowin")==0) {
-        ret=telomere_windows_main(argc-2, argv+1);
+        ret=telomere_windows_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"telobreaks")==0) {
-        ret=telomere_breaks_main(argc-2, argv+1);
+        ret=telomere_breaks_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"telofind")==0) {
-        ret=find_telomere_main(argc-2, argv+1);
+        ret=find_telomere_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"minidot")==0){
         ret=minidot_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"bigenough")==0){

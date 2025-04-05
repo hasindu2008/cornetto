@@ -60,10 +60,12 @@ typedef struct {
 
 typedef struct {
     char* id;
-    int32_t sump;
+    int32_t sump; //todo 64bit
     int32_t sumn;
-
+    //todo chr tally array with capacity and size
 } ctg_t;
+
+//todo chr to {tally array index, current chr occurence} mapping
 
 KSEQ_INIT(gzFile, gzread)
 KHASH_MAP_INIT_STR(map_ctgs, ctg_t*)
@@ -205,11 +207,13 @@ int fixdir_main(int argc, char* argv[]) {
         } else {
             cur_ctg->sumn += length;
         }
+        //todo add to tally array
 
         free(rec->tid);
         free(rec);
     }
     fclose(fp);
+
 
     // Read FASTA file and write corrected FASTA to stdout
     gzFile fp_fasta = gzopen(fastafile, "r");
@@ -227,11 +231,14 @@ int fixdir_main(int argc, char* argv[]) {
                 reverse_complement(seq);
                 neg++;
             }
+            //todo get the chr tally array index max for the given contig
+            //change the name accordingly and write to the stat tsv as well
             fprintf(stdout, ">%s\n%s\n", seq->name.s, seq->seq.s);
             total++;
         } else {
             fprintf(stderr, "%s\n", seq->name.s);
             missing++;
+            //todo write to missing file
         }
     }
     fprintf(stderr, "total: %d\nnegative: %d\nmissing: %d\n", total, neg, missing);
