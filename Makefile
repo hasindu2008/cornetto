@@ -22,7 +22,8 @@ OBJ = $(BUILD_DIR)/main.o \
 	  $(BUILD_DIR)/sdict.o \
 	  $(BUILD_DIR)/sdust.o \
 	  $(BUILD_DIR)/assbed.o \
-	  $(BUILD_DIR)/seq.o
+	  $(BUILD_DIR)/seq.o \
+	  $(BUILD_DIR)/asmstats.o
 
 ifdef asan
 	CFLAGS += -fsanitize=address -fno-omit-frame-pointer
@@ -53,6 +54,9 @@ $(BUILD_DIR)/bigenough_main.o: src/bigenough_main.c src/error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/assbed.o: src/assbed.c src/error.h src/kseq.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/asmstats.o: src/asmstats.c src/error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/seq.o: src/seq.c src/kseq.h

@@ -89,7 +89,7 @@ static void init_optp(optp_t *opt){
 }
 
 
-uint64_t update_covlen(khash_t(chr_map) *h, const char *bedfile){
+static uint64_t update_covlen(khash_t(chr_map) *h, const char *bedfile){
 
     FILE *bedfp = fopen(bedfile,"r");
     F_CHK(bedfp,bedfile);
@@ -150,7 +150,7 @@ uint64_t update_covlen(khash_t(chr_map) *h, const char *bedfile){
 }
 
 
-uint64_t print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, optp_t *opt){
+static uint64_t print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, optp_t *opt){
 
     int threshold = opt->threshold;
 
@@ -227,7 +227,7 @@ uint64_t print_bigenough_bits(khash_t(chr_map) *h, const char *bedfile, optp_t *
     return sum_len;
 }
 
-uint64_t read_bed_to_hashmap(khash_t(chr_map) *h, const char *bedfile){
+static uint64_t read_bed_to_hashmap(khash_t(chr_map) *h, const char *bedfile){
 
     FILE *bedfp = fopen(bedfile,"r");
     F_CHK(bedfp,bedfile);
@@ -296,7 +296,7 @@ uint64_t read_bed_to_hashmap(khash_t(chr_map) *h, const char *bedfile){
     return sum_len;
 }
 
-void destroy_hashmap(khash_t(chr_map) *h){
+static void destroy_hashmap(khash_t(chr_map) *h){
     for (khint_t k = 0; k < kh_end(h); ++k){
         if (kh_exist(h, k)){
             //reg_t *r = &kh_value(h, k);
@@ -307,7 +307,7 @@ void destroy_hashmap(khash_t(chr_map) *h){
     kh_destroy(chr_map, h);
 }
 
-void bigenough_boringbits(const char *assbed, const char *boringbed, optp_t *opt){
+static void bigenough_boringbits(const char *assbed, const char *boringbed, optp_t *opt){
 
 
     khash_t(chr_map) *h = kh_init(chr_map);

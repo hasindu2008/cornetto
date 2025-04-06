@@ -48,6 +48,7 @@ int telomere_breaks_main(int argc, char* argv[]);
 int sdust_main(int argc, char *argv[]);
 int assbed_main(int argc, char* argv[]);
 int seq_main(int argc, char* argv[]);
+int asmstats_main(int argc, char* argv[]);
 
 int print_usage(FILE *fp_help){
 
@@ -66,6 +67,7 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"       telobreaks      find telomere breaks in a fasta file\n");
     fprintf(fp_help,"       telofind        find telomere sequences in a fasta file\n");
     fprintf(fp_help,"       sdust           symmetric DUST (https://github.com/lh3/sdust)\n");
+    fprintf(fp_help,"       asmstats        calculate assembly statistics\n");
     fprintf(fp_help,"   misc:\n");
     fprintf(fp_help,"       fa2bed          create a bed file with assembly contig lengths\n");
     fprintf(fp_help,"       seq             extract reads equal to larger than a threshold from a fastq\n");
@@ -114,6 +116,8 @@ int main(int argc, char* argv[]){
         ret=assbed_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"seq")==0){
         ret=seq_main(argc-1, argv+1);
+    } else if (strcmp(argv[1],"asmstats")==0){
+        ret=asmstats_main(argc-1, argv+1);
     } else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"cornetto %s\n",CORNETTO_VERSION);
         exit(EXIT_SUCCESS);
