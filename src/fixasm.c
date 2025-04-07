@@ -1,6 +1,6 @@
 /**
- * @file fixdir_main.c
- * @brief entry point to fixdir
+ * @file fixasm_main.c
+ * @brief entry point to fixasm
  * @author Kavindu Jayasooriya (k.jayasooriya@unsw.edu.au)
 
 MIT License
@@ -108,11 +108,11 @@ static inline void print_help_msg(FILE *fp_help);
 char *strdup(const char *src);
 static paf_rec_t *parse_paf_rec(char *buffer);
 void reverse_complement(kseq_t *seq);
-int fixdir_main(int argc, char* argv[]);
+int fixasm_main(int argc, char* argv[]);
 
 // Function implementations
 static inline void print_help_msg(FILE *fp_help) {
-    fprintf(fp_help, "Usage: cornetto fixdir <assembly.fa> <asm_to_ref.paf>\n");
+    fprintf(fp_help, "Usage: cornetto fixasm <assembly.fa> <asm_to_ref.paf>\n");
     fprintf(fp_help, "   -m FILE                    write missing contig names to FILE\n");
     fprintf(fp_help, "   -r FILE                    write report to FILE\n");
     fprintf(fp_help, "   -v INT                     verbosity level [%d]\n", (int)get_log_level());
@@ -411,7 +411,7 @@ void fix_the_assembly(const char *fastafile, khash_t(map_ctgs) *h, chr_list_t *c
     }
 }
 
-int fixdir_main(int argc, char* argv[]) {
+int fixasm_main(int argc, char* argv[]) {
 
     const char* optstring = "v:r:m:h";
 

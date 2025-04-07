@@ -38,7 +38,7 @@ SOFTWARE.
 #include "cornetto.h"
 
 int depth_main(int argc, char* argv[]);
-int fixdir_main(int argc, char* argv[]);
+int fixasm_main(int argc, char* argv[]);
 int minidot_main(int argc, char* argv[]);
 int boringbits_main(int argc, char* argv[], int8_t boring);
 int bigenough_main(int argc, char* argv[]);
@@ -60,7 +60,7 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"       bigenough       find contigs that have sufficient boring bits\n");
     //fprintf(fp_help,"         subtool2      do something\n");
     fprintf(fp_help,"   dotplot:\n");
-    fprintf(fp_help,"       fixdir          fix the direction of contigs in an assembly\n");
+    fprintf(fp_help,"       fixasm          fix the direction of contigs in an assembly\n");
     fprintf(fp_help,"       minidot         create dot plot (from https://github.com/lh3/miniasm)\n");
     fprintf(fp_help,"   telomere eval:\n");
     fprintf(fp_help,"       telowin         analyse telomere windows in a fasta file\n");
@@ -94,8 +94,8 @@ int main(int argc, char* argv[]){
         return print_usage(stderr);
     } else if (strcmp(argv[1],"depth")==0){
         ret=depth_main(argc-1, argv+1);
-    } else if (strcmp(argv[1],"fixdir")==0){
-        ret=fixdir_main(argc-1, argv+1);
+    } else if (strcmp(argv[1],"fixasm")==0){
+        ret=fixasm_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"boringbits")==0){ //deprecated (this was never used)
         ret=boringbits_main(argc-1, argv+1, 1);
     } else if (strcmp(argv[1],"noboringbits")==0){

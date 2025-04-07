@@ -46,7 +46,7 @@ typedef struct {
     int32_t target_end;
     uint8_t mapq;
     char tp;
-} paf_rec_t; //todo remove duplicate of paf_rec_t in src/fixdir_main.c
+} paf_rec_t; //todo remove duplicate of paf_rec_t in src/fixasm_main.c
 
 
 static paf_rec_t *parse_paf_rec(char *buffer) {

@@ -35,7 +35,7 @@ Example usage:
 
 ---
 
-### fixdir
+### fixasm
 
 **This programme processes a FASTA file and a PAF alignment file to fix the direction of contigs based on the total base length being more positive or negative. It outputs the corrected FASTA to `stdout` and logs missing sequences to `stderr`.**
 
@@ -59,7 +59,7 @@ Options:
 **Example usage:**
 
 ```bash
-./cornetto fixdir incorrect_assembly.fa a.paf > corrected_contigs.fasta 2> missing_sequences.log
+./cornetto fixasm incorrect_assembly.fa a.paf > corrected_contigs.fasta 2> missing_sequences.log
 ```
 
 **Output example:**
