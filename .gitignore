@@ -43,3 +43,6 @@ Thumbs.db
 # binaries
 /cornetto
 /htslib
+
+# big tests
+/test/real

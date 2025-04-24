@@ -35,7 +35,7 @@ Example usage:
 
 ---
 
-### fixdir
+### fixasm
 
 **This programme processes a FASTA file and a PAF alignment file to fix the direction of contigs based on the total base length being more positive or negative. It outputs the corrected FASTA to `stdout` and logs missing sequences to `stderr`.**
 
@@ -59,7 +59,7 @@ Options:
 **Example usage:**
 
 ```bash
-./cornetto fixdir incorrect_assembly.fa a.paf > corrected_contigs.fasta 2> missing_sequences.log
+./cornetto fixasm incorrect_assembly.fa a.paf > corrected_contigs.fasta 2> missing_sequences.log
 ```
 
 **Output example:**
@@ -77,3 +77,15 @@ Options:
   contig3
   contig4
   ```
+
+### bigenough
+
+```bash
+cornetto bigenough [options] <assembly.bed> <boring.bed>
+```
+
+For each contig, if the total length of the regions listed in <boring.bed> covers more than T% of the contig's total length in <assembly.bed>, include all of that contig’s regions from <boring.bed> in the output.
+
+Options:
+* `-r FILE`:  also output in readfish format to FILE
+* `-T INT`:   percentage threshold to consider as sufficient boring bits on a contig [default: 50]

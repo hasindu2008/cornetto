@@ -9,6 +9,10 @@ die () {
 
 [ "$#" -eq 1 ] || die "1 argument required, $# provided. Usage: create_hapnetto.sh <assembly prefix>"
 
+test -z ${MINIMAP2} && MINIMAP2=minimap2
+$MINIMAP2 --version > /dev/null 2>&1 || die "minimap2 not found!. Either put minimap2 under path or set MINIMAP2 variable, e.g.,export MINIMAP2=/path/to/minimap2"
+test -z ${BEDTOOLS} && BEDTOOLS=bedtools
+$BEDTOOLS --version > /dev/null 2>&1 || die "bedtools not found!. Either put bedtools under path or set BEDTOOLS variable, e.g.,export BEDTOOLS=/path/to/bedtools"
 
 TMPOUT=tmp_create_hapnetto
 test -d ${TMPOUT} && die "Directory ${TMPOUT} already exists. Please remove it before running this script or change to a different working directory"
@@ -29,8 +33,8 @@ test -f ${ASSNAME}.hap1.fasta || die "File ${ASSNAME}.hap1.fasta not found."
 test -f ${ASSNAME}.hap2.fasta || die "File ${ASSNAME}.hap2.fasta not found."
 
 #1# align the hapX assemblies to the primary assembly
-minimap2 -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap1.fasta > ${TMPOUT}/${ASSNAME}_hap1_to_asm.paf || die "minimap2 failed"
-minimap2 -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap2.fasta > ${TMPOUT}/${ASSNAME}_hap2_to_asm.paf || die "minimap2 failed"
+${MINIMAP2} -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap1.fasta > ${TMPOUT}/${ASSNAME}_hap1_to_asm.paf || die "minimap2 failed"
+${MINIMAP2} -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap2.fasta > ${TMPOUT}/${ASSNAME}_hap2_to_asm.paf || die "minimap2 failed"
 
 GET_HAP_X_FUN () {
     HAP=$1
@@ -42,23 +46,23 @@ GET_HAP_X_FUN () {
     rm -f ${TMPOUT}/${HAP}_tmp.bed
     cut -f 1 ${TMPOUT}/${HAP}.txt  | sort -u | while read ctg
     do
-        grep $ctg ${TMPOUT}/${HAP}.txt | awk '{print $6"\t"$8"\t"$9}' | bedtools sort | bedtools merge -d 1000000  >> ${TMPOUT}/${HAP}_tmp.bed || die "awk failed"
+        grep $ctg ${TMPOUT}/${HAP}.txt | awk '{print $6"\t"$8"\t"$9}' | ${BEDTOOLS} sort | ${BEDTOOLS} merge -d 1000000  >> ${TMPOUT}/${HAP}_tmp.bed || die "awk failed"
     done
 
     # fun1: get the gaps on the primary assembly, that are not covered by hapX contigs
-    bedtools subtract -a ${ASSBED} -b ${TMPOUT}/${HAP}_tmp.bed > ${TMPOUT}/${HAP}_tmp2.bed || die "bedtools subtract failed"
+    ${BEDTOOLS} subtract -a ${ASSBED} -b ${TMPOUT}/${HAP}_tmp.bed > ${TMPOUT}/${HAP}_tmp2.bed || die "bedtools subtract failed"
 
     # fun2:get the corners of the hapX contigs on the primary assembly (500 bp flank)
     awk '{if($2>=500){print $1"\t"$2-500"\t"$2+500} if($3>=500){print $1"\t"$3-500"\t"$3+500}}' ${TMPOUT}/${HAP}_tmp.bed >> ${TMPOUT}/${HAP}_tmp2.bed || die "awk failed"
 
     # merge the fun2 and func2 bit
-    bedtools sort -i ${TMPOUT}/${HAP}_tmp2.bed | bedtools merge > ${TMPOUT}/${HAP}_funbits.bed || die "bedtools merge failed"
+    ${BEDTOOLS} sort -i ${TMPOUT}/${HAP}_tmp2.bed | ${BEDTOOLS} merge > ${TMPOUT}/${HAP}_funbits.bed || die "bedtools merge failed"
 }
 
 GET_HAP_X_FUN hap1
 GET_HAP_X_FUN hap2
 
-cat ${TMPOUT}/hap1_funbits.bed ${TMPOUT}/hap2_funbits.bed | bedtools sort | bedtools merge > ${TMPOUT}/hap1_hap2_funbits.bed || die "bedtools merge failed"
+cat ${TMPOUT}/hap1_funbits.bed ${TMPOUT}/hap2_funbits.bed | ${BEDTOOLS} sort | ${BEDTOOLS} merge > ${TMPOUT}/hap1_hap2_funbits.bed || die "bedtools merge failed"
 
 # now do the rest from cornetto4
 #5# combine the funbits from (3) and (4) and extend them by +40kb in either direction
@@ -68,34 +72,37 @@ cat ${TMPOUT_PREV}/3_tmp.bed ${TMPOUT_PREV}/lowQ_tmp.bed  ${TMPOUT}/hap1_hap2_fu
 awk '{if(($3-$2)>200000) {print $1"\t0\t200000\n"$1"\t"$3-200000"\t"$3}}' ${ASSBED} >>  ${TMPOUT}/funbits.bed || die "awk failed"
 
 #7# merge any overlapping or adjacent (within 200kb) intervals from (6)
-bedtools sort -i  ${TMPOUT}/funbits.bed | bedtools merge -d 200000 >  ${TMPOUT}/funbits_merged.bed || die "bedtools merge failed"
+${BEDTOOLS} sort -i  ${TMPOUT}/funbits.bed | ${BEDTOOLS} merge -d 200000 >  ${TMPOUT}/funbits_merged.bed || die "bedtools merge failed"
 
 #8# subtract merged windows from (7) from the whole genome assembly
-bedtools subtract -a ${ASSBED} -b  ${TMPOUT}/funbits_merged.bed >  ${TMPOUT}/boringbits_tmp.bed || die "bedtools subtract failed"
+${BEDTOOLS} subtract -a ${ASSBED} -b  ${TMPOUT}/funbits_merged.bed >  ${TMPOUT}/boringbits_tmp.bed || die "bedtools subtract failed"
 
 #9# subtract any contigs shorter than 800Mbase
 awk '{if(($3-$2)<800000) print $0}' ${ASSBED} >  ${TMPOUT}/short.bed || die "awk failed"
-bedtools subtract -a  ${TMPOUT}/boringbits_tmp.bed -b  ${TMPOUT}/short.bed >  ${TMPOUT}/boringbits.bed || die "bedtools subtract failed"
+${BEDTOOLS} subtract -a  ${TMPOUT}/boringbits_tmp.bed -b  ${TMPOUT}/short.bed >  ${TMPOUT}/boringbits.bed || die "bedtools subtract failed"
 
+#10# if 'boring bits' are <50% of a single contig/scaffold, remove all boring bits on the whole scaffold.  Then create readfish targets
+${CORNETTO} bigenough ${ASSBED} ${TMPOUT}/boringbits.bed -r ${ASSNAME}_dip.boringbits.txt > ${ASSNAME}_dip.boringbits.bed || die "cornetto bigenough failed"
+
+# old crappy code to do the same thing. Remove after testing
 #10# if 'boring bits' are <50% of a single contig/scaffold, remove all boring bits on the whole scaffold. Use the below horrible inefficient code snippet for now
-## i.e. if the contig is more than 50% interesting, capture the whole thing
-INPUT=${TMPOUT}/boringbits.bed
-cut -f 1 ${INPUT}  | uniq >  ${TMPOUT}/boring_ctg.tmp || die "cut failed"
-while read p;
-do
-ctg_len=$(grep "$p" ${ASSBED} | cut -f 3)
-ctg_boring=$(grep "$p" ${INPUT} | awk '{sum+=$3-$2}END{ print sum}')
-fac=$(echo "$ctg_boring*100/$ctg_len" | bc)
-if [ "$fac" -gt "50" ];then
-    grep "$p" ${INPUT}
-fi
-done <  ${TMPOUT}/boring_ctg.tmp >  ${ASSNAME}_dip.boringbits.bed || die "while loop failed"
+# INPUT=${TMPOUT}/boringbits.bed
+# cut -f 1 ${INPUT}  | uniq >  ${TMPOUT}/boring_ctg.tmp || die "cut failed"
+# while read p;
+# do
+# ctg_len=$(grep "$p" ${ASSBED} | cut -f 3)
+# ctg_boring=$(grep "$p" ${INPUT} | awk '{sum+=$3-$2}END{ print sum}')
+# fac=$(echo "$ctg_boring*100/$ctg_len" | bc)
+# if [ "$fac" -gt "50" ];then
+#     grep "$p" ${INPUT}
+# fi
+# done <  ${TMPOUT}/boring_ctg.tmp >  ${ASSNAME}_dip.boringbits.bed || die "while loop failed"
 
 #11# print the size of the boring_bits panel as a % of human genome size
-echo -n -e "${ASSNAME}\t"
-cat ${ASSNAME}_dip.boringbits.bed | awk '{sum+=($3-$2)}END{print sum/3100000000*100}'
+# echo -n -e "${ASSNAME}\t"
+# cat ${ASSNAME}_dip.boringbits.bed | awk '{sum+=($3-$2)}END{print sum/3100000000*100}'
 
 #12# create readfish targets
-cat ${ASSNAME}_dip.boringbits.bed  | awk '{print $1","$2","$3",+"}' > ${TMPOUT}/plus_tmp
-cat ${ASSNAME}_dip.boringbits.bed  | awk '{print $1","$2","$3",-"}' > ${TMPOUT}/minus_tmp
-cat ${TMPOUT}/plus_tmp ${TMPOUT}/minus_tmp | sort > ${ASSNAME}_dip.boringbits.txt
+# cat ${ASSNAME}_dip.boringbits.bed  | awk '{print $1","$2","$3",+"}' > ${TMPOUT}/plus_tmp
+# cat ${ASSNAME}_dip.boringbits.bed  | awk '{print $1","$2","$3",-"}' > ${TMPOUT}/minus_tmp
+# cat ${TMPOUT}/plus_tmp ${TMPOUT}/minus_tmp | sort > ${ASSNAME}_dip.boringbits.txt
