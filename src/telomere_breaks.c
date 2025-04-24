@@ -46,7 +46,7 @@ void free_scaffold(Scaffold* scaffold) {
 
 int telomere_breaks_main(int argc, char* argv[]) {
     if (argc < 4) {
-        fprintf(stderr, "Usage: telomere_breaks <lens_file> <sdust_file> <telomere_file>\n");
+        fprintf(stderr, "Usage: telobreaks <lens_file> <sdust_file> <telomere_file>\n");
         return EXIT_FAILURE;
     }
 

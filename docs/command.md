@@ -89,3 +89,95 @@ For each contig, if the total length of the regions listed in <boring.bed> cover
 Options:
 * `-r FILE`:  also output in readfish format to FILE
 * `-T INT`:   percentage threshold to consider as sufficient boring bits on a contig [default: 50]
+
+---
+
+### minidot
+
+**This subcommand generates a dot plot from a PAF file.**
+
+Options:
+
+* `-m INT`:        minimum match length [default: 100]
+* `-i FLOAT`:      minimum identity [default: 0.1]
+* `-s INT`:        minimum span [default: 1000]
+* `-w INT`:        image width [default: 600]
+* `-f INT`:        font size [default: 11]
+* `-L`:            do not print labels
+* `-D`:            do not align hits to the diagonal
+
+**Example usage:**
+
+```bash
+cornetto minidot -m 500 -i 0.9 -s 2000 -w 800 input.paf > output.eps
+```
+
+---
+
+### sdust
+
+**This subcommand identifies low-complexity regions in a FASTA file using the symmetric DUST algorithm.**
+
+Options:
+
+* `-w INT`:        window size [default: 64]
+* `-t INT`:        threshold [default: 20]
+
+**Example usage:**
+
+```bash
+cornetto sdust -w 64 -t 20 input.fa > output.sdust
+```
+
+---
+
+### telofind
+
+**This subcommand identifies telomere sequences in a FASTA file.**
+
+Options:
+
+* `<input.fasta>`: Input FASTA file.
+* `[sequence]`:    Optional sequence to search for (default: `TTAGGG`).
+
+**Example usage:**
+
+```bash
+cornetto telofind input.fasta > output.telomere
+```
+
+---
+
+### telobreaks
+
+**This subcommand identifies telomere breaks in a genome assembly.**
+
+Options:
+
+* `<lens_file>`:   File containing contig lengths.
+* `<sdust_file>`:  File containing low-complexity regions.
+* `<telomere_file>`: File containing telomere regions.
+
+**Example usage:**
+
+```bash
+cornetto telobreaks assembly.lens assembly.sdust assembly.telomere > output.breaks
+```
+
+---
+
+### telowin
+
+**This subcommand analyzes telomere windows in a genome assembly.**
+
+Options:
+
+* `<input_file>`:  Input file containing telomere regions.
+* `<identity>`:    Identity percentage (e.g., 99.9).
+* `<threshold>`:   Threshold for telomere detection.
+
+**Example usage:**
+
+```bash
+cornetto telowin input.telomere 99.9 0.4 > output.windows
+```
