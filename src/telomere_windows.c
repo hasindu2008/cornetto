@@ -19,9 +19,9 @@
 static double THRESHOLD = 0.4;
 
 void print_usage_telomere_windows() {
-    fprintf(stderr, "Usage: cornetto telomere --windows <in> <identity> <threshold>\n");
-    fprintf(stderr, "This program sizes a fasta or fastq file. Multiple fasta files can be supplied by using a comma-separated list.\n");
-    fprintf(stderr, "Example usage: cornetto telomere --windows fasta1.fasta,fasta2.fasta\n");
+    fprintf(stderr, "Usage: cornetto telowin <input_file> <identity> <threshold>\n");
+    fprintf(stderr, "This program analyzes telomere windows in a genome assembly.\n");
+    fprintf(stderr, "Example usage: cornetto telowin input.telomere 99.9 0.4\n");
 }
 
 void process_scaffold(const char* name, uint8_t* b, int length) {
