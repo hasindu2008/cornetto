@@ -20,8 +20,8 @@ The ENA project [PRJEB86853](https://www.ebi.ac.uk/ena/browser/view/PRJEB86853) 
 
 ### HG002
 
-The files in the table [here](data-asm-hg002.tsv) are found inside the cornetto-hg002-asm directory created when you download and extract the cornetto-hg002-asm.tar.gz file from https://doi.org/10.5061/dryad.kkwh70sfr		
+The files in the table [here](data-asm-hg002.tsv) are found inside the cornetto-hg002-asm directory created when you download and extract the cornetto-hg002-asm.tar.gz file from [https://doi.org/10.5061/dryad.kkwh70sfr](https://doi.org/10.5061/dryad.kkwh70sfr)
 
 ### Animals
 
-The files in the table [here](data-asm-animals.tsv) are found inside the cornetto-animal-asm directory created when you download and extract the cornetto-animal-asm.tar.gz file from https://doi.org/10.5061/dryad.kkwh70sfr		
+The files in the table [here](data-asm-animals.tsv) are found inside the cornetto-animal-asm directory created when you download and extract the cornetto-animal-asm.tar.gz file from [https://doi.org/10.5061/dryad.kkwh70sfr](https://doi.org/10.5061/dryad.kkwh70sfr)
