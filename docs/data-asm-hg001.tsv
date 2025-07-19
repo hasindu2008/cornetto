@@ -1,0 +1,39 @@
+Assembly name	Assembly Description	Assembly File
+hg002-Hifi-1	Hg002 DNA; 1x HiFi SMRT cell; primary asm	hg002-Hifi-1/hg002-Hifi-1.fasta
+hg002-Hifi-2	Hg002 DNA; 2x HiFi SMRT cell; primary asm	hg002-Hifi-2/hg002-Hifi-2.fasta
+hg002-Hifi-3	Hg002 DNA; 3x HiFi SMRT cell; primary asm	hg002-Hifi-3/hg002-Hifi-3.fasta
+hg002-NonCornetto-1	hg002 DNA; 1x HiFi SMRT cell + 3x ONT duplex FC (without cornetto); primary asm	hg002-NonCornetto-1/hg002-NonCornetto-1.fasta
+hg002-NonCornetto-2	hg002 DNA; 1x HiFi SMRT cell + 9x ONT duplex FC (without cornetto); primary asm	hg002-NonCornetto-2/hg002-NonCornetto-2.fasta
+hg002-Cornetto-1.1	Hg002 DNA; 1x HiFi SMRT cell + 1x ONT duplex FC (cornetto cycle 1); primary asm	hg002-Cornetto-1/hg002-Cornetto-1.1.fasta
+hg002-Cornetto-1.2	Hg002 DNA; 1x HiFi SMRT cell + 1x ONT duplex FC (cornetto cycle 2); primary asm	hg002-Cornetto-1/hg002-Cornetto-1.2.fasta
+hg002-Cornetto-1.3	Hg002 DNA; 1x HiFi SMRT cell + 1x ONT duplex FC (cornetto cycle 3); primary asm	hg002-Cornetto-1/hg002-Cornetto-1.3.fasta
+hg002-Cornetto-1.4	Hg002 DNA; 1x HiFi SMRT cell + 2x ONT duplex FC (cornetto cycle 4); primary asm	hg002-Cornetto-1/hg002-Cornetto-1.4.fasta
+hg002-Cornetto-1.5	Hg002 DNA; 1x HiFi SMRT cell + 2x ONT duplex FC (cornetto cycle 5); primary asm	hg002-Cornetto-1/hg002-Cornetto-1.5.fasta
+hg002-Cornetto-1.6	Hg002 DNA; 1x HiFi SMRT cell + 2x ONT duplex FC (cornetto cycle 6); primary asm	hg002-Cornetto-1/hg002-Cornetto-1.6.fasta
+hg002-Cornetto-1.7	Hg002 DNA; 1x HiFi SMRT cell + 3x ONT duplex FC (cornetto cycle 7); primary asm	hg002-Cornetto-1/hg002-Cornetto-1.7.fasta
+hg002-Cornetto-1.8	Hg002 DNA; 1x HiFi SMRT cell + 3x ONT duplex FC (cornetto cycle 8); primary asm	hg002-Cornetto-1/hg002-Cornetto-1.8.fasta
+hg002-Cornetto-1.9 (final)	hg002 DNA; 1x HiFi SMRT cell + 3x ONT duplex FC (cornetto cycle 9); primary asm	hg002-Cornetto-1/hg002-Cornetto-1.9.fasta
+hg002-Cornetto-2.1	Hg002 DNA; 1x HiFi SMRT cell + 1x ONT duplex FC (cornetto cycle 1); primary asm	hg002-Cornetto-2/hg002-Cornetto-2.1.fasta
+hg002-Cornetto-2.2	Hg002 DNA; 1x HiFi SMRT cell + 1x ONT duplex FC (cornetto cycle 2); primary asm	hg002-Cornetto-2/hg002-Cornetto-2.2.fasta
+hg002-Cornetto-2.3	Hg002 DNA; 1x HiFi SMRT cell + 1x ONT duplex FC (cornetto cycle 3); primary asm	hg002-Cornetto-2/hg002-Cornetto-2.3.fasta
+hg002-Cornetto-2.4	Hg002 DNA; 1x HiFi SMRT cell + 2x ONT duplex FC (cornetto cycle 4); primary asm	hg002-Cornetto-2/hg002-Cornetto-2.4.fasta
+hg002-Cornetto-2.5	Hg002 DNA; 1x HiFi SMRT cell + 2x ONT duplex FC (cornetto cycle 5); primary asm	hg002-Cornetto-2/hg002-Cornetto-2.5.fasta
+hg002-Cornetto-2.6	Hg002 DNA; 1x HiFi SMRT cell + 2x ONT duplex FC (cornetto cycle 6); primary asm	hg002-Cornetto-2/hg002-Cornetto-2.6.fasta
+hg002-Cornetto-2.7	Hg002 DNA; 1x HiFi SMRT cell + 3x ONT duplex FC (cornetto cycle 7); primary asm	hg002-Cornetto-2/hg002-Cornetto-2.7.fasta
+hg002-Cornetto-2.8	Hg002 DNA; 1x HiFi SMRT cell + 3x ONT duplex FC (cornetto cycle 8); primary asm	hg002-Cornetto-2/hg002-Cornetto-2.8.fasta
+hg002-Cornetto-2.9 (final)	hg002 DNA; 1x HiFi SMRT cell + 3x ONT duplex FC (cornetto cycle 9); primary asm	hg002-Cornetto-2/hg002-Cornetto-2.9.fasta
+hg002-Base, primary	hg002 DNA; 1x ONT flow cell (LSK114, simplex reads, SUP); primary asm	hg002-ONT_base/hg002-ONT_base.fasta
+hg002-Base, h1	hg002 DNA; 1x ONT flow cell (LSK114, simplex reads, SUP); haplotype 1	hg002-ONT_base/hg002-ONT_base.hap1.fasta
+hg002-Base, h2	hg002 DNA; 1x ONT flow cell (LSK114, simplex reads, SUP); haplotype 2	hg002-ONT_base/hg002-ONT_base.hap2.fasta
+hg002-NonCornetto-3, primary	hg002 DNA; 3x ONT flow cell (LSK114, simplex reads, SUP); primary asm	hg002-NonCornetto-3/hg002-NonCornetto-3.fasta
+hg002-NonCornetto-3, h1	hg002 DNA; 3x ONT flow cell (LSK114, simplex reads, SUP); haplotype 1	hg002-NonCornetto-3/hg002-NonCornetto-3.hap1.fasta
+hg002-NonCornetto-3, h2	hg002 DNA; 3x ONT flow cell (LSK114, simplex reads, SUP); haplotype 2	hg002-NonCornetto-3/hg002-NonCornetto-3.hap2.fasta
+hg002-Cornetto-3.1, primary	hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 1; LSK114, simplex reads, SUP); primary asm	hg002-Cornetto-3/hg002-Cornetto-3.1.fasta
+hg002-Cornetto-3.2, primary	hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 2; LSK114, simplex reads, SUP); primary asm	hg002-Cornetto-3/hg002-Cornetto-3.2.fasta
+hg002-Cornetto-3.3 (final), primary	hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 3; LSK114, simplex reads, SUP); primary asm	hg002-Cornetto-3/hg002-Cornetto-3.3.fasta
+hg002-Cornetto-4.1, h1	hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 1; LSK114, simplex reads, SUP); haplotype 1	hg002-Cornetto-4/hg002-Cornetto-4.1.hap1.fasta
+hg002-Cornetto-4.1, h2	hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 1; LSK114, simplex reads, SUP); haplotype 2	hg002-Cornetto-4/hg002-Cornetto-4.1.hap2.fasta
+hg002-Cornetto-4.2, h1	hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 2; LSK114, simplex reads, SUP); haplotype 1	hg002-Cornetto-4/hg002-Cornetto-4.2.hap1.fasta
+hg002-Cornetto-4.2, h2	hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 2; LSK114, simplex reads, SUP); haplotype 2	hg002-Cornetto-4/hg002-Cornetto-4.2.hap2.fasta
+hg002-Cornetto-4.3 (final), h1	hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 3; LSK114, simplex reads, SUP); haplotype 1	hg002-Cornetto-4/hg002-Cornetto-4.3.hap1.fasta
+hg002-Cornetto-4.3 (final), h2	hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 3; LSK114, simplex reads, SUP); haplotype 2	hg002-Cornetto-4/hg002-Cornetto-4.3.hap2.fasta
