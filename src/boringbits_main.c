@@ -1,6 +1,6 @@
 /**
- * @file depth.c
- * @brief entry point to depth
+ * @file boringbits_main.c
+ * @brief entry point to boringbits_main
  * @author Hasindu Gamaarachchi (hasindu@unsw.edu.au)
 
 MIT License
@@ -103,7 +103,6 @@ static inline void print_help_msg(FILE *fp_help, optp_t opt){
     fprintf(fp_help,"   -h                         help\n");
     //fprintf(fp_help,"   -o FILE                    output to file [stdout]\n");
     fprintf(fp_help,"   --verbose INT              verbosity level [%d]\n",(int)get_log_level());
-    fprintf(fp_help,"   --version                  print version\n");
 
     //fprintf(fp_help,"\nadvanced options:\n");
     //fprintf(fp_help,"   --debug-break INT          break after processing the specified no. of batches\n");
@@ -538,7 +537,7 @@ void the_boring_bits(const char* covtotalfile, const char *covmqfile, optp_t *op
 
 
 
-void init_optp(optp_t *opt){
+static void init_optp(optp_t *opt){
     opt->window_size = 2500;
     opt->window_inc = 50;
     opt->low_cov_thresh = 0.4;

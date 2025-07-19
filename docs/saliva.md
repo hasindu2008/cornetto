@@ -38,6 +38,5 @@ centrifuge -p 48 -f -x index_dir/p_compressed+h+v -U asm-all-0.fasta -S contig_c
 
 4. Create a BED file covering full contigs for each nonhuman contig to be excluded during readfish
 ```bash
-samtools faidx asm-all-0.nonhuman_contigs.fasta
-awk '{print $1"\t0\t"$2}' asm-0.fasta.fai > asm-all-0.nonhuman_contigs.bed
+cornetto fa2bed asm-all-0.nonhuman_contigs.fasta > asm-all-0.nonhuman_contigs.bed
 ```

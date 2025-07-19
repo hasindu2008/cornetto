@@ -2,17 +2,20 @@
 
 Cornetto is a method for adaptive genome assembly using nanopore sequencing from Oxford Nanopore Technologies (ONT). This repository documents the Cornetto bioinformatics protocol and contains the source code for Cornetto (a programme written in C and a collection of shell scripts).
 
+Documentation: https://hasindu2008.github.io/cornetto </br>
+Preprint: https://doi.org/10.1101/2025.03.31.646505 </br>
+Talk video: https://youtu.be/ci0OoM6VbsA </br>
+
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
-- [Creating a base assembly and initial cornetto panel](#creating-a-base-assembly-and-initial-cornetto-panel)
+- [Creating the base assembly and initial Cornetto panel](#creating-the-base-assembly-and-initial-cornetto-panel)
 - [Running a Cornetto iteration](#running-a-cornetto-iteration)
 - [Evaluating assemblies](#evaluating-assemblies)
 - [Additional refinements](#additional-refinements)
 - [Usage of C programme](#usage-of-c-programme)
-- [shitflow (shell-based internode transfer flow)](#shitflow-shell-based-internode-transfer-flow)
 - [Notes](#notes)
-<!-- - [Acknowledgement](#acknowledgement) -->
+- [Acknowledgement](#acknowledgement)
 
 ## Prerequisites
 
@@ -22,28 +25,32 @@ Cornetto is a method for adaptive genome assembly using nanopore sequencing from
 * For adaptive sampling, we use the open-source [readfish](https://github.com/LooseLab/readfish) software, so get it installed on the host running MinKNOW. ONT MinKNOW's inbuilt adaptive sampling also should work, but we relied on the open-source readfish.
 * Get the Cornetto C programme compiled as instructed in the section [below](#compiling-the-cornetto-c-programme).
 * For assembling the genomes, you will need [hifiasm](https://github.com/chhylp123/hifiasm). For ONT-only assemblies, make sure you have a newer version (>= 0.22.0) that supports ONT data (`--ont` option).
-* For creating the Cornetto readfish panels, we need following software.
+* For creating the Cornetto readfish panels, we need following additional software.
     - [gfatools](https://github.com/lh3/gfatools)
     - [minimap2](https://github.com/lh3/minimap2/)
     - [samtools](https://www.htslib.org/download/)
     - [bedtools](https://github.com/arq5x/bedtools2)
-    - [seqkit](https://bioinf.shenwei.me/seqkit) (only for ONT-only simplex)
     - [centrifuge](https://ccb.jhu.edu/software/centrifuge) (only for saliva samples)
-- For evaluating assemblies, you may use methods of your choice. Our suggested method requires following software:
+- For evaluating assemblies, you may use methods of your choice. Our suggested method requires following additional software:
     - [quast](https://quast.sourceforge.net)
     - [compleasm](https://github.com/huangnengCSU/compleasm)
     - [yak](https://github.com/lh3/yak)
-    - [VGP telomere scripts](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere)
-    - [minidot](https://github.com/lh3/miniasm)
 
 ### Compiling the Cornetto C programme
 
 Building the Cornetto C programme requires a compiler that supports C99 standard (with X/Open 7 POSIX 2008 extensions), which is widely available. To build:
 
 ```bash
+sudo apt-get install zlib1g-dev   #install zlib development libraries
 git clone https://github.com/hasindu2008/cornetto
 cd cornetto
 make
+```
+The commands to zlib development libraries on some popular distributions :
+```bash
+On Debian/Ubuntu : sudo apt-get install zlib1g-dev
+On Fedora/CentOS : sudo dnf/yum install zlib-devel
+On OS X : brew install zlib
 ```
 
 ## Creating the base assembly and initial Cornetto panel
@@ -95,10 +102,8 @@ samtools index asm-0.realigned.bam
 
 Get the per base coverage information for total alignments (mapq>=0) and unique alignments (mapq>=20)
 ```bash
-samtools faidx asm-0.fasta
-awk '{print $1"\t0\t"$2}' asm-0.fasta.fai | sort -k3,3nr > asm-0.chroms.bed
-samtools depth -@ 24 -b asm-0.chroms.bed -aa asm-0.realigned.bam  | awk '{print $1"\t"$2-1"\t"$2"\t"$3}' > asm-0.cov-total.bg
-samtools depth -@ 24 -Q 20 -b asm-0.chroms.bed -aa asm-0.realigned.bam  | awk '{print $1"\t"$2-1"\t"$2"\t"$3}' > asm-0.cov-mq20.bg
+samtools depth -@ 24 -aa asm-0.realigned.bam  | awk '{print $1"\t"$2-1"\t"$2"\t"$3}' > asm-0.cov-total.bg
+samtools depth -@ 24 -Q 20 -aa asm-0.realigned.bam  | awk '{print $1"\t"$2-1"\t"$2"\t"$3}' > asm-0.cov-mq20.bg
 ```
 
 Now to create the initial Cornetto panel, you can launch the script at [scripts/create-cornetto.sh](scripts/create-cornetto.sh):
@@ -180,10 +185,12 @@ If you are using PacBio base + ONT duplex Cornetto, basecall your data with the 
 slow5-dorado duplex dna_r10.4.1_e8.2_400bps_sup@v4.2.0 reads-1.blow5  > reads-1.bam
 ```
 
-If you are using ONT simplex for the base and Cornetto, basecall your data with the simplex super accuracy basecalling model. Then extract reads which are longer than a threshold (30 kbases) into a file called `reads-1.fastq`. The commands we used for simplex basecalling was:
+If you are using ONT simplex for the base and Cornetto, basecall your data with the simplex super accuracy basecalling model. Then extract reads which are equal or longer than a threshold (30 kbases) into a file called `reads-1.fastq`. The commands we used for simplex basecalling was:
 ```bash
+# basecall
 slow5-dorado basecaller -x cuda:all dna_r10.4.1_e8.2_400bps_sup@v5.0.0 reads-1.blow5 --emit-fastq --min-qscore 10  > reads-1_all.fastq
-seqkit seq -m 30000 reads-1_all.fastq -o reads-1.fastq
+# reads >=30 kbases
+cornetto seq -m 30000 reads-1_all.fastq > reads-1.fastq
 ```
 
 ### Step 3: Assembling
@@ -220,7 +227,7 @@ This step is only required for diploid assemblies using ONT simplex data (ONT si
 Run the script at [scripts/recreate-hapnetto.sh](scripts/recreate-hapnetto.sh):
 
 ```
-scripts/create-hapnetto.sh asm-1
+scripts/recreate-hapnetto.sh asm-1
 ```
 
 See comments inside [scripts/recreate-hapnetto.sh](scripts/recreate-hapnetto.sh) to understand what the script is doing. The final outputs we want are the two files `asm-1_dip.boringbits.bed`  and `asm-1_dip.boringbits.txt`.
@@ -269,25 +276,22 @@ samtools faidx hg002v1.0.1.fasta.gz
 # paternal haplotype
 grep "PATERNAL\|chrEBV\|chrM\|chrX\|chrY" hg002v1.0.1.fasta.gz.fai | cut -f 1 > paternal.txt
 samtools faidx hg002v1.0.1.fasta.gz -r paternal.txt -o hg002v1.0.1_pat.fasta
-
-# maternal haplotype
-grep "MATERNAL\|chrEBV\|chrM\|chrX\|chrY" hg002v1.0.1.fasta.gz.fai | cut -f 1 > maternal.txt
-samtools faidx hg002v1.0.1.fasta.gz -r maternal.txt -o hg002v1.0.1_mat.fasta
 ```
 
-To generate the dotplot use the `scripts/minidotplot.sh`. This script requires minimap2, samtools and `minidot` from [miniasm](https://github.com/lh3/miniasm) package. For your convenience, we are in the process of integrating `minidot` to the Cornetto C programme.
+To generate the dotplot use the `scripts/minidotplot.sh`. This script requires minimap2, samtools.
 
 ```bash
 scripts/minidotplot.sh hg002v1.0.1_pat.fasta asm.fasta
 ```
 
-To get the telomere statistics use the `scripts/telostats.sh`. This script requires the [teleomere analysis scripts from the VGP project](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere). For your convenience, we are in the process of integrating the functionality of these VGP telomere scripts to the Cornetto C programme.
+To get the telomere statistics use the `scripts/telostats.sh`. This script uses cornetto subcommands that implements  functionality of [teleomere analysis scripts from the VGP project](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere).
+
 
 ```bash
 scripts/telostats.sh asm.fasta
 ```
 
-To get per-chromosome statistics use the `scripts/asmstats.sh`. Make sure you have already run `scripts/minidotplot.sh` and `scripts/telostats.sh` before running this script. This is because the files generated in those steps are reused by this script. We plan to make the functionality of this bash script into the Cornetto programme in future.
+To get per-chromosome statistics use the `scripts/asmstats.sh`. Make sure you have already run `scripts/minidotplot.sh` and `scripts/telostats.sh` before running this script. This is because the files generated in those steps are reused by this script.
 
 ```bash
 scripts/asmstats.sh asm.fasta
@@ -320,18 +324,19 @@ If you are focused on primary assemblies, you may use following the approach doc
 
 Our Cornetto C programme contains a number of subtools that are used by the above explained scripts. If you want to use those subtools in your scripts, see the [manual page](docs/command.md).
 
-
-## Shitflow (**Sh**ell-based **i**nternode **t**ransfer **f**low)
-
-The [shitflow](shitflow/README.md) directory in the repository contains the scripts we used semi-automate the execution and analysis on a combination of in-house computer systems and the Australia NCI Gadi supercomputer nodes. These scripts are for our own use with various hardcoded paths, so you better keep away. Just documenting here in case one is curious what the heck this is and for the sake of exact reproducibility.
-
-
 ## Notes
 
 - Our scripts and the C programme is not tested on non-Linux platforms, so might need some adjustments.
 - A very useful article that explains various assembly-related terms: [concepts-in-phased-assemblies](https://lh3.github.io/2021/04/17/concepts-in-phased-assemblies)
 
-<!-- ## Acknowledgement
+## Acknowledgement
 
-- minidot programme in [src/minidot](src/minidot) is from https://github.com/lh3/miniasm under the MIT license -->
+- cornetto uses [klib](https://github.com/attractivechaos/klib) which is under the MIT license.
+- `minidot` from [miniasm](https://github.com/lh3/miniasm) package (MIT license) has been integrated as `cornetto minidot` at [src/minidot](src/minidot).
+- `sdust` programme from https://github.com/lh3/sdust is integrated as `cornetto sdust` at [src/sdust](src/sdust).
+- `telofind`, `telobreaks` and `telowin` subcommands are implemented based on [VGP telomere scripts](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere) license under BSD.
+
+
+
+
 

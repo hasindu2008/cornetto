@@ -1,0 +1,13 @@
+Assembly Description	Assembly File	Assembly File
+Petrel-Base, primary	Petrel DNA; 1x HiFi SMRT cell; primary asm	Petrel-Base/Petrel-Base.fasta
+Petrel-Cornetto, primary	Petrel DNA; 1x HiFi SMRT cell + 2x ONT duplex FC (7x cycles); primary asm	Petrel-Cornetto/Petrel-Cornetto.fasta
+Cichlid-Base, primary	Cichlid DNA; 1x HiFi SMRT cell; primary asm	Cichlid-Base/Cichlid-Base.fasta
+Cichlid-Cornetto, primary	Cichlid DNA; 1x HiFi SMRT cell + 2x ONT duplex FC (6x cycles); primary asm	Cichlid-Cornetto/Cichlid-Cornetto.fasta
+Turtle-Base, h1	Turtle DNA; 1x ONT FC (standard; LSK114, simplex reads, SUP basecalling); haplotype 1	Turtle-Base/Turtle-Base.hap1.fasta
+Turtle-Base, h2	Turtle DNA; 1x ONT FC (standard; LSK114, simplex reads, SUP basecalling); haplotype 2	Turtle-Base/Turtle-Base.hap2.fasta
+Turtle-Cornetto, h1	Turtle DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; 3x cycles; LSK114, simplex reads, SUP basecalling); haplotype 1	Turtle-Cornetto/Turtle-Cornetto.hap1.fasta
+Turtle-Cornetto, h2	Turtle DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; 3x cycles; LSK114, simplex reads, SUP basecalling); haplotype 2	Turtle-Cornetto/Turtle-Cornetto.hap2.fasta
+Parrot-Base, h1	Parrot DNA; 2x ONT FC (standard; LSK114, simplex reads, SUP basecalling); haplotype 1	Parrot-Base/Parrot-Base.hap1.fasta
+Parrot-Base, h2	Parrot DNA; 2x ONT FC (standard; LSK114, simplex reads, SUP basecalling); haplotype 2	Parrot-Base/Parrot-Base.hap2.fasta
+Parrot-Cornetto, h1	Parrot DNA; 2x ONT FC (standard) + 1x ONT FC (cornetto; 4x cycles; LSK114, simplex reads, SUP basecalling); haplotype 1	Parrot-Cornetto/Parrot-Cornetto.hap1.fasta
+Parrot-Cornetto, h2	Parrot DNA; 2x ONT FC (standard) + 1x ONT FC (cornetto; 4x cycles; LSK114, simplex reads, SUP basecalling); haplotype 2	Parrot-Cornetto/Parrot-Cornetto.hap2.fasta

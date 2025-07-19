@@ -1,0 +1,22 @@
+Assembly name	Description	fastq 0	fastq 1	fastq 2	fastq 3	fastq 4	fastq 5	fastq 6	fastq 7	fastq 8	fastq 9
+hg002-Hifi-1	1x HiFi SMRT cell	A_0_RGBX240039									
+hg002-Hifi-2	2x HiFi SMRT cell	A_0_RGBX240039	B_0_RGBX240196								
+hg002-Hifi-3	3x HiFi SMRT cell	A_0_RGBX240039	B_0_RGBX240196	m84005_220827_014912_s1 (T2TC)							
+hg002-NonCornetto-1	1x HiFi SMRT cell + 3x ONT duplex FC (without cornetto)	A_0_RGBX240039	W_PGXHXX240196	X_PGXHXX240295	Y_PGXHXX240296						
+hg002-NonCornetto-2	1x HiFi SMRT cell + 9x ONT duplex FC (without cornetto)	A_0_RGBX240039	W_PGXHXX240196	X_PGXHXX240295	Y_PGXHXX240296	HG002_3 (T2TC)	HG002_6 (T2TC)	HG002_2 (T2TC)	HG002_9 (T2TC)	HG002_4 (T2TC)	HG002_8 (T2TC)
+hg002-Cornetto-1*	1x HiFi SMRT cell + 3x ONT duplex FC (cornetto 9 cycles)	A_0_RGBX240039	A_1_QGXHXX240275	A_2_QGXHXX240279	A_3_QGXHXX240283	A_4_QGXHXX240293	A_5_QGXHXX240298	A_6_QGXHXX240304	A_7_QGXHXX240308	A_8_QGXHXX240317	A_9_QGXHXX240325
+hg002-Cornetto-2*	1x HiFi SMRT cell + 3x ONT duplex FC (cornetto 9 cycles)	B_0_RGBX240196	B_1_QGXHXX240276	B_2_QGXHXX240280	B_3_QGXHXX240284	B_4_QGXHXX240294	B_5_QGXHXX240299	B_6_QGXHXX240305	B_7_QGXHXX240332	B_8_QGXHXX240338	B_9_QGXHXX240344
+											
+hg002-Base	hg002 DNA; 1x ONT flow cell (LSK114, simplex reads, SUP)	D_0_PGXXSX240470									
+hg002-NonCornetto-3	hg002 DNA; 3x ONT flow cell (LSK114, simplex reads, SUP)	D_0_PGXXSX240470	Z_1_PGXXXX250050	Z_2_PGXXXX250051							
+hg002-Cornetto-3*	hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto 3 cycles; LSK114, simplex reads, SUP)	D_0_PGXXSX240470	D_1_PGXXXX240596	D_2_PGXXXX250005	D_3_PGXXXX250015						
+hg002-Cornetto-4*	hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto 3 cycles; LSK114, simplex reads, SUP)	D_0_PGXXSX240470	E_1_QGXXXX250049	E_2_QGXXXX250062	E_3_QGXXXX250063						
+											
+Petrel-Base	Petrel DNA; 1x HiFi SMRT cell	S_0_RGBX240160									
+Petrel-Cornetto	Petrel DNA; 1x HiFi SMRT cell + 2x ONT duplex FC (cornetto 7 cycles);	S_0_RGBX240160	S_1_QGXHXX240346	S_2_QGXHXX240351	S_3_QGXHXX240354	S_4_QGXHXX240364	S_5_QGXHXX240370	S_6_QGXHXX240376	S_7_QGXHXX240383		
+Cichlid-Base	Cichlid DNA; 1x HiFi SMRT cell	C_0_RGBX240268									
+Cichlid-Cornetto	Cichlid DNA; 1x HiFi SMRT cell + 2x ONT duplex FC (cornetto 6 cycles)	C_0_RGBX240268	C_1_QGXHXX240408	C_2_QGXHXX240418	C_3_QGXHXX240421	C_4_QGXHXX240440	C_5_QGXHXX240445	C_6_QGXHXX240450			
+Turtle-Base	Turtle DNA; 1x ONT FC (standard; LSK114, simplex reads, SUP basecalling)	M_0_PGXXXX250091									
+Turtle-Cornetto	Turtle DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto 3 cycles; LSK114, simplex reads, SUP basecalling)	M_0_PGXXXX250091	M_1_QGXXXX250215	M_2_QGXXXX250226	M_3_QGXXXX250237						
+Parrot-Base	Parrot DNA; 2x ONT FC (standard; LSK114, simplex reads, SUP basecalling)	L_0_PGXXXX250096_PGXXXX250137									
+Parrot-Cornetto	Parrot DNA; 2x ONT FC (standard) + 1x ONT FC (cornetto 4 cycles; LSK114, simplex reads, SUP basecalling)	L_0_PGXXXX250096_PGXXXX250137	L_1_QGXXXX250203	L_2_QGXXXX250216	L_3_QGXXXX250227	L_4_QGXXXX250238					
