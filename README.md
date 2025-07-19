@@ -2,9 +2,9 @@
 
 Cornetto is a method for adaptive genome assembly using nanopore sequencing from Oxford Nanopore Technologies (ONT). This repository documents the Cornetto bioinformatics protocol and contains the source code for Cornetto (a programme written in C and a collection of shell scripts).
 
-Documentation: https://hasindu2008.github.io/cornetto </br>
-Preprint: https://doi.org/10.1101/2025.03.31.646505 </br>
-Talk video: https://youtu.be/ci0OoM6VbsA </br>
+Documentation: https://hasindu2008.github.io/cornetto <br>
+Preprint: https://doi.org/10.1101/2025.03.31.646505 <br>
+Talk video: https://youtu.be/ci0OoM6VbsA <br>
 
 ## Table of Contents
 
