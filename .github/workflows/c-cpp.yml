@@ -54,25 +54,6 @@ jobs:
       run: make -j8
     - name: test
       run: make test
-  ubuntu_16_cmake:
-    name: Ubuntu 16 cmake
-    runs-on: ubuntu-24.04
-    container:
-      image: ubuntu:16.04
-      volumes:
-        - /node20217:/node20217:rw,rshared
-        - /node20217:/__e/node20:ro,rshared
-    steps:
-    - name: nodejs
-      run: |
-        apt-get update && apt-get install -y wget xz-utils
-        wget https://unofficial-builds.nodejs.org/download/release/v20.9.0/node-v20.9.0-linux-x64-glibc-217.tar.xz
-        tar -xf node-v20.9.0-linux-x64-glibc-217.tar.xz --strip-components 1 -C /node20217
-    - uses: actions/checkout@v2
-    - name: install packages
-      run: apt-get update && apt-get install -y zlib1g-dev gcc g++ autoconf automake make cmake
-    - name: build
-      run:  mkdir build && cd build && cmake -DSLOW5_LINK_STATIC=ON -DSLOW5_USE_ZSTD=OFF -DSLOW5_ENABLE_MT=OFF .. && make -j8
   ubuntu_18:
     name: Ubuntu 18
     runs-on: ubuntu-24.04
@@ -96,8 +77,6 @@ jobs:
       run: make test
     - name: test valgrind
       run: ./test/test.sh mem
-    - name: examples
-      run: make examples
   ubuntu_20:
     name: Ubuntu 20
     runs-on: ubuntu-24.04
@@ -115,6 +94,33 @@ jobs:
       run: make clean && make CC=clang -j8
     - name: test-clang
       run: make test
+  ubuntu_20_icc:
+    name: Ubuntu 20 icc
+    runs-on: ubuntu-24.04
+    container:
+      image: ubuntu:20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: install packages
+      run: apt-get update && apt-get install -y zlib1g-dev wget gcc g++ autoconf automake make libzstd-dev gnupg
+    - name: Intel Apt repository
+      timeout-minutes: 1
+      run: |
+        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+        apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+        echo "deb https://apt.repos.intel.com/oneapi all main" | tee /etc/apt/sources.list.d/oneAPI.list
+        apt-get update
+    - name: install packages
+      run: apt-get update && apt-get install -y libzstd-dev intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
+    - name: Setup Intel oneAPI environment
+      run: |
+        . /opt/intel/oneapi/setvars.sh
+        printenv >> $GITHUB_ENV
+    - name: build
+      run: make CC=icc -j8
+    - name: test
+      run: make test CC=icc
   ubuntu_22:
     name: Ubuntu 22
     runs-on: ubuntu-22.04
@@ -138,28 +144,47 @@ jobs:
     - name: test-gcc
       run: make test
 
-  # os_x_13:
-  #   name: OSX 13
-  #   runs-on: macos-13
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: build
-  #     run: make -j8
-  #   - name: test
-  #     run: make test
-  #   - name: examples
-  #     run: make examples
-  # os_x_14:
-  #   name: OSX 14
-  #   runs-on: macos-14
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: build
-  #     run: make -j8
-  #   - name: test
-  #     run: make test
-  #   - name: examples
-  #     run: make examples
+  os_x_13:
+    name: OSX 13
+    runs-on: macos-13
+    steps:
+    - uses: actions/checkout@v2
+    - name: build
+      run: make -j8
+    - name: test
+      run: make test
+  os_x_14:
+    name: OSX 14
+    runs-on: macos-14
+    steps:
+    - uses: actions/checkout@v2
+    - name: build
+      run: make -j8
+    - name: test
+      run: make test
+  ubuntu_24_arm:
+    name: Ubuntu 24 ARM
+    runs-on: ubuntu-24.04-arm
+    steps:
+    - uses: actions/checkout@v2
+    - name: install packages
+      run: sudo apt-get update && sudo apt-get install zlib1g-dev
+    - name: build-gcc
+      run: make -j8
+    - name: test-gcc
+      run: make test
+  ubuntu_22_arm:
+    name: Ubuntu 22 ARM
+    runs-on: ubuntu-22.04-arm
+    steps:
+    - uses: actions/checkout@v2
+    - name: install packages
+      run: sudo apt-get update && sudo apt-get install zlib1g-dev
+    - name: build-gcc
+      run: make -j8
+    - name: test-gcc
+      run: make test
+
   # arm64:
   #   name: ubuntu arm
   #   runs-on: ubuntu-latest
