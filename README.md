@@ -12,13 +12,13 @@ Documentation: https://hasindu2008.github.io/cornetto <br>
 - [Talk video link](https://youtu.be/ci0OoM6VbsA)
 - [Datasets](docs/data.md)
 
-## Cornetto Bioinformatics protocol
+## Cornetto bioinformatics protocol
 
-See [here](docs/protocol.md)
+See [here](docs/protocol.md).
 
-## Cornetto Toolkit
+## Cornetto toolkit
 
-See [here](docs/toolkit.md)
+See [here](docs/toolkit.md).
 
 ## Acknowledgement
 
