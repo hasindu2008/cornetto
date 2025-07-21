@@ -41,6 +41,6 @@ scripts/asmstats.sh asm.fasta
 
 ## Usage of C programme
 
-Our Cornetto C programme contains a number of subtools that are used by the above explained scripts. If you want to use those subtools in your scripts, see the [manual page](docs/command.md).
+Our Cornetto C programme contains a number of subtools that are used by the above explained scripts. If you want to use those subtools in your scripts, see the [manual page](command.md).
 
 
