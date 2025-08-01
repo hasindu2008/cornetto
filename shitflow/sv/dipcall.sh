@@ -23,7 +23,7 @@ die() {
     exit 1
 }
 
-${DIPCALL} --version || die "DIPCALL not found: ${DIPCALL}"
+test -x ${DIPCALL} || die "DIPCALL not found: ${DIPCALL}"
 ${BGZIP} --version || die "BGZIP not found: ${BGZIP}"
 ${TABIX} --version || die "TABIX not found: ${TABIX}"
 ${BCFTOOLS} --version || die "BCFTOOLS not found: ${BCFTOOLS}"
