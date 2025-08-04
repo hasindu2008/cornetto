@@ -49,9 +49,8 @@ die() {
 minimap2 --version || die "Could not find minimap2"
 samtools --version || die "Could not find samtools"
 
-export MINIDOT=/g/data/ox63/install/miniasm/minidot
+export CORNETTO=/g/data/ox63/hasindu/cornetto/cornetto/cornetto
 export PATH=$PATH:/g/data/ox63/install/datamash-1.3/
-export TELO_SCRIPT_PATH=/g/data/ox63/install/vgp-pipeline/telomere/telomere_analysis.sh
 export SCRIPT_DIR=/g/data/ox63/hasindu/cornetto/cornetto/scripts
 
 test -z $REF && die "Reference file not provided"
