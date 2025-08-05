@@ -22,7 +22,7 @@ test -e ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed || die "File ${PREFIX}/${P
 
 awk '{print "s/"$1"/"$2"/g"}' ${PREFIX}.fasta.chr.rename.txt | sed -f - ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed | sort -k1,1 | cut -f1 | uniq -c | sort -k1,1 -r -n | awk '{print $2"\t"$1}' > ${PREFIX}/$PREFIX.fasta.fix.tmp.telostat.txt
 
-echo ""
+echo "${FASTA}"
 echo ""
 echo -e "chr\tT2T?\tNTelo\tTelocontiglen"
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY
