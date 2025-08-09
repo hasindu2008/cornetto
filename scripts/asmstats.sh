@@ -14,8 +14,10 @@ die() {
 datamash --version > /dev/null || die "Datamash not found"
 
 FASTA=$1
-PREFIX=$(basename $FASTA .fasta)
+PREFIX=$(basename $FASTA .fa)
+PREFIX=$(basename $PREFIX .fasta)
 FILE=$PREFIX.fasta.fix.tmp.paf
+
 test -e $FILE  || die "File $FILE does not exist. Did you run minidotplot.sh?"
 test -e ${PREFIX}.report.tsv || die "File ${PREFIX}.report.tsv does not exist. Did you run minidotplot.sh?"
 awk '{print $1"\t"$4}' ${PREFIX}.report.tsv > ${PREFIX}.chr.rename.txt || die "awk failed"
