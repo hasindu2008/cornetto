@@ -6,7 +6,7 @@
 
 This programme loads the whole depth file to memory, thus would need tens of gigabytes of RAM. It is not memory-optimized because the assembly process already requires several hundred gigabytes of RAM. Therefore, the user is expected to have access to a computer with a large amount of RAM.
 
-Options:
+**Options:**
 
 * `-q FILE`:       depth file with high mapq read coverage
 * `-w INT`:        window size [default: 2500]
@@ -31,7 +31,7 @@ Cornetto noboringbits prints coordinate windows that meet any of the following:
    - windows with low mappability: mean MAPQ 20 coverage for window is < [0.4]x mean coverage for the window
 
 
-Example usage:
+**Example usage:**
 ```
 ./cornetto noboringbits test/cov-total.bg -q test/cov-mq20.bg > noboringbits.txt
 ```
@@ -92,7 +92,7 @@ This programme processes a FASTA file and a PAF alignment file to fix the direct
 
 This subcommand generates a dot plot from a PAF file. From https://github.com/lh3/miniasm.
 
-Options:
+**Options:**
 
 * `-m INT`:        minimum match length [default: 100]
 * `-i FLOAT`:      minimum identity [default: 0.1]
@@ -108,15 +108,16 @@ Options:
 cornetto minidot -m 500 -i 0.9 -s 2000 -w 800 input.paf > output.eps
 ```
 
+---
 
 ## Telemere evaluation
 
 
 ### telowin
 
-**This subcommand analyzes telomere windows in a genome assembly.**
+This subcommand analyses telomere windows in a genome assembly.
 
-Options:
+**Options:**
 
 * `<input_file>`:  Input file containing telomere regions.
 * `<identity>`:    Identity percentage (e.g., 99.9).
@@ -131,9 +132,9 @@ cornetto telowin input.telomere 99.9 0.4 > output.windows
 
 ### telobreaks
 
-**This subcommand identifies telomere breaks in a genome assembly.**
+This subcommand identifies telomere breaks in a genome assembly.
 
-Options:
+**Inputs:**
 
 * `<lens_file>`:   File containing contig lengths.
 * `<sdust_file>`:  File containing low-complexity regions.
@@ -148,9 +149,9 @@ cornetto telobreaks assembly.lens assembly.sdust assembly.telomere > output.brea
 
 ### telofind
 
-**This subcommand identifies telomere sequences in a FASTA file.**
+This subcommand identifies telomere sequences in a FASTA file.
 
-Options:
+**Options:**
 
 * `<input.fasta>`: Input FASTA file.
 * `[sequence]`:    Optional sequence to search for (default: `TTAGGG`).
