@@ -48,6 +48,7 @@ GET_HAP_X_FUN () {
     do
         grep $ctg ${TMPOUT}/${HAP}.txt | awk '{print $6"\t"$8"\t"$9}' | ${BEDTOOLS} sort | ${BEDTOOLS} merge -d 1000000  >> ${TMPOUT}/${HAP}_tmp.bed || die "awk failed"
     done
+    # todo: replace grep with a proper column comparison
 
     # fun1: get the gaps on the primary assembly, that are not covered by hapX contigs
     ${BEDTOOLS} subtract -a ${ASSBED} -b ${TMPOUT}/${HAP}_tmp.bed > ${TMPOUT}/${HAP}_tmp2.bed || die "bedtools subtract failed"

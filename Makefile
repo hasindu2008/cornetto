@@ -14,6 +14,7 @@ OBJ = $(BUILD_DIR)/main.o \
 	  $(BUILD_DIR)/misc.o \
 	  $(BUILD_DIR)/misc_p.o \
 	  $(BUILD_DIR)/error.o \
+	  $(BUILD_DIR)/pafrec.o \
       $(BUILD_DIR)/find_telomere.o \
       $(BUILD_DIR)/telomere_windows.o \
       $(BUILD_DIR)/telomere_breaks.o \
@@ -72,6 +73,9 @@ $(BUILD_DIR)/misc_p.o: src/misc_p.c src/misc.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/error.o: src/error.c src/error.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/pafrec.o: src/pafrec.c src/pafrec.h src/error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 # temolere stuff

@@ -32,73 +32,7 @@ SOFTWARE.
 #include <assert.h>
 #include <stdint.h>
 #include "error.h"
-
-// Type definitions
-typedef struct {
-    char *rid;
-    int32_t qlen;
-    int32_t query_start;
-    int32_t query_end;
-    int8_t strand;
-    char *tid;
-    int32_t tlen;
-    int32_t target_start;
-    int32_t target_end;
-    uint8_t mapq;
-    char tp;
-} paf_rec_t; //todo remove duplicate of paf_rec_t in src/fixasm_main.c
-
-
-static paf_rec_t *parse_paf_rec(char *buffer) {
-    char *pch = NULL;
-    paf_rec_t *paf = (paf_rec_t *)malloc(sizeof(paf_rec_t));
-    MALLOC_CHK(paf);
-
-    // Read fields from buffer
-    pch = strtok(buffer, "\t\r\n"); assert(pch != NULL);
-    paf->rid = strdup(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->qlen = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->query_start = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->query_end = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->strand = (strcmp(pch, "+") == 0) ? 0 : 1;
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->tid = strdup(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->tlen = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->target_start = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->target_end = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->mapq = atoi(pch);
-
-    paf->tp = 'P';
-    while ((pch = strtok(NULL, "\t\r\n"))) {
-        if (strcmp("tp:A:P", pch) == 0) {
-            paf->tp = 'P';
-        } else if (strcmp("tp:A:S", pch) == 0) {
-            paf->tp = 'S';
-        }
-    }
-
-    return paf;
-}
+#include "pafrec.h"
 
 
 static void load_paf(const char *paffile) {
@@ -135,8 +69,9 @@ static struct option long_options[] = {
     {0, 0, 0, 0}};
 
 static inline void print_help_msg(FILE *fp_help){
-    fprintf(fp_help,"Usage: cornetto asmbed <assembly.fasta> \n");
-    //fprintf(fp_help,"   -v INT                     verbosity level [%d]\n",(int)get_log_level());
+    fprintf(fp_help,"Usage: cornetto asmstats <asm2ref.paf> <telomere.bed>\n");
+    fprintf(fp_help,"   -r FILE                    report from fixasm\n");
+    fprintf(fp_help,"   -v INT                     verbosity level [%d]\n",(int)get_log_level());
     fprintf(fp_help,"   -h                         help\n");
 }
 
@@ -149,6 +84,7 @@ int asmstats_main(int argc, char* argv[]) {
 
     const char *paf = NULL;
     const char *bed = NULL;
+    const char *report = NULL;
 
     FILE *fp_help = stderr;
 
@@ -158,6 +94,9 @@ int asmstats_main(int argc, char* argv[]) {
         if (c=='h'){
             fp_help = stdout;
             fp_help = stdout;
+        }
+        else if (c == 'r') {
+            report = optarg;
         }
 
     }
@@ -172,6 +111,7 @@ int asmstats_main(int argc, char* argv[]) {
     }
     paf = argv[optind];
     bed = argv[optind + 1];
+
 
     if (paf == NULL || bed == NULL) {
         print_help_msg(fp_help);

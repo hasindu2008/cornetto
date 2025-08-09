@@ -177,6 +177,8 @@ This subcommand identifies low-complexity regions in a FASTA file using the symm
 cornetto sdust -w 64 -t 20 input.fa > output.sdust
 ```
 
+---
+
 ## Misc
 
 ### fa2bed

@@ -40,6 +40,7 @@ SOFTWARE.
 #include "kseq.h"
 #include "khash.h"
 #include "error.h"
+#include "pafrec.h"
 
 static struct option long_options[] = {
     {"verbose", required_argument, 0, 'v'},        //0 verbosity level [1]
@@ -50,22 +51,6 @@ static struct option long_options[] = {
 };
 
 
-// Type definitions
-typedef struct {
-    char *rid;
-    int32_t qlen;
-    int32_t query_start;
-    int32_t query_end;
-    int8_t strand;
-    char *tid;
-    int32_t tlen;
-    int32_t target_start;
-    int32_t target_end;
-    int32_t match_len;
-    int32_t block_len;
-    uint8_t mapq;
-    char tp;
-} paf_rec_t;
 
 static char* cleanup_str(char *str){
     char *cleaned_str = (char *)malloc(strlen(str) + 1);
@@ -111,8 +96,6 @@ KHASH_MAP_INIT_STR(map_chr, int)
 
 // Function declarations
 static inline void print_help_msg(FILE *fp_help);
-char *strdup(const char *src);
-static paf_rec_t *parse_paf_rec(char *buffer);
 void reverse_complement(kseq_t *seq);
 int fixasm_main(int argc, char* argv[]);
 
@@ -216,61 +199,6 @@ static void destroy_hashmap_chr(khash_t(map_chr) *h_chr){
         }
     }
     kh_destroy(map_chr, h_chr);
-}
-
-
-static paf_rec_t *parse_paf_rec(char *buffer) {
-    char *pch = NULL;
-    paf_rec_t *paf = (paf_rec_t *)malloc(sizeof(paf_rec_t));
-    MALLOC_CHK(paf);
-
-    // Read fields from buffer
-    pch = strtok(buffer, "\t\r\n"); assert(pch != NULL);
-    paf->rid = strdup(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->qlen = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->query_start = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->query_end = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->strand = (strcmp(pch, "+") == 0) ? 0 : 1;
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->tid = strdup(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->tlen = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->target_start = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->target_end = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->match_len = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->block_len = atoi(pch);
-
-    pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
-    paf->mapq = atoi(pch);
-
-    paf->tp = 'P';
-    while ((pch = strtok(NULL, "\t\r\n"))) {
-        if (strcmp("tp:A:P", pch) == 0) {
-            paf->tp = 'P';
-        } else if (strcmp("tp:A:S", pch) == 0) {
-            paf->tp = 'S';
-        }
-    }
-
-    return paf;
 }
 
 void reverse_complement(kseq_t *seq) {

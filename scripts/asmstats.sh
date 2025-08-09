@@ -17,7 +17,8 @@ FASTA=$1
 PREFIX=$(basename $FASTA .fasta)
 FILE=$PREFIX.fasta.fix.tmp.paf
 test -e $FILE  || die "File $FILE does not exist. Did you run minidotplot.sh?"
-test -e ${PREFIX}.fasta.chr.rename.txt || die "File ${PREFIX}.fasta.chr.rename.txt does not exist. Did you run minidotplot.sh?"
+test -e ${PREFIX}.report.tsv || die "File ${PREFIX}.report.tsv does not exist. Did you run minidotplot.sh?"
+awk '{print $1"\t"$4}' ${PREFIX}.report.tsv > ${PREFIX}.chr.rename.txt || die "awk failed"
 test -e ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed || die "File ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed does not exist. Did you run telostats.sh?"
 
 awk '{print "s/"$1"/"$2"/g"}' ${PREFIX}.fasta.chr.rename.txt | sed -f - ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed | sort -k1,1 | cut -f1 | uniq -c | sort -k1,1 -r -n | awk '{print $2"\t"$1}' > ${PREFIX}/$PREFIX.fasta.fix.tmp.telostat.txt
