@@ -25,7 +25,7 @@ $MINIMAP2 --version > /dev/null 2>&1 || die "minimap2 not found!. Either put min
 ${MINIMAP2} -t16 --eqx -cx asm5 $REF $ASM > ${PREFIX}.tmp.paf || die "minimap2 failed"
 
 ${CORNETTO} fixasm ${ASM} ${PREFIX}.tmp.paf --report ${PREFIX}.report.tsv -w ${PREFIX}.fix.tmp.paf > ${PREFIX}.tmp.renamed.fasta || die "cornetto failed"
-awk '{print $1"\t"$4}' ${PREFIX}.report.tsv > ${PREFIX}.chr.rename.txt || die "awk failed"
+
 
 # done by -w above
 #$MINIMAP2 -t16 --eqx -cx asm5 $REF ${PREFIX}.tmp.renamed.fasta > ${PREFIX}.fix.tmp.paf || die "minimap2 failed"

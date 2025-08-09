@@ -56,7 +56,7 @@ GET_HAP_X_FUN () {
     # fun2:get the corners of the hapX contigs on the primary assembly (500 bp flank)
     awk '{if($2>=500){print $1"\t"$2-500"\t"$2+500} if($3>=500){print $1"\t"$3-500"\t"$3+500}}' ${TMPOUT}/${HAP}_tmp.bed >> ${TMPOUT}/${HAP}_tmp2.bed || die "awk failed"
 
-    # merge the fun2 and func2 bit
+    # merge the fun1 and fun2 bit
     ${BEDTOOLS} sort -i ${TMPOUT}/${HAP}_tmp2.bed | ${BEDTOOLS} merge > ${TMPOUT}/${HAP}_funbits.bed || die "bedtools merge failed"
 }
 
