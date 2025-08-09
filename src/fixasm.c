@@ -61,6 +61,8 @@ typedef struct {
     int32_t tlen;
     int32_t target_start;
     int32_t target_end;
+    int32_t match_len;
+    int32_t block_len;
     uint8_t mapq;
     char tp;
 } paf_rec_t;
@@ -88,6 +90,10 @@ typedef struct {
     int tally_size; // size of the tally array
     int tally_capacity; // capacity of the tally array
     int *tally;
+
+    //later used to save the deduced new contig name
+    char *new_name; // this will be set to the chr name with the highest tally
+
 } ctg_t;
 
 typedef struct{
@@ -115,6 +121,7 @@ static inline void print_help_msg(FILE *fp_help) {
     fprintf(fp_help, "Usage: cornetto fixasm <assembly.fa> <asm_to_ref.paf>\n");
     fprintf(fp_help, "   -m FILE                    write missing contig names to FILE\n");
     fprintf(fp_help, "   -r FILE                    write report to FILE\n");
+    fprintf(fp_help, "   -w FILE                    write fixed PAF to FILE\n");
     fprintf(fp_help, "   -v INT                     verbosity level [%d]\n", (int)get_log_level());
     fprintf(fp_help, "   -h                         help\n");
 }
@@ -132,6 +139,7 @@ static ctg_t *init_ctg(char *rid){
     for (int i = 0; i < new_ctg->tally_capacity; ++i) {
         new_ctg->tally[i] = 0;
     }
+    new_ctg->new_name = NULL; // initially no new name is set
     return new_ctg;
 }
 
@@ -186,6 +194,9 @@ void free_chr_list(chr_list_t *chr_list){
 static void free_ctg(ctg_t *ctg) {
     free(ctg->id);
     free(ctg->tally);
+    if (ctg->new_name) {
+        free(ctg->new_name);
+    }
     free(ctg);
 }
 
@@ -242,7 +253,10 @@ static paf_rec_t *parse_paf_rec(char *buffer) {
     paf->target_end = atoi(pch);
 
     pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
+    paf->match_len = atoi(pch);
+
     pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
+    paf->block_len = atoi(pch);
 
     pch = strtok(NULL, "\t\r\n"); assert(pch != NULL);
     paf->mapq = atoi(pch);
@@ -340,6 +354,67 @@ void load_paf(const char *paffile, khash_t(map_ctgs) *h, khash_t(map_chr) *h_chr
     free(buffer);
 }
 
+
+void write_corrected_paf(const char *out_paf, const char *paffile, khash_t(map_ctgs) *h) {
+
+    // Initialize buffers
+    size_t bufferSize = 4096;
+    char *buffer = (char *)malloc(sizeof(char) * bufferSize);
+    MALLOC_CHK(buffer);
+
+
+    // Read PAF file
+    FILE *fp = fopen(paffile, "r");
+    if (!fp) {
+        perror("fopen");
+        exit(EXIT_FAILURE);
+    }
+
+    FILE *fw = fopen(out_paf, "w");
+    if (!fw) {
+        perror("fopen");
+        exit(EXIT_FAILURE);
+    }
+
+    while (getline(&buffer, &bufferSize, fp) != -1) {
+        paf_rec_t *rec = parse_paf_rec(buffer);
+        khiter_t k = kh_get(map_ctgs, h, rec->rid);
+        if (k != kh_end(h)) {
+            ctg_t *cur_ctg = kh_value(h, k);
+            int8_t newdir = rec->strand;
+            int32_t new_query_start = rec->query_start;
+            int32_t new_query_end = rec->query_end;
+            if (cur_ctg->sump < cur_ctg->sumn) { // relative strand is negative
+                newdir = !newdir;
+                new_query_start = rec->qlen - rec->query_end;
+                new_query_end = rec->qlen - rec->query_start;
+            }
+            char *newname = cur_ctg->new_name;
+
+            //print paf record
+            fprintf(fw, "%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d\ttp:A:%c\n",
+                    newname, rec->qlen, new_query_start, new_query_end, newdir == 0 ? '+' : '-',
+                    rec->tid, rec->tlen, rec->target_start, rec->target_end, rec->match_len, rec->block_len, rec->mapq, rec->tp);
+
+
+        } else{
+            fprintf(stderr, "Error: contig %s not found in hash table\n", rec->rid);
+            exit(EXIT_FAILURE);
+        }
+
+        free(rec->rid);
+        free(rec->tid);
+        free(rec);
+    }
+    fclose(fp);
+    fclose(fw);
+
+    free(buffer);
+}
+
+
+
+
 void fix_the_assembly(const char *fastafile, khash_t(map_ctgs) *h, chr_list_t *chr_list, const char *missing_fn, const char *report_fn) {
     // Read FASTA file and write corrected FASTA to stdout
     gzFile fp_fasta = gzopen(fastafile, "r");
@@ -385,16 +460,22 @@ void fix_the_assembly(const char *fastafile, khash_t(map_ctgs) *h, chr_list_t *c
 
             char *cleaned_name = cleanup_str(chr_list->names[max_chr_index]);
 
-            if (fp_report) fprintf(fp_report, "%s\t%s\t%c\t%s_%d\n", seq->name.s, cleaned_name, dir, cleaned_name, chr_list->counters[max_chr_index]);
+            //get the counter
+            int cleaned_name_counter = chr_list->counters[max_chr_index];
+            //save the new name
+            cur_ctg->new_name = (char *)malloc(strlen(cleaned_name) + 100);
+            MALLOC_CHK(cur_ctg->new_name);
+            sprintf(cur_ctg->new_name, "%s_%d", cleaned_name, cleaned_name_counter);
+
+            if (fp_report) fprintf(fp_report, "%s\t%s\t%c\t%s_%d\n", seq->name.s, cleaned_name, dir, cleaned_name, cleaned_name_counter);
             //change the name accordingly and write to the stat tsv as well
-            fprintf(stdout, ">%s_%d\n%s\n", cleaned_name, chr_list->counters[max_chr_index], seq->seq.s);
+            fprintf(stdout, ">%s_%d\n%s\n", cleaned_name, cleaned_name_counter, seq->seq.s);
             free(cleaned_name);
             total++;
             chr_list->counters[max_chr_index]++; //increment the current index for the chr
         } else {
             if (fp_missing) fprintf(fp_missing, "%s\n", seq->name.s);
             missing++;
-            //todo write to missing file
         }
     }
     fprintf(stderr, "total: %d\nnegative: %d\nmissing: %d\n", total, neg, missing);
@@ -413,13 +494,14 @@ void fix_the_assembly(const char *fastafile, khash_t(map_ctgs) *h, chr_list_t *c
 
 int fixasm_main(int argc, char* argv[]) {
 
-    const char* optstring = "v:r:m:h";
+    const char* optstring = "v:r:m:w:h";
 
     int longindex = 0;
     int32_t c = -1;
 
     const char *missing = NULL;
     const char *report = NULL;
+    const char *out_paf = NULL;
 
     FILE *fp_help = stderr;
 
@@ -430,6 +512,8 @@ int fixasm_main(int argc, char* argv[]) {
             missing = optarg;
         } else if (c == 'r'){
             report = optarg;
+        } else if (c == 'w'){
+            out_paf = optarg;
         } else if (c=='v'){
             int v = atoi(optarg);
             set_log_level((enum log_level_opt)v);
@@ -468,6 +552,9 @@ int fixasm_main(int argc, char* argv[]) {
 
     // Fix the assembly
     fix_the_assembly(fastafile, h, chr_list, missing, report);
+
+    //todo write the corrected PAF file if requested
+    if (out_paf) write_corrected_paf(out_paf, paffile, h);
 
     free_chr_list(chr_list);
     destroy_hashmap_ctgs(h);
