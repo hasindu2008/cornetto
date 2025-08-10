@@ -34,4 +34,7 @@ ${CORNETTO} telobreaks $PREFIX/$PREFIX.lens $PREFIX/$PREFIX.sdust $PREFIX/$PREFI
 diff -q ${PREFIX}/${PREFIX}.windows test/real/E_2/telostats/${PREFIX}.windows || die "telostats output mismatch in windows file"
 diff -q ${PREFIX}/${PREFIX}.breaks test/real/E_2/telostats/${PREFIX}.breaks || die "telostats output mismatch in breaks file"
 
+echo "asmstats test"
+./cornetto asmstats test/real/E_2/${PREFIX}.fasta.tmp.paf  test/real/E_2/telostats/${PREFIX}.windows.0.4.50kb.ends.bed -r test/real/E_2/fixasm/report.tsv
+
 echo "Tests passed"

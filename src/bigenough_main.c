@@ -110,7 +110,6 @@ static uint64_t update_covlen(khash_t(chr_map) *h, const char *bedfile){
         int64_t beg=-1;
         int64_t end=-1;
 
-        //TODO can optimised though strtok etc later
         int ret=sscanf(buffer,"%s\t%ld\t%ld",ref,&beg, &end);
         if(ret!=3 || end<beg){
             ERROR("Malformed bed entry at line %ld",line_no);
