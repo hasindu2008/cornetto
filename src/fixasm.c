@@ -229,10 +229,7 @@ void load_paf(const char *paffile, khash_t(map_ctgs) *h, khash_t(map_chr) *h_chr
 
     // Read PAF file
     FILE *fp = fopen(paffile, "r");
-    if (!fp) {
-        perror("fopen");
-        exit(EXIT_FAILURE);
-    }
+    F_CHK(fp, paffile);
 
     int absent;
     int absent_chr;
@@ -248,7 +245,7 @@ void load_paf(const char *paffile, khash_t(map_ctgs) *h, khash_t(map_chr) *h_chr
             kh_value(h, k) = new_ctg;
         } else if (absent == -1) {
             fprintf(stderr, "Error: failed to insert key\n");
-            perror("kh_put");
+            exit(EXIT_FAILURE);
         } else {
             free(rec->rid);
         }
@@ -260,7 +257,7 @@ void load_paf(const char *paffile, khash_t(map_ctgs) *h, khash_t(map_chr) *h_chr
             insert_to_chr_list(chr_list, rec->tid);
         } else if (absent_chr == -1) {
             fprintf(stderr, "Error: failed to insert key\n");
-            perror("kh_put");
+            exit(EXIT_FAILURE);
         } else {
             free(rec->tid);
         }
@@ -293,16 +290,10 @@ void write_corrected_paf(const char *out_paf, const char *paffile, khash_t(map_c
 
     // Read PAF file
     FILE *fp = fopen(paffile, "r");
-    if (!fp) {
-        perror("fopen");
-        exit(EXIT_FAILURE);
-    }
+    F_CHK(fp, paffile);
 
     FILE *fw = fopen(out_paf, "w");
-    if (!fw) {
-        perror("fopen");
-        exit(EXIT_FAILURE);
-    }
+    F_CHK(fw, out_paf);
 
     while (getline(&buffer, &bufferSize, fp) != -1) {
         paf_rec_t *rec = parse_paf_rec(buffer);

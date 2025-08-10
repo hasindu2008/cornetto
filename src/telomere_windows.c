@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <limits.h>
+#include "error.h"
 
 #define WINDOW_SIZE 1000
 #define MIN_OFFSET 0
@@ -54,10 +55,7 @@ int telomere_windows_main(int argc, char* argv[]) {
     fprintf(stderr, "Given error rate of %.6f running with adjusted threshold of %.6f due to survival prob %.6f\n", identity, THRESHOLD, pow(identity, 6));
 
     FILE* fp = fopen(input_file, "r");
-    if (!fp) {
-        perror("Error opening file");
-        return EXIT_FAILURE;
-    }
+    F_CHK(fp, input_file);
 
     char line[LINE_MAX];
     uint8_t* scaffold = NULL;

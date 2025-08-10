@@ -56,10 +56,7 @@ int telomere_breaks_main(int argc, char* argv[]) {
     khash_t(length) *length_map = kh_init(length);
 
     FILE* lens_file = fopen(argv[1], "r");
-    if (!lens_file) {
-        perror("Error opening lens file");
-        return EXIT_FAILURE;
-    }
+    F_CHK(lens_file, argv[1]);
 
     char line[LINE_MAX];
     while (fgets(line, sizeof(line), lens_file)) {
@@ -77,10 +74,7 @@ int telomere_breaks_main(int argc, char* argv[]) {
     fclose(lens_file);
 
     FILE* sdust_file = fopen(argv[2], "r");
-    if (!sdust_file) {
-        perror("Error opening sdust file");
-        return EXIT_FAILURE;
-    }
+    F_CHK(sdust_file, argv[2]);
 
     while (fgets(line, sizeof(line), sdust_file)) {
         char name[LINE_MAX];
@@ -97,10 +91,7 @@ int telomere_breaks_main(int argc, char* argv[]) {
     fclose(sdust_file);
 
     FILE* telomere_file = fopen(argv[3], "r");
-    if (!telomere_file) {
-        perror("Error opening telomere file");
-        return EXIT_FAILURE;
-    }
+    F_CHK(telomere_file, argv[3]);
 
     while (fgets(line, sizeof(line), telomere_file)) {
         char name[LINE_MAX];

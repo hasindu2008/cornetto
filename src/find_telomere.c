@@ -89,11 +89,7 @@ int find_telomere_main(int argc, char* argv[]) {
             line[--line_len] = '\0'; // remove newline character
             }
             str = (char*)realloc(str, str_size + line_len + 1);
-            if (!str) {
-            perror("Error reallocating memory");
-            fclose(infile);
-            return EXIT_FAILURE;
-            }
+            MALLOC_CHK(str);
             strcpy(str + str_size, line);
             str_size += line_len;
         } else {

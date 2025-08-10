@@ -32,13 +32,7 @@ echo "ends: $ENDS"
 echo "asm: $FILE"
 
 ${CORNETTO} telofind $FILE | awk '{print $1"\t"$(NF-4)"\t"$(NF-3)"\t"$(NF-2)"\t"$(NF-1)"\t"$NF}' - > $PREFIX/$PREFIX.telomere || die "cornetto telofind failed"
-${CORNETTO} sdust $FILE > $PREFIX/$PREFIX.sdust || die "cornetto sdust failed"
-
-# test -f ${FILE}.fai || samtools faidx ${FILE} || die "samtools faidx on ${FILE} failed"
 ${CORNETTO} fa2bed $FILE | awk '{print $1"\t"$3}' > $PREFIX/${PREFIX}.lens || die "fa2bed failed"
-
-${CORNETTO} telowin $PREFIX/$PREFIX.telomere 99.9 0.1 > $PREFIX/$PREFIX.windows || die "cornetto telowin failed"
-${CORNETTO} telobreaks $PREFIX/$PREFIX.lens $PREFIX/$PREFIX.sdust $PREFIX/$PREFIX.telomere > $PREFIX/$PREFIX.breaks || die "cornetto telobreak failed"
 ${CORNETTO} telowin $PREFIX/$PREFIX.telomere 99.9 $THRESHOLD > $PREFIX/$PREFIX.windows.$THRESHOLD || die "cornetto telowin failed"
 
 echo "Merge telomere motifs in 100bp"
