@@ -592,8 +592,7 @@ void contig_majority_common(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_
                 process_chr_and_print(h_ctg, chr_list[i], chrlen, invert);
             }
         } else {
-            ERROR("Failed to get chromosome %s from hash table. Check your input files.", chr_list[i]);
-            exit(EXIT_FAILURE);
+            WARNING("Failed to get chromosome %s from hash table. Ignoring.", chr_list[i]);
         }
     }
 }
