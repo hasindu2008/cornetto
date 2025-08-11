@@ -25,4 +25,4 @@ test -e ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed || die "File ${PREFIX}/${P
 
 echo "${FASTA}"
 echo ""
-${CORNETTO} asmstats ${FILE} ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed -r ${PREFIX}.report.tsv -H -T
+${CORNETTO} asmstats ${FILE} ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed -r ${PREFIX}.fasta.report.tsv -H -T

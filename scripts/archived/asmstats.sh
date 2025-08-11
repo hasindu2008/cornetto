@@ -19,7 +19,7 @@ PREFIX=$(basename $PREFIX .fasta)
 FILE=$PREFIX.fasta.fix.tmp.paf
 
 test -e $FILE  || die "File $FILE does not exist. Did you run minidotplot.sh?"
-test -e ${PREFIX}.report.tsv || die "File ${PREFIX}.report.tsv does not exist. Did you run minidotplot.sh?"
+test -e ${PREFIX}.fasta.report.tsv || die "File ${PREFIX}.fasta.report.tsv does not exist. Did you run minidotplot.sh?"
 awk '{print $1"\t"$4}' ${PREFIX}.fasta.report.tsv > ${PREFIX}.fasta.chr.rename.txt || die "awk failed"
 test -e ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed || die "File ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed does not exist. Did you run telostats.sh?"
 
