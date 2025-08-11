@@ -593,6 +593,7 @@ void contig_majority_common(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_
             }
         } else {
             WARNING("Failed to get chromosome %s from hash table. Ignoring.", chr_list[i]);
+            fprintf(stdout, "%s\n", chr_list[i]);
         }
     }
 }
