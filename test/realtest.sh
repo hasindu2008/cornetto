@@ -12,7 +12,7 @@ export CORNETTO=./cornetto
 
 echo "fixasm test"
 
-${CORNETTO} fixasm test/real/E_2/${PREFIX}.fasta test/real/E_2/${PREFIX}.fasta.tmp.paf -r b.tsv -m b.txt -w b.paf  > b.fasta || die "fixasm failed running"
+${CORNETTO} fixasm test/real/E_2/${PREFIX}.fasta test/real/E_2/${PREFIX}.fasta.tmp.paf -r ${PREFIX}.report.tsv -m b.txt -w b.paf  > b.fasta || die "fixasm failed running"
 diff -q b.tsv test/real/E_2/fixasm/report.tsv || die "fixasm output mismatch in TSV report"
 diff -q b.txt test/real/E_2/fixasm/missing.txt || die "fixasm output mismatch in missing contigs"
 diff -q b.paf test/real/E_2/fixasm/fixed.paf || die "fixasm output mismatch in paf file"
@@ -35,6 +35,7 @@ diff -q ${PREFIX}/${PREFIX}.windows test/real/E_2/telostats/${PREFIX}.windows ||
 diff -q ${PREFIX}/${PREFIX}.breaks test/real/E_2/telostats/${PREFIX}.breaks || die "telostats output mismatch in breaks file"
 
 echo "asmstats test"
-./cornetto asmstats test/real/E_2/${PREFIX}.fasta.tmp.paf  test/real/E_2/telostats/${PREFIX}.windows.0.4.50kb.ends.bed -r test/real/E_2/fixasm/report.tsv
+./cornetto asmstats test/real/E_2/${PREFIX}.fasta.tmp.paf  test/real/E_2/telostats/${PREFIX}.windows.0.4.50kb.ends.bed -r test/real/E_2/fixasm/report.tsv -H -T > asmstats.txt
+diff -q asmstats.txt test/real/E_2/telostats/asmstats.txt || die "asmstats output mismatch"
 
 echo "Tests passed"

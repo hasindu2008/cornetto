@@ -109,8 +109,16 @@ cornetto minidot -m 500 -i 0.9 -s 2000 -w 800 input.paf > output.eps
 ```
 
 ---
+## Eval
 
-## Telemere evaluation
+### asmstats
+
+calculate assembly statistics
+
+
+---
+
+## Telemere
 
 
 ### telowin
