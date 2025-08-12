@@ -47,21 +47,24 @@ static struct option long_options[] = {
     {"help", no_argument, 0, 'h'},                 //1
     {"missing", required_argument, 0, 'm'},       //2 write missing contig names to file
     {"report", required_argument, 0, 'r'},        //3 write report to file
+    {"trim-pat-mat", no_argument, 0, 'T'},       //4 trim paternal and maternal suffixes
     {0, 0, 0, 0}
 };
 
 
 
-static char* cleanup_str(char *str){
+static char* cleanup_str(char *str, uint8_t trim_suffixes){
     char *cleaned_str = (char *)malloc(strlen(str) + 1);
     strcpy(cleaned_str, str);
     MALLOC_CHK(cleaned_str);
 
-    char *pch=strstr(cleaned_str, "_PATERNAL");
-    if(pch != NULL) *pch='\0';
+    if(trim_suffixes) {
+        char *pch=strstr(cleaned_str, "_PATERNAL");
+        if(pch != NULL) *pch='\0';
 
-    pch=strstr(cleaned_str, "_MATERNAL");
-    if(pch !=NULL) *pch='\0';
+        pch=strstr(cleaned_str, "_MATERNAL");
+        if(pch !=NULL) *pch='\0';
+    }
 
     return cleaned_str;
 }
@@ -105,6 +108,7 @@ static inline void print_help_msg(FILE *fp_help) {
     fprintf(fp_help, "   -m FILE                    write missing contig names to FILE\n");
     fprintf(fp_help, "   -r FILE                    write report to FILE\n");
     fprintf(fp_help, "   -w FILE                    write fixed PAF to FILE\n");
+    fprintf(fp_help, "   -T                         trim chr name suffixes _MATERNAL and _PATERNAL in outputs\n");
     fprintf(fp_help, "   -v INT                     verbosity level [%d]\n", (int)get_log_level());
     fprintf(fp_help, "   -h                         help\n");
 }
@@ -334,7 +338,7 @@ void write_corrected_paf(const char *out_paf, const char *paffile, khash_t(map_c
 
 
 
-void fix_the_assembly(const char *fastafile, khash_t(map_ctgs) *h, chr_list_t *chr_list, const char *missing_fn, const char *report_fn) {
+void fix_the_assembly(const char *fastafile, khash_t(map_ctgs) *h, chr_list_t *chr_list, const char *missing_fn, const char *report_fn, uint8_t trim_suffixes) {
     // Read FASTA file and write corrected FASTA to stdout
     gzFile fp_fasta = gzopen(fastafile, "r");
     F_CHK(fp_fasta, fastafile);
@@ -377,7 +381,7 @@ void fix_the_assembly(const char *fastafile, khash_t(map_ctgs) *h, chr_list_t *c
             assert(max_chr_index >= 0);
             assert(max_chr_index < chr_list->size);
 
-            char *cleaned_name = cleanup_str(chr_list->names[max_chr_index]);
+            char *cleaned_name = cleanup_str(chr_list->names[max_chr_index], trim_suffixes);
 
             //get the counter
             int cleaned_name_counter = chr_list->counters[max_chr_index];
@@ -413,7 +417,7 @@ void fix_the_assembly(const char *fastafile, khash_t(map_ctgs) *h, chr_list_t *c
 
 int fixasm_main(int argc, char* argv[]) {
 
-    const char* optstring = "v:r:m:w:h";
+    const char* optstring = "v:r:m:w:Th";
 
     int longindex = 0;
     int32_t c = -1;
@@ -421,6 +425,8 @@ int fixasm_main(int argc, char* argv[]) {
     const char *missing = NULL;
     const char *report = NULL;
     const char *out_paf = NULL;
+
+    uint8_t trim_suffixes = 0;
 
     FILE *fp_help = stderr;
 
@@ -439,6 +445,8 @@ int fixasm_main(int argc, char* argv[]) {
         } else if (c=='h'){
             fp_help = stdout;
             fp_help = stdout;
+        } else if (c == 'T') {
+            trim_suffixes = 1;
         }
 
     }
@@ -470,7 +478,7 @@ int fixasm_main(int argc, char* argv[]) {
     load_paf(paffile, h, h_chr, chr_list);
 
     // Fix the assembly
-    fix_the_assembly(fastafile, h, chr_list, missing, report);
+    fix_the_assembly(fastafile, h, chr_list, missing, report, trim_suffixes);
 
     //todo write the corrected PAF file if requested
     if (out_paf) write_corrected_paf(out_paf, paffile, h);

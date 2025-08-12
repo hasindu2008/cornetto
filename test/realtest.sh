@@ -7,13 +7,29 @@ die() {
 	exit 1
 }
 
+
+if [ "$1" = 'mem' ]; then
+    mem=1
+else
+    mem=0
+fi
+
+ex() {
+    if [ $mem -eq 1 ]; then
+        valgrind --leak-check=full --error-exitcode=1 "$@"
+    else
+        "$@"
+    fi
+}
+
+
 PREFIX=hg002-cornetto-E_2
 export CORNETTO=./cornetto
 
 echo "fixasm test"
 
-${CORNETTO} fixasm test/real/E_2/${PREFIX}.fasta test/real/E_2/${PREFIX}.fasta.tmp.paf -r ${PREFIX}.report.tsv -m b.txt -w b.paf  > b.fasta || die "fixasm failed running"
-diff -q b.tsv test/real/E_2/fixasm/report.tsv || die "fixasm output mismatch in TSV report"
+ex ${CORNETTO} fixasm test/real/E_2/${PREFIX}.fasta test/real/E_2/${PREFIX}.fasta.tmp.paf -r ${PREFIX}.report.tsv -m b.txt -w b.paf -T  > b.fasta || die "fixasm failed running"
+diff -q ${PREFIX}.report.tsv test/real/E_2/fixasm/report.tsv || die "fixasm output mismatch in TSV report"
 diff -q b.txt test/real/E_2/fixasm/missing.txt || die "fixasm output mismatch in missing contigs"
 diff -q b.paf test/real/E_2/fixasm/fixed.paf || die "fixasm output mismatch in paf file"
 diff -q b.fasta test/real/E_2/fixasm/fixed.fasta || die "fixasm output mismatch in fasta file"
@@ -35,7 +51,7 @@ diff -q ${PREFIX}/${PREFIX}.windows test/real/E_2/telostats/${PREFIX}.windows ||
 diff -q ${PREFIX}/${PREFIX}.breaks test/real/E_2/telostats/${PREFIX}.breaks || die "telostats output mismatch in breaks file"
 
 echo "asmstats test"
-./cornetto asmstats test/real/E_2/${PREFIX}.fasta.tmp.paf  test/real/E_2/telostats/${PREFIX}.windows.0.4.50kb.ends.bed -r test/real/E_2/fixasm/report.tsv -H -T > asmstats.txt
-diff -q asmstats.txt test/real/E_2/telostats/asmstats.txt || die "asmstats output mismatch"
+ex ./cornetto asmstats test/real/E_2/${PREFIX}.fasta.tmp.paf  test/real/E_2/telostats/${PREFIX}.windows.0.4.50kb.ends.bed -r test/real/E_2/fixasm/report.tsv -H -T > asmstats.txt
+diff -q asmstats.txt test/real/E_2/asmstats/asmstats.txt || die "asmstats output mismatch"
 
 echo "Tests passed"
