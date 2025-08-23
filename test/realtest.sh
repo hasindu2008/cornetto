@@ -55,7 +55,7 @@ diff -q ${TEMPDIR}/${PREFIX}.breaks test/real/E_2/telostats/${PREFIX}.breaks || 
 rm -r ${TEMPDIR}
 
 echo "asmstats test"
-ex ./cornetto asmstats test/real/E_2/${PREFIX}.fasta.tmp.paf  test/real/E_2/telostats/${PREFIX}.windows.0.4.50kb.ends.bed -r test/real/E_2/fixasm/report.tsv --human-chr --trim-pat-mat > asmstats.txt
+ex ./cornetto asmstats test/real/E_2/${PREFIX}.fasta.tmp.paf  test/real/E_2/telostats/${PREFIX}.windows.0.4.50kb.ends.bed -r test/real/E_2/fixasm/report.tsv --order human1 --trim-pat-mat > asmstats.txt
 diff -q asmstats.txt test/real/E_2/asmstats/asmstats.txt || die "asmstats output mismatch"
 rm asmstats.txt
 

@@ -30,16 +30,28 @@ SOFTWARE.
 #include <stdlib.h>
 #include <assert.h>
 #include <stdint.h>
+#include <zlib.h>
 #include "error.h"
 #include "pafrec.h"
 #include "khash.h"
 #include "ksort.h"
+#include "kseq.h"
 
 //just to get the statistics, not written for efficiency
 
-char *human_chr[] = {"chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11",
+char *human_chr_1[] = {"chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11",
         "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY"};
-uint32_t n_human_chr = 24;
+uint32_t n_human_chr_1 = 24;
+
+char *human_chr_2[] = {"chr1_MATERNAL", "chr1_PATERNAL", "chr2_MATERNAL", "chr2_PATERNAL", "chr3_MATERNAL", "chr3_PATERNAL",
+    "chr4_MATERNAL", "chr4_PATERNAL", "chr5_MATERNAL", "chr5_PATERNAL", "chr6_MATERNAL", "chr6_PATERNAL",
+    "chr7_MATERNAL", "chr7_PATERNAL", "chr8_MATERNAL", "chr8_PATERNAL", "chr9_MATERNAL", "chr9_PATERNAL",
+    "chr10_MATERNAL", "chr10_PATERNAL", "chr11_MATERNAL", "chr11_PATERNAL", "chr12_MATERNAL", "chr12_PATERNAL",
+    "chr13_MATERNAL", "chr13_PATERNAL", "chr14_MATERNAL", "chr14_PATERNAL", "chr15_MATERNAL", "chr15_PATERNAL",
+    "chr16_MATERNAL", "chr16_PATERNAL", "chr17_MATERNAL", "chr17_PATERNAL", "chr18_MATERNAL", "chr18_PATERNAL",
+    "chr19_MATERNAL", "chr19_PATERNAL", "chr20_MATERNAL", "chr20_PATERNAL", "chr21_MATERNAL", "chr21_PATERNAL",
+    "chr22_MATERNAL", "chr22_PATERNAL", "chrX_MATERNAL", "chrY_PATERNAL"};
+uint32_t n_human_chr_2 = 46;
 
 // paf recs and telostat each assembly contig
 typedef struct {
@@ -69,6 +81,8 @@ KHASH_MAP_INIT_STR(as_map_ctgs, as_ctg_t*)
 KHASH_MAP_INIT_STR(as_map_chr, as_chr_t*)
 
 KSORT_INIT_GENERIC(uint32_t)
+
+KSEQ_INIT(gzFile, gzread)
 
 static as_ctg_t *init_as_ctg(){
     as_ctg_t *ctg = (as_ctg_t *)malloc(sizeof(as_ctg_t));
@@ -159,6 +173,10 @@ static void load_paf(const char *paffile, khash_t(as_map_ctgs) *h_ctg, khash_t(a
     FILE *fp = fopen(paffile, "r");
     F_CHK(fp, paffile);
 
+    int ctg_updated = 0;
+    int chr_updated = 0;
+    int paf_records = 0;
+
     while (getline(&buffer, &bufferSize, fp) != -1) {
 
         paf_rec_t *rec = parse_paf_rec(buffer);
@@ -173,6 +191,7 @@ static void load_paf(const char *paffile, khash_t(as_map_ctgs) *h_ctg, khash_t(a
             //update the contig length
             if (ctg->len == 0) {
                 ctg->len = rec->qlen;
+                ctg_updated++;
             } else if (ctg->len != rec->qlen) {
                 ERROR("Contig '%s' has inconsistent lengths in PAF file", rec->rid);
                 exit(EXIT_FAILURE);
@@ -192,6 +211,7 @@ static void load_paf(const char *paffile, khash_t(as_map_ctgs) *h_ctg, khash_t(a
                 as_chr_t *chr = kh_value(h_chr, k_chr);
                 if (chr->len == 0) {
                     chr->len = rec->tlen;
+                    chr_updated++;
                 } else if (chr->len != rec->tlen) {
                     ERROR("Chromosome '%s' has inconsistent lengths in PAF file", rec->tid);
                     exit(EXIT_FAILURE);
@@ -207,12 +227,13 @@ static void load_paf(const char *paffile, khash_t(as_map_ctgs) *h_ctg, khash_t(a
             free(rec->tid);
             free(rec);
         }
-
-
-
+        paf_records++;
 
     }
     fclose(fp);
+
+    VERBOSE("%d PAF records loaded from %s", paf_records, paffile);
+    VERBOSE("%d assembly contigs, %d reference chromosomes updated from %s", ctg_updated, chr_updated, paffile);
 
     free(buffer);
 }
@@ -229,6 +250,8 @@ static void load_telobed(khash_t(as_map_ctgs) *h, const char *bedfile){
     size_t bufferSize = 100;
     ssize_t readlinebytes = 0;
     int64_t line_no = 0;
+
+    int n_ctg = 0;
 
     while ((readlinebytes = getline(&buffer, &bufferSize, bedfp)) != -1) {
 
@@ -261,7 +284,7 @@ static void load_telobed(khash_t(as_map_ctgs) *h, const char *bedfile){
                 as_ctg_t *ctg = init_as_ctg();
                 ctg->ntelo++;
                 kh_value(h, k) = ctg;
-
+                n_ctg++;
             }
             else{
                 ERROR("Contig '%s' insertion failed", ref);
@@ -275,6 +298,8 @@ static void load_telobed(khash_t(as_map_ctgs) *h, const char *bedfile){
         free(ref);
         line_no++;
     }
+
+    VERBOSE("%ld bed entries, %d unique assembly contigs loaded from %s", line_no, n_ctg, bedfile);
 
     fclose(bedfp);
     free(buffer);
@@ -293,6 +318,10 @@ static void load_fixasm_report(khash_t(as_map_ctgs) *h_ctg, khash_t(as_map_chr) 
     size_t bufferSize = 100;
     ssize_t readlinebytes = 0;
     int64_t line_no = 0;
+
+    int new_ctg = 0;
+    int updated_ctg = 0;
+    int n_chr = 0;
 
     while ((readlinebytes = getline(&buffer, &bufferSize, reportfp)) != -1) {
 
@@ -317,7 +346,7 @@ static void load_fixasm_report(khash_t(as_map_ctgs) *h_ctg, khash_t(as_map_chr) 
                 as_ctg_t *ctg = init_as_ctg();
                 ctg->mapped_chr = strdup(chr);
                 kh_value(h_ctg, k) = ctg;
-
+                new_ctg++;
             }
             else{
                 ERROR("Contig '%s' insertion failed", ctg);
@@ -326,6 +355,7 @@ static void load_fixasm_report(khash_t(as_map_ctgs) *h_ctg, khash_t(as_map_chr) 
         } else { //update
             as_ctg_t *ctg = kh_value(h_ctg, k);
             ctg->mapped_chr = strdup(chr);
+            updated_ctg++;
         }
 
 
@@ -337,9 +367,8 @@ static void load_fixasm_report(khash_t(as_map_ctgs) *h_ctg, khash_t(as_map_chr) 
             if(absent == 1){
                 kh_key(h_chr, k) = strdup(chr);
                 as_chr_t *chr = init_as_chr();
-
                 kh_value(h_chr, k) = chr;
-
+                n_chr++;
             }
             else{
                 ERROR("Chromosome '%s' insertion failed", chr);
@@ -355,13 +384,16 @@ static void load_fixasm_report(khash_t(as_map_ctgs) *h_ctg, khash_t(as_map_chr) 
         line_no++;
     }
 
+    VERBOSE("%d reference chromosomes loaded from %s", n_chr, reportfile);
+    VERBOSE("%d new assembly contigs loaded and %d updated (total %d) from %s", new_ctg, updated_ctg, new_ctg + updated_ctg, reportfile);
+
     fclose(reportfp);
     free(buffer);
 }
 
 static struct option long_options[] = {
     {"report", required_argument, 0, 'r'},          //0
-    {"human-chr", no_argument, 0, 0},             //1
+    {"sort-order", required_argument, 0, 's'},             //1
     {"trim-pat-mat", no_argument, 0, 0},                  //2
     {"verbose", required_argument, 0, 'v'},        //3 verbosity level [1]
     {"help", no_argument, 0, 'h'},                 //4
@@ -370,14 +402,14 @@ static struct option long_options[] = {
 
 static inline void print_help_msg(FILE *fp_help){
     fprintf(fp_help,"Usage: cornetto asmstats <asm2ref.paf> <telomere.bed> -r <fixasm.report.tsv>\n");
-    fprintf(fp_help,"   -r FILE                    report from fixasm\n");
-    fprintf(fp_help,"   --human-chr                use inbuilt human chromosome names and order when printing report\n");
+    fprintf(fp_help,"   -r FILE                    report file generated from fixasm\n");
+    fprintf(fp_help,"   -s STR                     use the sort order specified by STR when printing the chromosome report (human1 for haploid human, human2 for diploid human or ref.fasta)\n");
     //fprintf(fp_help,"   --trim-pat-mat                     trim chr name suffixes _MATERNAL and _PATERNAL from PAF\n");
     fprintf(fp_help,"   -v INT                     verbosity level [%d]\n",(int)get_log_level());
     fprintf(fp_help,"   -h                         help\n");
 }
 
-static void telo_table(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_ctg, char const **chr_list, size_t chr_list_size){
+static void telo_table(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_ctg, char **chr_list, size_t chr_list_size){
 
     fprintf(stdout,"chr\tT2T?\tNTelo\tTelocontiglen\n");
 
@@ -567,7 +599,7 @@ static void process_lx_chr_and_print(khash_t(as_map_ctgs) *h_ctg, char const *ch
 }
 
 
-void contig_majority_common(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_ctg, char const **chr_list, size_t chr_list_size, uint8_t invert, uint8_t lx){
+void contig_majority_common(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_ctg, char **chr_list, size_t chr_list_size, uint8_t invert, uint8_t lx){
 
     if(lx==1 && invert==1){
         ERROR("%s", "Not supported lx==1 && invert==1");
@@ -599,7 +631,7 @@ void contig_majority_common(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_
 }
 
 
-static void contig_majority_correct_table(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_ctg, char const **chr_list, size_t chr_list_size){
+static void contig_majority_correct_table(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_ctg, char **chr_list, size_t chr_list_size){
 
     fprintf(stdout, "\n");
     fprintf(stdout, "\n");
@@ -612,7 +644,7 @@ static void contig_majority_correct_table(khash_t(as_map_chr) *h_chr, khash_t(as
 }
 
 
-static void lx_contig_majority_correct_table(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_ctg, char const **chr_list, size_t chr_list_size){
+static void lx_contig_majority_correct_table(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_ctg, char **chr_list, size_t chr_list_size){
 
     fprintf(stdout, "\n");
     fprintf(stdout, "\n");
@@ -624,7 +656,7 @@ static void lx_contig_majority_correct_table(khash_t(as_map_chr) *h_chr, khash_t
 }
 
 
-void contig_majority_wrong_table(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_ctg, char const **chr_list, size_t chr_list_size){
+void contig_majority_wrong_table(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs) *h_ctg, char **chr_list, size_t chr_list_size){
 
     fprintf(stdout, "\n");
     fprintf(stdout, "\n");
@@ -636,9 +668,9 @@ void contig_majority_wrong_table(khash_t(as_map_chr) *h_chr, khash_t(as_map_ctgs
 
 }
 
-char const **get_chr_list(khash_t(as_map_chr) *h_chr, size_t *chr_list_size) {
+char **get_chr_list(khash_t(as_map_chr) *h_chr, size_t *chr_list_size) {
     size_t c = 100;
-    char const **chr_list = malloc(sizeof(char *) * c);
+    char **chr_list = malloc(sizeof(char *) * c);
     MALLOC_CHK(chr_list);
     size_t n = 0;
 
@@ -649,13 +681,20 @@ char const **get_chr_list(khash_t(as_map_chr) *h_chr, size_t *chr_list_size) {
                 chr_list = realloc(chr_list, sizeof(char *) * c);
                 MALLOC_CHK(chr_list);
             }
-            chr_list[n] = kh_key(h_chr, k);
+            chr_list[n] = strdup(kh_key(h_chr, k));
             n++;
         }
     }
 
     *chr_list_size = n;
     return chr_list;
+}
+
+static void free_chr_list(char **chr_list, size_t chr_list_size) {
+    for (size_t i = 0; i < chr_list_size; i++) {
+        free(chr_list[i]);
+    }
+    free(chr_list);
 }
 
 // static void print_hashmap_ctgs(khash_t(as_map_ctgs) *h_ctg){
@@ -667,9 +706,36 @@ char const **get_chr_list(khash_t(as_map_chr) *h_chr, size_t *chr_list_size) {
 //     }
 // }
 
+char **get_chr_list_from_fasta(const char *fasta, size_t *chr_list_size){
+
+    gzFile fp = gzopen(fasta, "r");
+    F_CHK(fp, fasta);
+
+    size_t c = 100;
+    char **chr_list = malloc(sizeof(char *) * c);
+    MALLOC_CHK(chr_list);
+    size_t n = 0;
+
+    kseq_t *seq = kseq_init(fp);
+    while (kseq_read(seq) >= 0) {
+        if (n >= c) {
+            c *= 2;
+            chr_list = realloc(chr_list, sizeof(char *) * c);
+            MALLOC_CHK(chr_list);
+        }
+        chr_list[n] = strdup(seq->name.s);
+        n++;
+    }
+    kseq_destroy(seq);
+    gzclose(fp);
+
+    *chr_list_size = n;
+    return chr_list;
+}
+
 int asmstats_main(int argc, char* argv[]) {
 
-    const char* optstring = "r:h";
+    const char* optstring = "r:s:h";
 
     int longindex = 0;
     int32_t c = -1;
@@ -678,7 +744,7 @@ int asmstats_main(int argc, char* argv[]) {
     const char *bed = NULL;
     const char *report = NULL;
 
-    uint8_t use_human_chr = 0;
+    const char *order = NULL;
     uint8_t trim = 0;
 
     FILE *fp_help = stderr;
@@ -692,12 +758,11 @@ int asmstats_main(int argc, char* argv[]) {
         }
         else if (c == 'r') {
             report = optarg;
-        } else if (c == 0 && longindex == 1){ // --human-chr{
-            use_human_chr = 1;
+        } else if (c == 's') {
+            order = optarg;
         } else if (c == 0 && longindex == 2){ // --trim
             trim = 1;
         }
-
 
     }
 
@@ -737,12 +802,21 @@ int asmstats_main(int argc, char* argv[]) {
     load_paf(paf, h_ctg, h_chr, trim);
 
     size_t chr_list_size = 0;
-    char const **chr_list = NULL;
-    if(use_human_chr){
-        chr_list = (char const **)human_chr;
-        chr_list_size = n_human_chr;
-    } else {
+    char **chr_list = NULL;
+    uint8_t free_list = 0;
+    if (order == NULL){
         chr_list = get_chr_list(h_chr, &chr_list_size);
+        free_list=1;
+    } else if(strcmp(order, "human1") == 0){
+        chr_list = (char **)human_chr_1;
+        chr_list_size = n_human_chr_1;
+    } else if (strcmp(order, "human2") == 0) {
+        chr_list = (char **)human_chr_2;
+        chr_list_size = n_human_chr_2;
+    } else {
+        INFO("Unknown order: %s. Options are: [human1, human2]. Assuming %s is a reference file", order, order);
+        chr_list = get_chr_list_from_fasta(order, &chr_list_size);
+        free_list = 1;
     }
 
     fprintf(stdout, "%s\n\n", paf);
@@ -755,7 +829,7 @@ int asmstats_main(int argc, char* argv[]) {
 
     contig_majority_wrong_table(h_chr, h_ctg, chr_list, chr_list_size);
 
-    if(!use_human_chr) free(chr_list);
+    if(free_list) free_chr_list(chr_list, chr_list_size);
 
     destroy_hashmap_ctgs(h_ctg);
     destroy_hashmap_chr(h_chr);

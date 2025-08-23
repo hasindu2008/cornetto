@@ -13,7 +13,7 @@ test/test.sh mem
 
 test/realtest.sh
 
-# TODO not all are tested here. Need to add some small representative test cases to tet.sh
+# TODO not all are tested here. Need to add some small representative test cases to test.sh
 test/realtest.sh  mem
 
 

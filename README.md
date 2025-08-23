@@ -55,7 +55,8 @@ cornetto fixasm asm.fasta asm.paf -r asm.report.tsv -w asm.fix.paf > asm.fix.fas
 cornetto minidot asm.fix.paf -f 2 > asm.eps
 
 # per-chromosome evaluation
-cornetto asmstats asm.paf asm.windows.0.4.50kb.ends.bed -r asm.report.tsv # asm.windows.0.4.50kb.ends.bed is from `scripts/telostats.sh`
+cornetto asmstats asm.paf asm.windows.0.4.50kb.ends.bed -r asm.report.tsv -s ref.fasta
+# asm.windows.0.4.50kb.ends.bed is from `scripts/telostats.sh`
 
 # miscellaneous commands
 cornetto fa2bed asm.fasta > asm.bed  # create a bed file with assembly contig lengths

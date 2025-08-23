@@ -116,8 +116,8 @@ cornetto minidot -m 500 -i 0.9 -s 2000 -w 800 input.paf > output.eps
 This subprogram calculate per-chromosome assembly evaluation statistics. Output is detailed [here](asmstats.md).
 
 **Options:**
--   `-r FILE`:                    report from fixasm
--   `--human-chr`:                use inbuilt human chromosome names and order when printing report
+-   `-r FILE`:               report file generated from fixasm
+-   `-s STR`:                use the sort order specified by STR when printing the chromosome report. STR can be human1 for haploid human chrosome names, human2 for diploid human chromosome names or a fasta file to read the chromosome order from.
 
 **Example usage:**
 ```bash
