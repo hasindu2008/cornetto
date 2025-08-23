@@ -46,14 +46,14 @@ cat $TEMPDIR/$PREFIX.lens | awk -v ends=$ENDS '{if ($2>(ends*2)) {print $1"\t0\t
 ENDS=`echo $ENDS | awk '{printf "%.0f", $1/1000}'`"kb" || die "awk failed"
 ${BEDTOOLS} intersect -wa -a $TEMPDIR/$PREFIX.windows.$THRESHOLD.bed -b $TEMPDIR/asm.ends.bed > ${BED} || die "bedtools intersect failed"
 
-test -e ${BED} || die "telomere_analysis.sh failed"
+test -e ${BED} || die "telostats.sh failed"
 
 echo -e "FILE\t${FILE}"
 echo -e -n "total telomere regions at the end of contigs:\t"
 cat $BED | wc -l
 echo ""
 echo ""
-cat $BED | cut -f 1  | sort | uniq -c | awk 'BEGIN{t1=0;t2=0;t3=0}{if($1==1){t1+=1}else if($1==2){t2+=1} else {t3+=1}} END{print "telo in one end:\t"t1"\ntelo in two ends:\t"t2"\ntelo more than 2:\t"t3"\n"}' || die "awk failed"
+cat $BED | cut -f 1  | sort | uniq -c | awk 'BEGIN{t1=0;t2=0;t3=0}{if($1==1){t1+=1}else if($1==2){t2+=1} else {t3+=1}} END{print "contigs with 1 telo:\t"t1"\ncontigs with 2 telo:\t"t2"\ncontigs with more than 2 telo:\t"t3"\n"}' || die "awk failed"
 
 
 
