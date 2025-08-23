@@ -47,7 +47,7 @@ GET_HAP_X_FUN () {
     rm -f ${TMPOUT}/${HAP}_tmp.bed
     cut -f 1 ${TMPOUT}/${HAP}.txt  | sort -u | while read ctg
     do
-        grep $ctg ${TMPOUT}/${HAP}.txt | awk '{print $6"\t"$8"\t"$9}' | ${BEDTOOLS} sort | ${BEDTOOLS} merge -d 1000000  >> ${TMPOUT}/${HAP}_tmp.bed || die "awk failed"
+        cat ${TMPOUT}/${HAP}.txt | awk -v ctg=$ctg '{if($1==ctg){print $6"\t"$8"\t"$9}}' | ${BEDTOOLS} sort | ${BEDTOOLS} merge -d 1000000  >> ${TMPOUT}/${HAP}_tmp.bed || die "awk failed"
     done
     # todo: replace grep with a proper column comparison
 

@@ -17,8 +17,8 @@ ${CORNETTO} --version || die "cornetto executable not found! Either put cornetto
 test -z ${BEDTOOLS} && BEDTOOLS=bedtools
 $BEDTOOLS --version > /dev/null 2>&1 || die "bedtools not found!. Either put bedtools under path or set BEDTOOLS variable, e.g.,export BEDTOOLS=/path/to/bedtools"
 
-BASENAME=$(basename ${FASTA})
-PREFIX=${FASTA%.fasta}
+PREFIX=$(basename $FASTA .fa)
+PREFIX=$(basename $FASTA .fasta)
 
 TMPOUT=tmp_recreate_cornetto
 test -d ${TMPOUT} && die "Directory ${TMPOUT} already exists. Please remove it before running this script or change to a different working directory"

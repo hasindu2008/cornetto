@@ -33,9 +33,7 @@ usage() {
 [ -z "${REF}" ] && usage
 
 module load minimap2/2.24
-module load samtools/1.12
 module load bedtools/2.28.0
-module load java/jdk-17.0.2
 
 ###################################################################
 
@@ -47,10 +45,8 @@ die() {
 }
 
 minimap2 --version || die "Could not find minimap2"
-samtools --version || die "Could not find samtools"
 
 export CORNETTO=/g/data/ox63/hasindu/cornetto/cornetto/cornetto
-export PATH=$PATH:/g/data/ox63/install/datamash-1.3/
 export SCRIPT_DIR=/g/data/ox63/hasindu/cornetto/cornetto/scripts
 
 test -z $REF && die "Reference file not provided"

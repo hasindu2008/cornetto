@@ -34,8 +34,8 @@ test -f ${ASSNAME}.hap1.fasta || die "File ${ASSNAME}.hap1.fasta not found."
 test -f ${ASSNAME}.hap2.fasta || die "File ${ASSNAME}.hap2.fasta not found."
 
 #1# align the hapX assemblies to the primary assembly
-${MINIMAP2} -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap1.fasta > ${TMPOUT}/${ASSNAME}_hap1_to_asm.paf || die "minimap2 failed"
-${MINIMAP2} -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap2.fasta > ${TMPOUT}/${ASSNAME}_hap2_to_asm.paf || die "minimap2 failed"
+${MINIMAP2} -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap1.fasta > ${TMPOUT}/${ASSNAME}_hap1_to_asm.paf || ${MINIMAP2} -t16 --eqx -x asm5 ${FASTA} ${ASSNAME}.hap1.fasta > ${TMPOUT}/${ASSNAME}_hap1_to_asm.paf || die "minimap2 failed"
+${MINIMAP2} -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap2.fasta > ${TMPOUT}/${ASSNAME}_hap2_to_asm.paf || ${MINIMAP2} -t16 --eqx -x asm5 ${FASTA} ${ASSNAME}.hap2.fasta > ${TMPOUT}/${ASSNAME}_hap2_to_asm.paf || die "minimap2 failed"
 
 GET_HAP_X_FUN () {
     HAP=$1
@@ -44,10 +44,11 @@ GET_HAP_X_FUN () {
     cut -f 1-10 ${TMPOUT}/${ASSNAME}_${HAP}_to_asm.paf | sort -k7,7nr -nk8,8 > ${TMPOUT}/${HAP}.txt || die "cut failed"
 
     # go through every contig in hapX assembly separately while merging them if on same target contig within 1M bp
+    # TODO would benefit from a good implementation
     rm -f ${TMPOUT}/${HAP}_tmp.bed
     cut -f 1 ${TMPOUT}/${HAP}.txt  | sort -u | while read ctg
     do
-        grep $ctg ${TMPOUT}/${HAP}.txt | awk '{print $6"\t"$8"\t"$9}' | ${BEDTOOLS} sort | ${BEDTOOLS} merge -d 1000000  >> ${TMPOUT}/${HAP}_tmp.bed || die "awk failed"
+        cat ${TMPOUT}/${HAP}.txt | awk -v ctg=$ctg '{if($1==ctg){print $6"\t"$8"\t"$9}}' | ${BEDTOOLS} sort | ${BEDTOOLS} merge -d 1000000  >> ${TMPOUT}/${HAP}_tmp.bed || die "awk failed"
     done
 
     # fun1: get the gaps on the primary assembly, that are not covered by hapX contigs

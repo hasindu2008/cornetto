@@ -59,4 +59,12 @@ ex ./cornetto asmstats test/real/E_2/${PREFIX}.fasta.tmp.paf  test/real/E_2/telo
 diff -q asmstats.txt test/real/E_2/asmstats/asmstats.txt || die "asmstats output mismatch"
 rm asmstats.txt
 
+echo "recreate"
+cp test/real/E_2/recreate/hg002-cornetto-E_2.bp.p_ctg.lowQ.bed .
+scripts/recreate-cornetto.sh test/real/E_2/hg002-cornetto-E_2.fasta || die "recreate failed"
+diff -q tmp_recreate_cornetto/ test/real/E_2/recreate/tmp_recreate_cornetto/ || die "recreate output mismatch"
+rm -r hg002-cornetto-E_2.bp.p_ctg.lowQ.bed tmp_recreate_cornetto/
+
+# recreate hapnetto requires minimap2, so not tested here. Can be manually tested with what is under test/real/E_2/recreate/tmp_recreate_hapnetto/
+
 echo "Tests passed"
