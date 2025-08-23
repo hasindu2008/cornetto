@@ -172,7 +172,7 @@ void insert_to_ctg(chr_list_t *chr_list, ctg_t *cur_ctg, int this_chr_index){
     cur_ctg->tally[this_chr_index]++;
 }
 
-void free_chr_list(chr_list_t *chr_list){
+static void free_chr_list(chr_list_t *chr_list){
     free(chr_list->names);
     free(chr_list->counters);
     free(chr_list);

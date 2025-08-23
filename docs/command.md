@@ -117,7 +117,7 @@ This subprogram calculate per-chromosome assembly evaluation statistics. Output 
 
 **Options:**
 -   `-r FILE`:               report file generated from fixasm
--   `-s STR`:                use the sort order specified by STR when printing the chromosome report. STR can be human1 for haploid human chrosome names, human2 for diploid human chromosome names or a fasta file to read the chromosome order from.
+-   `-s STR`:                use the sort order specified by STR when printing the chromosome report. STR can be human1 for haploid human chromosome names, human2 for diploid human chromosome names or a fasta file to read the chromosome order from.
 
 **Example usage:**
 ```bash
