@@ -12,8 +12,6 @@ die() {
 REF=$1
 ASM=$2
 
-PREFIX=$(basename ${ASM})
-
 [ ! -f $REF ] && die "Reference $REF not found"
 [ ! -f $ASM ] && die "Assembly $ASM not found"
 
@@ -22,14 +20,17 @@ ${CORNETTO} --version > /dev/null 2>&1 || die "cornetto executable not found! Ei
 test -z ${MINIMAP2} && MINIMAP2=minimap2
 $MINIMAP2 --version > /dev/null 2>&1 || die "minimap2 not found!. Either put minimap2 under path or set MINIMAP2 variable, e.g.,export MINIMAP2=/path/to/minimap2"
 
-${MINIMAP2} -t16 --eqx -cx asm5 $REF $ASM > ${PREFIX}.tmp.paf || die "minimap2 failed"
 
-${CORNETTO} fixasm ${ASM} ${PREFIX}.tmp.paf --report ${PREFIX}.report.tsv -w ${PREFIX}.fix.tmp.paf > ${PREFIX}.tmp.renamed.fasta || die "cornetto failed"
+PREFIX=$(basename $ASM .fa)
+PREFIX=$(basename $ASM .fasta)
+TEMPDIR=tmp_${PREFIX}_minidot
 
+mkdir -p $TEMPDIR || die "mkdir $TEMPDIR failed"
 
-# done by -w above
-#$MINIMAP2 -t16 --eqx -cx asm5 $REF ${PREFIX}.tmp.renamed.fasta > ${PREFIX}.fix.tmp.paf || die "minimap2 failed"
+${MINIMAP2} -t16 --eqx -cx asm5 $REF $ASM > ${PREFIX}.paf || die "minimap2 failed"
 
-${CORNETTO} minidot ${PREFIX}.fix.tmp.paf -f 2  > ${PREFIX}.eps || die "minidot failed"
+${CORNETTO} fixasm ${ASM} ${PREFIX}.paf --report ${PREFIX}.report.tsv -w $TEMPDIR/${PREFIX}.fix.paf > $TEMPDIR/${PREFIX}.fix.fasta || die "cornetto failed"
 
-echo "yey, all done"
+${CORNETTO} minidot $TEMPDIR/${PREFIX}.fix.paf -f 2  > ${PREFIX}.eps || die "minidot failed"
+
+echo "yey, all done for minidotplot"

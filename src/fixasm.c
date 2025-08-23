@@ -47,7 +47,7 @@ static struct option long_options[] = {
     {"help", no_argument, 0, 'h'},                 //1
     {"missing", required_argument, 0, 'm'},       //2 write missing contig names to file
     {"report", required_argument, 0, 'r'},        //3 write report to file
-    {"trim-pat-mat", no_argument, 0, 'T'},       //4 trim paternal and maternal suffixes
+    {"trim-pat-mat", no_argument, 0, 0},       //4 trim paternal and maternal suffixes
     {0, 0, 0, 0}
 };
 
@@ -108,7 +108,7 @@ static inline void print_help_msg(FILE *fp_help) {
     fprintf(fp_help, "   -m FILE                    write missing contig names to FILE\n");
     fprintf(fp_help, "   -r FILE                    write report to FILE\n");
     fprintf(fp_help, "   -w FILE                    write fixed PAF to FILE\n");
-    fprintf(fp_help, "   -T                         trim chr name suffixes _MATERNAL and _PATERNAL in outputs\n");
+    //fprintf(fp_help, "   --trim-pat-mat             trim chr name suffixes _MATERNAL and _PATERNAL in outputs\n");
     fprintf(fp_help, "   -v INT                     verbosity level [%d]\n", (int)get_log_level());
     fprintf(fp_help, "   -h                         help\n");
 }
@@ -417,7 +417,7 @@ void fix_the_assembly(const char *fastafile, khash_t(map_ctgs) *h, chr_list_t *c
 
 int fixasm_main(int argc, char* argv[]) {
 
-    const char* optstring = "v:r:m:w:Th";
+    const char* optstring = "v:r:m:w:h";
 
     int longindex = 0;
     int32_t c = -1;
@@ -445,7 +445,7 @@ int fixasm_main(int argc, char* argv[]) {
         } else if (c=='h'){
             fp_help = stdout;
             fp_help = stdout;
-        } else if (c == 'T') {
+        } else if (c == 0 && longindex == 4) { // --trim-pat-mat
             trim_suffixes = 1;
         }
 

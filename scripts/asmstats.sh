@@ -14,15 +14,13 @@ die() {
 FASTA=$1
 PREFIX=$(basename $FASTA .fa)
 PREFIX=$(basename $PREFIX .fasta)
-FILE=$PREFIX.fasta.tmp.paf
+FILE=$PREFIX.paf
 
 test -z ${CORNETTO} && CORNETTO=cornetto
 ${CORNETTO} --version > /dev/null || die "cornetto executable not found! Either put cornetto under path or set CORNETTO variable, e.g.,export CORNETTO=/path/to/cornetto"
 
 test -e $FILE  || die "File $FILE does not exist. Did you run minidotplot.sh?"
-test -e ${PREFIX}.fasta.report.tsv || die "File ${PREFIX}.fasta.report.tsv does not exist. Did you run minidotplot.sh?"
-test -e ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed || die "File ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed does not exist. Did you run telostats.sh?"
+test -e ${PREFIX}.report.tsv || die "File ${PREFIX}.report.tsv does not exist. Did you run minidotplot.sh?"
+test -e ${PREFIX}.windows.0.4.50kb.ends.bed || die "File ${PREFIX}.windows.0.4.50kb.ends.bed does not exist. Did you run telostats.sh?"
 
-echo "${FASTA}"
-echo ""
-${CORNETTO} asmstats ${FILE} ${PREFIX}/${PREFIX}.windows.0.4.50kb.ends.bed -r ${PREFIX}.fasta.report.tsv -H -T
+${CORNETTO} asmstats ${FILE} ${PREFIX}.windows.0.4.50kb.ends.bed -r ${PREFIX}.fasta.report.tsv -H -T

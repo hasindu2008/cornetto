@@ -361,8 +361,8 @@ static void load_fixasm_report(khash_t(as_map_ctgs) *h_ctg, khash_t(as_map_chr) 
 
 static struct option long_options[] = {
     {"report", required_argument, 0, 'r'},          //0
-    {"human-chr", no_argument, 0, 'H'},             //1
-    {"trim", no_argument, 0, 'T'},                  //2
+    {"human-chr", no_argument, 0, 0},             //1
+    {"trim-pat-mat", no_argument, 0, 0},                  //2
     {"verbose", required_argument, 0, 'v'},        //3 verbosity level [1]
     {"help", no_argument, 0, 'h'},                 //4
     {0, 0, 0, 0}
@@ -371,8 +371,8 @@ static struct option long_options[] = {
 static inline void print_help_msg(FILE *fp_help){
     fprintf(fp_help,"Usage: cornetto asmstats <asm2ref.paf> <telomere.bed> -r <fixasm.report.tsv>\n");
     fprintf(fp_help,"   -r FILE                    report from fixasm\n");
-    fprintf(fp_help,"   -H                         use inbuilt human chromosome names and order when printing report\n");
-    fprintf(fp_help,"   -T                         trim chr name suffixes _MATERNAL and _PATERNAL from PAF\n");
+    fprintf(fp_help,"   --human-chr                use inbuilt human chromosome names and order when printing report\n");
+    //fprintf(fp_help,"   --trim-pat-mat                     trim chr name suffixes _MATERNAL and _PATERNAL from PAF\n");
     fprintf(fp_help,"   -v INT                     verbosity level [%d]\n",(int)get_log_level());
     fprintf(fp_help,"   -h                         help\n");
 }
@@ -669,7 +669,7 @@ char const **get_chr_list(khash_t(as_map_chr) *h_chr, size_t *chr_list_size) {
 
 int asmstats_main(int argc, char* argv[]) {
 
-    const char* optstring = "r:HTh";
+    const char* optstring = "r:h";
 
     int longindex = 0;
     int32_t c = -1;
@@ -692,9 +692,9 @@ int asmstats_main(int argc, char* argv[]) {
         }
         else if (c == 'r') {
             report = optarg;
-        } else if (c == 'H') {
+        } else if (c == 0 && longindex == 1){ // --human-chr{
             use_human_chr = 1;
-        } else if (c == 'T') {
+        } else if (c == 0 && longindex == 2){ // --trim
             trim = 1;
         }
 
@@ -744,6 +744,8 @@ int asmstats_main(int argc, char* argv[]) {
     } else {
         chr_list = get_chr_list(h_chr, &chr_list_size);
     }
+
+    fprintf(stdout, "%s\n\n", paf);
 
     telo_table(h_chr, h_ctg, chr_list, chr_list_size);
 
