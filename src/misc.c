@@ -105,6 +105,72 @@ void yes_or_no(uint64_t* flag_a, uint64_t flag, const char* opt_name, const char
     }
 }
 
+/* alpha-numeric sort is adapted from https://github.com/samtools/samtools/blob/c83652d0d97544370b5f50abef9141df7a113d03/bam_sort.c
+
+The MIT License
+
+    Copyright (C) 2008-2025 Genome Research Ltd.
+    Portions copyright (C) 2009-2012 Broad Institute.
+
+    Author: Heng Li <lh3@sanger.ac.uk>
+    Author: Martin Pollard <mp15@sanger.ac.uk>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.  */
+
+
+
+#define is_digit(c) ((c)<='9' && (c)>='0')
+int strnum_cmp(const char *_a, const char *_b){
+
+    const unsigned char *a = (const unsigned char*)_a, *b = (const unsigned char*)_b;
+    const unsigned char *pa = a, *pb = b;
+    while (*pa && *pb) {
+        if (!is_digit(*pa) || !is_digit(*pb)) {
+            if (*pa != *pb)
+                return (int)*pa - (int)*pb;
+            ++pa; ++pb;
+        } else {
+            // skip leading zeros
+            while (*pa == '0') ++pa;
+            while (*pb == '0') ++pb;
+
+            // skip matching digits
+            while (is_digit(*pa) && *pa == *pb)
+                pa++, pb++;
+
+            // Now mismatching, so see which ends the number sooner
+            int diff = (int)*pa - (int)*pb;
+            while (is_digit(*pa) && is_digit(*pb))
+                pa++, pb++;
+
+            if (is_digit(*pa))
+                return  1; // pa still going, so larger
+            else if (is_digit(*pb))
+                return -1; // pb still going, so larger
+            else if (diff)
+                return diff; // same length, so earlier diff
+        }
+    }
+    return *pa? 1 : *pb? -1 : 0;
+}
+
+
 
 // Prints to the provided buffer a nice number of bytes (KB, MB, GB, etc)
 //adapted from https://www.mbeckler.org/blog/?p=114

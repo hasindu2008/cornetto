@@ -27,4 +27,6 @@ void yes_or_no(uint64_t* flag_a, uint64_t flag, const char* opt_name, const char
 
 char **read_bed_regions(char *bedfile, int64_t *count);
 
+int strnum_cmp(const char *_a, const char *_b);
+
 #endif

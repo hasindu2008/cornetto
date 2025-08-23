@@ -24,4 +24,4 @@ test -e $FILE  || die "File $FILE does not exist. Did you run minidotplot.sh?"
 test -e ${PREFIX}.report.tsv || die "File ${PREFIX}.report.tsv does not exist. Did you run minidotplot.sh?"
 test -e ${PREFIX}.windows.0.4.50kb.ends.bed || die "File ${PREFIX}.windows.0.4.50kb.ends.bed does not exist. Did you run telostats.sh?"
 
-${CORNETTO} asmstats ${FILE} ${PREFIX}.windows.0.4.50kb.ends.bed -r ${PREFIX}.report.tsv -s ${FASTA}
+${CORNETTO} asmstats ${FILE} ${PREFIX}.windows.0.4.50kb.ends.bed -r ${PREFIX}.report.tsv

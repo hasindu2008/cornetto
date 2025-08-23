@@ -31,6 +31,7 @@ SOFTWARE.
 #include <assert.h>
 #include <stdint.h>
 #include <zlib.h>
+#include "misc.h"
 #include "error.h"
 #include "pafrec.h"
 #include "khash.h"
@@ -690,6 +691,19 @@ char **get_chr_list(khash_t(as_map_chr) *h_chr, size_t *chr_list_size) {
     return chr_list;
 }
 
+int compare_chrs(const void *a, const void *b) {
+    const char *chr_a = *(const char **)a;
+    const char *chr_b = *(const char **)b;
+    return strnum_cmp(chr_a, chr_b);
+}
+
+char **get_sorted_chr_list(khash_t(as_map_chr) *h_chr, size_t *chr_list_size) {
+    char **chr_list = get_chr_list(h_chr, chr_list_size);
+    // Sort the chr_list
+    qsort(chr_list, *chr_list_size, sizeof(char *), compare_chrs);
+    return chr_list;
+}
+
 static void free_chr_list(char **chr_list, size_t chr_list_size) {
     for (size_t i = 0; i < chr_list_size; i++) {
         free(chr_list[i]);
@@ -805,7 +819,7 @@ int asmstats_main(int argc, char* argv[]) {
     char **chr_list = NULL;
     uint8_t free_list = 0;
     if (order == NULL){
-        chr_list = get_chr_list(h_chr, &chr_list_size);
+        chr_list = get_sorted_chr_list(h_chr, &chr_list_size);
         free_list=1;
     } else if(strcmp(order, "human1") == 0){
         chr_list = (char **)human_chr_1;
