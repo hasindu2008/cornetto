@@ -276,7 +276,7 @@ To generate the dotplot use the `scripts/minidotplot.sh`. This script requires m
 scripts/minidotplot.sh hg002v1.0.1_pat.fasta asm.fasta
 ```
 
-To get the telomere statistics use the `scripts/telostats.sh`. This script uses cornetto subcommands that implements  functionality of [teleomere analysis scripts from the VGP project](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere).
+To get the telomere statistics use the `scripts/telostats.sh`. This script uses cornetto subcommands that implements  functionality of teleomere analysis scripts from the [VGP project](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere).
 
 
 ```bash

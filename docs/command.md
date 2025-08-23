@@ -113,7 +113,16 @@ cornetto minidot -m 500 -i 0.9 -s 2000 -w 800 input.paf > output.eps
 
 ### asmstats
 
-calculate assembly statistics
+This subprogram calculate per-chromosome assembly evaluation statistics. Output is detailed [here](asmstats.md).
+
+**Options:**
+-   `-r FILE`:                    report from fixasm
+-   `--human-chr`:                use inbuilt human chromosome names and order when printing report
+
+**Example usage:**
+```bash
+cornetto asmstats asm2ref.paf telomere.bed -r fixasm.report.tsv
+```
 
 
 ---

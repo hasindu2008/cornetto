@@ -50,9 +50,12 @@ Using individual commands:
 ## 1. align assembly to reference
 minimap2 -t16 --eqx -cx asm5 ref.fasta asm.fasta > asm.paf
 ## 2. fix the +/- directions to match the reference
-cornetto fixasm asm.fasta asm.paf --report asm.report.tsv -w asm.fix.paf > asm.fix.fasta
+cornetto fixasm asm.fasta asm.paf -r asm.report.tsv -w asm.fix.paf > asm.fix.fasta
 ## 3. dot plot
 cornetto minidot asm.fix.paf -f 2 > asm.eps
+
+# per-chromosome evaluation
+cornetto asmstats asm.paf asm.windows.0.4.50kb.ends.bed -r asm.report.tsv # asm.windows.0.4.50kb.ends.bed is from `scripts/telostats.sh`
 
 # miscellaneous commands
 cornetto fa2bed asm.fasta > asm.bed  # create a bed file with assembly contig lengths

@@ -71,7 +71,7 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"       sdust           symmetric DUST (https://github.com/lh3/sdust)\n");
     fprintf(fp_help,"   misc:\n");
     fprintf(fp_help,"       fa2bed          create a bed file with assembly contig lengths\n");
-    fprintf(fp_help,"       seq             extract reads equal to larger than a threshold from a fastq\n");
+    fprintf(fp_help,"       seq             extract reads equal or longer than a threshold from a fastq\n");
     fprintf(fp_help,"\n");
     fprintf(fp_help,"       --help, -h      print this help message\n");
     fprintf(fp_help,"       --version, -V   print version information\n");
