@@ -1,6 +1,6 @@
 # Cornetto
 
-Cornetto is a method for adaptive genome assembly using nanopore sequencing from Oxford Nanopore Technologies (ONT). This repository documents the Cornetto bioinformatics protocol and contains the source code for Cornetto (a programme written in C and a collection of shell scripts).
+Cornetto is a method for iterative genome assembly using nanopore sequencing from Oxford Nanopore Technologies (ONT). This repository documents the Cornetto bioinformatics protocol and the Cornetto toolkit (a programme written in C and a collection of shell scripts). Cornetto toolkit also features some useful commands for evaluating assemblies generated from any other method.
 
 Documentation: https://hasindu2008.github.io/cornetto <br>
 
@@ -8,25 +8,30 @@ Documentation: https://hasindu2008.github.io/cornetto <br>
 
 ## Publication and data
 
-- [Preprint link](https://doi.org/10.1101/2025.03.31.646505)
-- [Talk video link](https://youtu.be/ci0OoM6VbsA)
-- [Datasets](docs/data.md)
+- [Preprint link (bioxiv)](https://doi.org/10.1101/2025.03.31.646505)
+- [Talk video link (London Calling 2025)](https://youtu.be/ci0OoM6VbsA)
+- [Datasets used in the preprint](docs/data.md)
 
 ## Cornetto bioinformatics protocol
-
-### Summary
-
-1. Generate a base assembly
-2. Generating a cornetto panel for adaptive sampling
-3. Run adaptive sampling
-4. Create the next iteration of assembly
-5. Repeat from step 2
 
 ### Detailed documentation
 
 See [here](docs/protocol.md).
 
+### Summary
+
+1. Generate a base assembly. Sequence on a single flowcell as normal and use hifiasm to assemble.
+2. Generate a cornetto panel for adaptive sampling. Identify the 'boringbits' from the assembly and create a adaptive sampling target panel for rejecting reads.
+3. Run adaptive sampling using readfish with the panel created in step 2 for around 24 hours.
+4. Create the next iteration of assembly. Use collective data from step 1 and step 3 to create an assembly with hifiasm.
+5. Repeat from step 2.
+
 ## Cornetto toolkit
+
+### Detailed documentation
+
+See [here](docs/toolkit.md).
+
 
 ### Summary
 
@@ -48,18 +53,18 @@ minimap2 -t16 --eqx -cx asm5 ref.fasta asm.fasta > asm.paf
 cornetto fixasm asm.fasta asm.paf --report asm.report.tsv -w asm.fix.paf > asm.fix.fasta
 ## 3. dot plot
 cornetto minidot asm.fix.paf -f 2 > asm.eps
+
+# miscellaneous commands
+cornetto fa2bed asm.fasta > asm.bed  # create a bed file with assembly contig lengths
+cornetto seq -m 10000 reads.fastq > long.fastq # extract reads >=10kb
 ```
-
-### Detailed documentation
-
-See [here](docs/toolkit.md).
 
 ## Acknowledgement
 
-- cornetto uses [klib](https://github.com/attractivechaos/klib) which is under the MIT license.
-- `minidot` from [miniasm](https://github.com/lh3/miniasm) package (MIT license) has been integrated as `cornetto minidot` at [src/minidot](src/minidot).
-- `sdust` programme from https://github.com/lh3/sdust is integrated as `cornetto sdust` at [src/sdust](src/sdust).
-- `telofind`, `telobreaks` and `telowin` subcommands are implemented based on [VGP telomere scripts](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere) license under BSD.
+- cornetto uses [klib](https://github.com/attractivechaos/klib) (MIT licensed).
+- `cornetto minidot` is simply `minidot` from [miniasm](https://github.com/lh3/miniasm) (MIT licensed).
+- `cornetto sdust` is simply [sdust](https://github.com/lh3/sdust).
+- `cornetto telofind`, `telobreaks` & `telowin` are implemented based on [VGP](https://github.com/VGP/vgp-assembly/tree/master/pipeline/telomere) telomere scripts (BSD licensed).
 
 
 
