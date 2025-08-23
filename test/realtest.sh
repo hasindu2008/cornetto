@@ -63,7 +63,9 @@ echo "recreate"
 cp test/real/E_2/recreate/hg002-cornetto-E_2.bp.p_ctg.lowQ.bed .
 scripts/recreate-cornetto.sh test/real/E_2/hg002-cornetto-E_2.fasta || die "recreate failed"
 diff -q tmp_recreate_cornetto/ test/real/E_2/recreate/tmp_recreate_cornetto/ || die "recreate output mismatch"
-rm -r hg002-cornetto-E_2.bp.p_ctg.lowQ.bed tmp_recreate_cornetto/
+diff -q hg002-cornetto-E_2.boringbits.txt test/real/E_2/recreate/hg002-cornetto-E_2.boringbits.txt || die "recreate output mismatch in boring bits file"
+diff -q hg002-cornetto-E_2.boringbits.bed test/real/E_2/recreate/hg002-cornetto-E_2.boringbits.bed || die "recreate output mismatch in boring bits bed file"
+rm -r hg002-cornetto-E_2.bp.p_ctg.lowQ.bed hg002-cornetto-E_2.boringbits.txt hg002-cornetto-E_2.boringbits.bed tmp_recreate_cornetto/
 
 # recreate hapnetto requires minimap2, so not tested here. Can be manually tested with what is under test/real/E_2/recreate/tmp_recreate_hapnetto/
 
