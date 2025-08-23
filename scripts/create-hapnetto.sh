@@ -33,8 +33,9 @@ test -f ${ASSNAME}.hap1.fasta || die "File ${ASSNAME}.hap1.fasta not found."
 test -f ${ASSNAME}.hap2.fasta || die "File ${ASSNAME}.hap2.fasta not found."
 
 #1# align the hapX assemblies to the primary assembly
-${MINIMAP2} -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap1.fasta > ${TMPOUT}/${ASSNAME}_hap1_to_asm.paf || die "minimap2 failed"
-${MINIMAP2} -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap2.fasta > ${TMPOUT}/${ASSNAME}_hap2_to_asm.paf || die "minimap2 failed"
+${MINIMAP2} -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap1.fasta > ${TMPOUT}/${ASSNAME}_hap1_to_asm.paf || ${MINIMAP2} -t16 --eqx -x asm5 ${FASTA} ${ASSNAME}.hap1.fasta > ${TMPOUT}/${ASSNAME}_hap1_to_asm.paf || die "minimap2 failed"
+${MINIMAP2} -t16 --eqx -cx asm5 ${FASTA} ${ASSNAME}.hap2.fasta > ${TMPOUT}/${ASSNAME}_hap2_to_asm.paf || ${MINIMAP2} -t16 --eqx -x asm5 ${FASTA} ${ASSNAME}.hap2.fasta > ${TMPOUT}/${ASSNAME}_hap2_to_asm.paf || die "minimap2 failed"
+# TODO: can make just -x?
 
 GET_HAP_X_FUN () {
     HAP=$1

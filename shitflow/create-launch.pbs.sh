@@ -57,10 +57,10 @@ minimap2 -x map-ont -d ${ASM}.fasta.idx ${ASM}.fasta || die "minimap2 failed"
 awk '{print $1"\t0\t"$2}' ${ASM}.fasta.fai | sort -k3,3nr > ${CHROMBED} || die "awk failed"
 cat ${CHROMBED} | awk '{print $1"\t"$3}' > ${CHROMSIZES} || die "awk failed"
 
-## align starting hifi FASTQ reads back to the assembly they generated
+## align starting FASTQ reads back to the assembly they generated
 minimap2 -t ${THREADS} --secondary=no --MD -ax map-ont ${ASM}.fasta ${FQ} > tmp.sam || die "minimap2 failed"
 samtools view -@ ${THREADS} -b tmp.sam | samtools sort -@ ${THREADS} > ${BAM} || die "samtools sort failed"
-samtools index ${BAM} || die "samtools index failed"
+samtools index ${BAM} || samtools index -c ${BAM} || die "samtools index failed"
 
 ## get per base coverage tracks for total alignemts (MQ>=0) and unique alignemnts (MQ>=20)
 samtools depth -@ ${THREADS} -b ${CHROMBED} -aa ${BAM} | awk '{print $1"\t"$2-1"\t"$2"\t"$3}' > ${TOTCOV}.bg || die "samtools depth failed"
