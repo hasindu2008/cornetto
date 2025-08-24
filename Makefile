@@ -24,7 +24,8 @@ OBJ = $(BUILD_DIR)/main.o \
 	  $(BUILD_DIR)/sdust.o \
 	  $(BUILD_DIR)/assbed.o \
 	  $(BUILD_DIR)/seq.o \
-	  $(BUILD_DIR)/asmstats.o
+	  $(BUILD_DIR)/asmstats.o \
+	  $(BUILD_DIR)/nx.o
 
 ifdef asan
 	CFLAGS += -fsanitize=address -fno-omit-frame-pointer
@@ -76,6 +77,9 @@ $(BUILD_DIR)/error.o: src/error.c src/error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/pafrec.o: src/pafrec.c src/pafrec.h src/error.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/nx.o: src/nx.c src/error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 # temolere stuff

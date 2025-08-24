@@ -49,6 +49,7 @@ int sdust_main(int argc, char *argv[]);
 int assbed_main(int argc, char* argv[]);
 int seq_main(int argc, char* argv[]);
 int asmstats_main(int argc, char* argv[]);
+int nx_main(int argc, char* argv[]);
 
 int print_usage(FILE *fp_help){
 
@@ -64,6 +65,7 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"       minidot         create dot plot (from https://github.com/lh3/miniasm)\n");
     fprintf(fp_help,"   eval:\n");
     fprintf(fp_help,"       asmstats        calculate assembly statistics\n");
+    fprintf(fp_help,"       nx              nx, ngx and n-telo tables\n");
     fprintf(fp_help,"   telomere:\n");
     fprintf(fp_help,"       telowin         analyse telomere windows in a fasta file\n");
     fprintf(fp_help,"       telobreaks      find telomere breaks in a fasta file\n");
@@ -120,6 +122,8 @@ int main(int argc, char* argv[]){
         ret=seq_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"asmstats")==0){
         ret=asmstats_main(argc-1, argv+1);
+    } else if (strcmp(argv[1],"nx")==0){
+        ret=nx_main(argc-1, argv+1);
     } else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"cornetto %s\n",CORNETTO_VERSION);
         exit(EXIT_SUCCESS);
