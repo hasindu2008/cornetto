@@ -65,8 +65,8 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"       minidot         create dot plot (from https://github.com/lh3/miniasm)\n");
     fprintf(fp_help,"   eval:\n");
     fprintf(fp_help,"       asmstats        calculate assembly statistics\n");
-    fprintf(fp_help,"       nx              nx, ngx and n-telo tables\n");
-    fprintf(fp_help,"   telomere:\n");
+    fprintf(fp_help,"       nx              nx or ngx plot tables\n");
+    fprintf(fp_help,"   telo:\n");
     fprintf(fp_help,"       telowin         analyse telomere windows in a fasta file\n");
     fprintf(fp_help,"       telobreaks      find telomere breaks in a fasta file\n");
     fprintf(fp_help,"       telofind        find telomere sequences in a fasta file\n");

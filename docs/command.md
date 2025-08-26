@@ -4,7 +4,16 @@
 
 ### noboringbits
 
-This programme loads the whole depth file to memory, thus would need tens of gigabytes of RAM. It is not memory-optimized because the assembly process already requires several hundred gigabytes of RAM. Therefore, the user is expected to have access to a computer with a large amount of RAM.
+Cornetto noboringbits prints coordinate windows that meet any of the following:
+
+1. contigs < 1Mbase in size
+2. 100kbase edge regions at each
+3. Windows that meet any of the following criteria:
+   - windows with low coverage: < [0.4]x genome average
+   - windows with high coverage: > [2.5]x genome average
+   - windows with low mappability: mean MAPQ 20 coverage for window is < [0.4]x mean coverage for the window
+
+This programme loads the whole depth file to memory, thus would need tens of gigabytes of RAM. It is not memory-optimised because the assembly process already requires several hundred gigabytes of RAM. Therefore, the user is expected to have access to a computer with a large amount of RAM.
 
 **Options:**
 
@@ -19,16 +28,6 @@ This programme loads the whole depth file to memory, thus would need tens of gig
 * `-h`:            help
 * `--verbose INT`: verbosity level [default: 4]
 * `--version`:     print version
-
-
-Cornetto noboringbits prints coordinate windows that meet any of the following:
-
-1. contigs < 1Mbase in size
-2. 100kbase edge regions at each
-3. Windows that meet any of the following criteria:
-   - windows with low coverage: < [0.4]x genome average
-   - windows with high coverage: > [2.5]x genome average
-   - windows with low mappability: mean MAPQ 20 coverage for window is < [0.4]x mean coverage for the window
 
 
 **Example usage:**
@@ -55,7 +54,7 @@ Options:
 
 ### fixasm
 
-This programme processes a FASTA file and a PAF alignment file to fix the direction of contigs based on the total base length being more positive or negative. It outputs the direction fixed FASTA to `stdout` and logs missing sequences to `stderr`.
+This program processes a FASTA file and a PAF alignment file to fix the direction of contigs based on the total base length being more positive or negative. It outputs the direction fixed contigs in FASTA format to `stdout`.
 
 **Input:**
 
@@ -127,14 +126,14 @@ cornetto asmstats asm2ref.paf telomere.bed -r fixasm.report.tsv
 
 ---
 
-## Telemere
+## Telo
 
 
 ### telowin
 
 This subcommand analyses telomere windows in a genome assembly.
 
-**Options:**
+**Inputs:**
 
 * `<input_file>`:  Input file containing telomere regions.
 * `<identity>`:    Identity percentage (e.g., 99.9).
@@ -168,7 +167,7 @@ cornetto telobreaks assembly.lens assembly.sdust assembly.telomere > output.brea
 
 This subcommand identifies telomere sequences in a FASTA file.
 
-**Options:**
+**Inputs:**
 
 * `<input.fasta>`: Input FASTA file.
 * `[sequence]`:    Optional sequence to search for (default: `TTAGGG`).
@@ -204,17 +203,17 @@ create a bed file with assembly contig lengths
 
 **Example usage:**
 ```
-cornetto asmbed <assembly.fasta>
+cornetto asmbed assembly.fasta
 ```
 
 ### seq
 
-extract reads equal to larger than a threshold from a fastq
+extract reads equal to longer than a threshold from a fastq
 
 **Options:**
 - `-m INT`:        min length [30000]
 
 **Example usage:**
 ```
-cornetto seq <reads.fastq>
+cornetto seq reads.fastq
 ```

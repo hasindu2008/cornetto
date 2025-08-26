@@ -10,7 +10,7 @@ Documentation: https://hasindu2008.github.io/cornetto <br>
 
 - [Preprint link (bioxiv)](https://doi.org/10.1101/2025.03.31.646505)
 - [Talk video link (London Calling 2025)](https://youtu.be/ci0OoM6VbsA)
-- [Datasets used in the preprint](docs/data.md)
+- [Raw data and assemblies for the preprint](docs/data.md)
 
 ## Cornetto bioinformatics protocol
 
@@ -20,10 +20,10 @@ See [here](docs/protocol.md).
 
 ### Summary
 
-1. Generate a base assembly. Sequence on a single flowcell as normal and use hifiasm to assemble.
-2. Generate a cornetto panel for adaptive sampling. Identify the 'boringbits' from the assembly and create a adaptive sampling target panel for rejecting reads.
+1. Generate a base assembly: Sequence on a single flowcell as normal and use hifiasm to assemble.
+2. Generate a cornetto panel for adaptive sampling: Identify the 'boringbits' from the assembly and create a adaptive sampling target panel for rejecting reads.
 3. Run adaptive sampling using readfish with the panel created in step 2 for around 24 hours.
-4. Create the next iteration of assembly. Use collective data from step 1 and step 3 to create an assembly with hifiasm.
+4. Create the next iteration of assembly: Use collective data from step 1 and step 3 to create an assembly with hifiasm.
 5. Repeat from step 2.
 
 ## Cornetto toolkit
@@ -39,7 +39,7 @@ Using helper scripts:
 
 ```bash
 scripts/telostats.sh asm.fasta # prints the telomere counts
-scripts/minidotplot.sh ref.fasta asm.fasta # creates reference vs assembly dotplot in assembly.eps
+scripts/minidotplot.sh ref.fasta asm.fasta # creates reference vs assembly dotplot. output: assembly.eps
 scripts/asmstats.sh asm.fasta  # prints chromosome-wise assembly to reference report
 ```
 
@@ -48,15 +48,14 @@ Using individual commands:
 ```bash
 # creating a dot plot
 ## 1. align assembly to reference
-minimap2 -t16 --eqx -cx asm5 ref.fasta asm.fasta > asm.paf
+minimap2 --eqx -cx asm5 ref.fasta asm.fasta > asm.paf
 ## 2. fix the +/- directions to match the reference
 cornetto fixasm asm.fasta asm.paf -r asm.report.tsv -w asm.fix.paf > asm.fix.fasta
 ## 3. dot plot
 cornetto minidot asm.fix.paf -f 2 > asm.eps
 
-# per-chromosome evaluation
+# per-chromosome evaluation. Note: asm.windows.0.4.50kb.ends.bed is from `scripts/telostats.sh`
 cornetto asmstats asm.paf asm.windows.0.4.50kb.ends.bed -r asm.report.tsv -s ref.fasta
-# asm.windows.0.4.50kb.ends.bed is from `scripts/telostats.sh`
 
 # miscellaneous commands
 cornetto fa2bed asm.fasta > asm.bed  # create a bed file with assembly contig lengths

@@ -49,7 +49,7 @@ static struct option long_options[] = {
 static inline void print_help_msg(FILE *fp_help){
     fprintf(fp_help,"Usage: cornetto nx <assembly.fasta> \n");
     //fprintf(fp_help,"   -v INT                     verbosity level [%d]\n",(int)get_log_level());
-    fprintf(fp_help,"   -g STR                     genome size (e.g. 3.2g). if unspecified, will use total contig length\n");
+    fprintf(fp_help,"   -g STR                     genome size (e.g. 3.1G). if unspecified, will use total contig length\n");
     fprintf(fp_help,"   -h                         help\n");
 
 }

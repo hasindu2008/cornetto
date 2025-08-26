@@ -28,7 +28,7 @@ scripts/telostats.sh asm.fasta
 ```
 
 Output:
-- `asm.windows.0.4.50kb.ends.bed`: telomeres at ends of contigs
+- `asm.windows.0.4.50kb.ends.bed`: telomeres at the ends of contigs
 - `stdout`: counts of number of contigs with 1 telomere at the end, 2 telomeres at the end, more than 2 telomeres at the end
 
 Example:
@@ -49,7 +49,7 @@ scripts/minidotplot.sh ref.fasta asm.fasta
 
 Output:
 - `asm.paf`: minimap2 alignment
-- `asm.report.tsv`: which chromosome is the best match per each contig, and if needs to reverse complement
+- `asm.report.tsv`: for each assembly contig: which chromosome in the reference is the best match; if it had to be reverse complemented to match the reference; new name
 - `asm.eps`: the dot plot in eps format
 
 Examples:
@@ -59,7 +59,7 @@ Examples:
 awk '/^S/{print ">"$2;print $3}' asm.p_ctg.gfa > asm.fasta
 scripts/minidotplot.sh chm13.fa asm.fasta
 
-# dot plot of a hifiasm primary assembly against a flat assembly of HG002 Q100
+# dot plot of a hifiasm primary assembly against a haploid assembly of HG002 Q100
 samtools faidx hg002v1.0.1.fasta
 grep "PATERNAL\|chrEBV\|chrM\|chrX\|chrY" hg002v1.0.1.fasta.gz.fai | cut -f 1 > paternal.txt
 samtools faidx hg002v1.0.1.fasta.gz -r paternal.txt -o hg002v1.0.1_pat.fasta
@@ -70,9 +70,10 @@ awk '/^S/{print ">"$2;print $3}' asm.hap1.p_ctg.gfa > asm.hap1.fasta
 awk '/^S/{print ">"$2;print $3}' asm.hap2.p_ctg.gfa > asm.hap2.fasta
 cat asm.hap1.fasta asm.hap2.fasta > asm.hap1+hap2.fasta
 scripts/minidotplot.sh hg002v1.0.1.fasta asm.hap1+hap2.fasta
-```
 
-If you want to create a flat
+# dot plot of a hifiasm hap1 against the chm13
+scripts/minidotplot.sh hg002v1.0.1.fasta asm.hap1.fasta
+```
 
 
 ### Assembly stats
@@ -87,12 +88,12 @@ Output which is printed to the `stdout` is explained [here](asmstats.md).
 
 Examples:
 ```bash
-# for a primary assembly caled asm.fasta against chm13.fa
+# for a primary assembly called asm.fasta against chm13.fa
 scripts/telostats.sh asm.fasta
 scripts/minidotplot.sh chm13.fa asm.fasta
 scripts/asmstats.sh asm.fasta
 
-# for a primary assembly caled asm.fasta against a flat hg002 we created above
+# for a primary assembly called asm.fasta against a haploid hg002 we created before
 scripts/telostats.sh asm.fasta
 scripts/minidotplot.sh hg002v1.0.1_pat.fasta asm.fasta
 scripts/asmstats.sh asm.fasta
@@ -101,28 +102,35 @@ scripts/asmstats.sh asm.fasta
 scripts/telostats.sh asm.hap1+hap2.fasta
 scripts/minidotplot.sh hg002v1.0.1.fasta asm.hap1+hap2.fasta
 scripts/asmstats.sh asm.hap1+hap2.fasta
+
+# for haplotype 1 assembly called asm.hap1.fasta against the chm13
+scripts/telostats.sh asm.hap1.fasta
+scripts/minidotplot.sh chm13.fa asm.hap1.fasta
+scripts/asmstats.sh asm.hap1.fasta
 ```
 
 
 ## Using individual commands
 
+What the aforementioned scripts perform, can also be done manually through individual commands.
+
 ### Generate a dot plot step by step
 
 1. First map your assembly to the reference using minimap2.
 ```bash
-minimap2 -t16 --eqx -cx asm5 ref.fasta asm.fasta > asm.paf
+minimap2 --eqx -cx asm5 ref.fasta asm.fasta > asm.paf
 ```
-`ref.fasta` and `asm.fasta` is what was detailed under the `minidotplot.sh` above. You may want to change the preset to asm10 and tune other minimap2 options.
+`ref.fasta` and `asm.fasta` are what we detailed under the `minidotplot.sh` section above. You may want to change the pre-set to asm10 and tune other minimap2 options.
 
 2. fix the +/- directions in the paf file we generated in step 1 to match the direction on the reference
 ```bash
 cornetto fixasm asm.fasta asm.paf -r asm.report.tsv -w asm.fix.paf > asm.fix.fasta
 ```
-Here, the inputs are `asm.fasta` and `asm.paf`. `asm.report.tsv`, `asm.fix.paf` and `asm.fix.fasta` are outputs
+Here, the inputs are `asm.fasta` and `asm.paf`. `asm.report.tsv`, `asm.fix.paf` and `asm.fix.fasta` are outputs:
 
-`asm.fix.paf` will contain the `asm.paf` with +/- directions fixed to match those in the reference.
-`asm.fix.fasta` will contain the contigs in `asm.fasta` but with the directions corrected to match the reference. The contigs are also renamed here based on the chromosome for which the majority of a contig mapped to.
-`asm.report.tsv`will contain a report like the example below that tells the chrosome which the majoirty of the cntig mapped, if the direction was swapped and the new name for the contig we assigned.
+- `asm.fix.paf` will contain the `asm.paf` with +/- directions fixed to match those in the reference.
+- `asm.fix.fasta` will contain the contigs in `asm.fasta` but with the directions corrected to match the reference. The contigs are also renamed here based on the chromosome for which the majority of a contig mapped to.
+- `asm.report.tsv`will contain a report like the example below that tells for each assembly contig: the chromosome which the majority of the contig mapped; if the direction was swapped; and, the new name for the contig we assigned.
 ```
 ptg000001l	chr3	+	chr3_0
 ptg000002l	chr13	+	chr13_0
@@ -148,7 +156,7 @@ Output which is printed to the `stdout` is explained [here](asmstats.md).
 
 ### Usage of C programme
 
-Our Cornetto C programme contains a number of subtools that are used by the above explained scripts. If you want to use those subtools in your scripts, see the [manual page](command.md).
+Our Cornetto C programme contains a number of subtools in addition to the ones explained above. For more details of each and every command, see the [manual page](command.md).
 
 
 
