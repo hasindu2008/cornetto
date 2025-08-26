@@ -132,16 +132,18 @@ int nx_main(int argc, char* argv[]) {
     ks_mergesort(uint64_t, n, length, 0);
 
     uint64_t cumsum = 0;
+    double percent = 0;
     for (uint64_t i = 0; i < n; ++i) {
-        double percent = 0;
+
+        fprintf(stdout, "%f\t%lu\n", percent, length[n-i-1]);
+        cumsum += length[n-i-1];
         if(genome_size>0){
             percent = (double)cumsum/genome_size*100;
         } else {
             percent = (double)cumsum/sum*100;
         }
-
         fprintf(stdout, "%f\t%lu\n", percent, length[n-i-1]);
-        cumsum += length[n-i-1];
+
     }
 
     free(length);
