@@ -2,7 +2,7 @@
  * @file find_telomere.c
  * @author Kavindu Jayasooriya (k.jayasooriya@unsw.edu.au)
  *
-Adapted from the `find_telomere.c` in the VGP assembly repository:
+rc and find functions are adapted from the `find_telomere.c` in the VGP assembly repository:
 https://github.com/VGP/vgp-assembly/blob/master/pipeline/telomere/find_telomere.c
 
 VGP Assembly project is licensed under BSD license
@@ -13,8 +13,14 @@ https://github.com/VGP/vgp-assembly/blob/master/LICENSE
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <zlib.h>
+#include <assert.h>
 #include "error.h"
+#include "kseq.h"
 
+KSEQ_INIT(gzFile, gzread)
+
+//todo lowercase?
 char* rc(const char* str) {
    size_t len = strlen(str);
    char* DNAseq = (char*)malloc(len + 1);
@@ -67,6 +73,13 @@ void find(const char* query, const char* name, const char* target) {
    free(rev);
 }
 
+static void disambiguate(char* str) {
+   while (*str) {
+      *str = toupper(*str);
+      str++;
+   }
+}
+
 int find_telomere_main(int argc, char* argv[]) {
     if (argc < 2) {
         fprintf(stderr, "Error: invalid number of parameters\n");
@@ -74,41 +87,25 @@ int find_telomere_main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    FILE* infile = fopen(argv[1], "r");
-    F_CHK(infile,argv[1]);
+   const char* fasta = argv[1];
+   const char* query = (argc >= 3 ? argv[2] : "TTAGGG");
 
-    char* str = NULL;
-    size_t str_size = 0;
-    char line[2048];
-    char header[2048] = "";
+   gzFile fp;
+   kseq_t *seq;
+   int l;
+   fp = gzopen(fasta, "r");
+   F_CHK(fp,fasta);
+   seq = kseq_init(fp);
+   MALLOC_CHK(seq);
 
-    while (fgets(line, sizeof(line), infile)) {
-        if (strchr(line, '>') == NULL) {
-            size_t line_len = strlen(line);
-            if (line[line_len - 1] == '\n') {
-            line[--line_len] = '\0'; // remove newline character
-            }
-            str = (char*)realloc(str, str_size + line_len + 1);
-            MALLOC_CHK(str);
-            strcpy(str + str_size, line);
-            str_size += line_len;
-        } else {
-            if (str_size > 0) {
-                find(str, header, (argc >= 3 ? argv[2] : "TTAGGG"));
-            }
-            free(str);
-            str = NULL;
-            str_size = 0;
-            strncpy(header, line, sizeof(header) - 1);
-            header[sizeof(header) - 1] = '\0';
-            header[strcspn(header, "\n")] = '\0';
-        }
-    }
-    if (str_size > 0) {
-        find(str, header, (argc >= 3 ? argv[2] : "TTAGGG"));
-        free(str);
-    }
-    fclose(infile);
+   while ((l = kseq_read(seq)) >= 0) {
+      assert(l==(int)strlen(seq->seq.s));
+      disambiguate(seq->seq.s);
+      find(seq->seq.s, seq->name.s, query);
+   }
 
-    return EXIT_SUCCESS;
+   kseq_destroy(seq);
+   gzclose(fp);
+
+   return EXIT_SUCCESS;
 }

@@ -96,7 +96,7 @@ int telomere_breaks_main(int argc, char* argv[]) {
     while (fgets(line, sizeof(line), telomere_file)) {
         char name[LINE_MAX];
         int start, end, matched_len;
-        sscanf(line, ">%s %*d %*d %d %d %d", name, &start, &end, &matched_len);
+        sscanf(line, "%s %*d %*d %d %d %d", name, &start, &end, &matched_len);
         if (matched_len >= MIN_TEL) {
             khiter_t k = kh_get(scaffold, scaffold_map, name);
             if (k != kh_end(scaffold_map)) {

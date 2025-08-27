@@ -123,6 +123,15 @@ This subprogram calculate per-chromosome assembly evaluation statistics. Output 
 cornetto asmstats asm2ref.paf telomere.bed -r fixasm.report.tsv
 ```
 
+### nx
+
+This subprogram prints a table that can be directly used to get an Nx or NGx plot. First column is the % cumulative contig lengths. The second column is the contig length.
+
+
+**Options:**
+- `-g STR`:    genome size (e.g. 3.1G). If specified becomes NGx. If unspecified, will use total contig length, thus nx.
+
+**Example usage:**
 
 ---
 
