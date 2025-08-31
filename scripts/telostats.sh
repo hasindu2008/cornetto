@@ -37,7 +37,7 @@ ${CORNETTO} fa2bed $FILE | awk '{print $1"\t"$3}' > $TEMPDIR/${PREFIX}.lens || d
 ${CORNETTO} telowin $TEMPDIR/$PREFIX.telomere 99.9 $THRESHOLD > $TEMPDIR/$PREFIX.windows.$THRESHOLD || die "cornetto telowin failed"
 
 echo "Merge telomere motifs in 100bp"
-cat $TEMPDIR/$PREFIX.windows.$THRESHOLD | awk '{print $2"\t"$(NF-2)"\t"$(NF-1)}' | sed 's/>//g' | ${BEDTOOLS} merge -d 100  > $TEMPDIR/$PREFIX.windows.$THRESHOLD.bed || die "bedtools merge failed"
+cat $TEMPDIR/$PREFIX.windows.$THRESHOLD | awk '{print $2"\t"$(NF-2)"\t"$(NF-1)}' | ${BEDTOOLS} merge -d 100  > $TEMPDIR/$PREFIX.windows.$THRESHOLD.bed || die "bedtools merge failed"
 echo
 
 echo "Find those at end of scaffolds, within < $ENDS"
