@@ -59,7 +59,7 @@ Examples:
 awk '/^S/{print ">"$2;print $3}' asm.p_ctg.gfa > asm.fasta
 scripts/minidotplot.sh chm13.fa asm.fasta
 
-# dot plot of a hifiasm primary assembly against a haploid assembly of HG002 Q100
+# dot plot of a hifiasm primary assembly against a "haploid" version of the HG002 Q100 reference
 samtools faidx hg002v1.0.1.fasta
 grep "PATERNAL\|chrEBV\|chrM\|chrX\|chrY" hg002v1.0.1.fasta.gz.fai | cut -f 1 > paternal.txt
 samtools faidx hg002v1.0.1.fasta.gz -r paternal.txt -o hg002v1.0.1_pat.fasta
@@ -71,7 +71,7 @@ awk '/^S/{print ">"$2;print $3}' asm.hap2.p_ctg.gfa > asm.hap2.fasta
 cat asm.hap1.fasta asm.hap2.fasta > asm.hap1+hap2.fasta
 scripts/minidotplot.sh hg002v1.0.1.fasta asm.hap1+hap2.fasta
 
-# dot plot of a hifiasm hap1 against the chm13
+# dot plot of a hifiasm hap1 against the chm13 haploid cell-line reference
 scripts/minidotplot.sh hg002v1.0.1.fasta asm.hap1.fasta
 ```
 

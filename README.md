@@ -2,6 +2,8 @@
 
 Cornetto is a method for iterative genome assembly using nanopore sequencing from Oxford Nanopore Technologies (ONT). This repository documents the Cornetto bioinformatics protocol and the Cornetto toolkit (a programme written in C and a collection of shell scripts). Cornetto toolkit also features some useful commands for evaluating assemblies generated from any other method.
 
+**Cornetto is under development and there could be interface changes and changes to default parameters. Do not hesitate to open an issue if you found a bug, something is not clear or for any feature requests.**
+
 Documentation: https://hasindu2008.github.io/cornetto <br>
 
 [![CI](https://github.com/hasindu2008/cornetto/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/hasindu2008/cornetto/actions/workflows/c-cpp.yml)

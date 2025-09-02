@@ -50,6 +50,8 @@ int assbed_main(int argc, char* argv[]);
 int seq_main(int argc, char* argv[]);
 int asmstats_main(int argc, char* argv[]);
 int nx_main(int argc, char* argv[]);
+int report_main(int argc, char* argv[]);
+int telocontigs_main(int argc, char* argv[]);
 
 int print_usage(FILE *fp_help){
 
@@ -124,6 +126,10 @@ int main(int argc, char* argv[]){
         ret=asmstats_main(argc-1, argv+1);
     } else if (strcmp(argv[1],"nx")==0){
         ret=nx_main(argc-1, argv+1);
+    } else if (strcmp(argv[1],"report")==0){
+        ret=report_main(argc-1, argv+1);
+    } else if (strcmp(argv[1],"telocontigs")==0){
+        ret=telocontigs_main(argc-1, argv+1);
     } else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"cornetto %s\n",CORNETTO_VERSION);
         exit(EXIT_SUCCESS);

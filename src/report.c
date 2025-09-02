@@ -38,7 +38,7 @@ SOFTWARE.
 #include "misc.h"
 
 KSEQ_INIT(gzFile, gzread)
-KSORT_INIT_GENERIC(uint64_t)
+// KSORT_INIT_GENERIC(uint64_t)
 
 static struct option long_options[] = {
     {"genome-size", required_argument, 0, 'g'},     //0 genome size
@@ -54,7 +54,7 @@ static inline void print_help_msg(FILE *fp_help){
 
 }
 
-int nx_main(int argc, char* argv[]) {
+int report_main(int argc, char* argv[]) {
 
     const char* optstring = "g:h";
 
@@ -129,9 +129,9 @@ int nx_main(int argc, char* argv[]) {
     kseq_destroy(seq);
     gzclose(fp);
 
-    ks_mergesort(uint64_t, n, length, 0);
+    //ks_mergesort(uint64_t, n, length, 0);
 
-    fprintf(stdout, "#x\tcontig_len\n");
+    fprintf(stdout, "#Ncontigs\tLargestcontig(Mbase)\tN50(Mbase)\tN90(Mbase)\n");
 
     uint64_t cumsum = 0;
     double percent = 0;
