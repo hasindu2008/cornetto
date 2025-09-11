@@ -76,5 +76,5 @@ cornetto seq -m 10000 reads.fastq > long.fastq # extract reads >=10kb
 
 Regarding the name – the method is named by Ira Deveson after the ‘Cornetto’ ice-cream cone. There was a [famous TV advertisement in Australia](https://www.youtube.com/watch?v=NInHrq02LmI&ab_channel=terryschopshop) in 2000s that promoted the Cornetto as having ‘no boring bits’. In our cornetto workflow, we reject the 'boring bits', the bits which are too easy for the assemblers to resolve.
 
-![cornetto](docs/cover.jpg)
+![cornetto](docs/cover.png)
 
