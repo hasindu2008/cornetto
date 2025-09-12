@@ -22,6 +22,21 @@ ex() {
     fi
 }
 
+testdir="test/real"
+url="https://unsw-my.sharepoint.com/:u:/g/personal/z5136909_ad_unsw_edu_au/EQPBqCHBY0FJgijjIfIsk-4BD0BrhpIeUkGvuFCdrnbDGg?download=1"
+download_test_set() {
+	# data set exists
+	if [ -d ${testdir} ]; then
+		return
+	fi
+
+	mkdir -p test
+	tar_path=test/cornetto-realdata.tar.gz
+	wget -O $tar_path $url || rm -rf $tar_path ${testdir}
+	echo "Extracting. Please wait."
+	tar -xf $tar_path -C test || rm -rf $tar_path ${testdir}
+	rm -f $tar_path
+}
 
 PREFIX=hg002-cornetto-E_2
 export CORNETTO=./cornetto

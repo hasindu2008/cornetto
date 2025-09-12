@@ -27,7 +27,7 @@ TEMPDIR=tmp_${PREFIX}_minidot
 
 mkdir -p $TEMPDIR || die "mkdir $TEMPDIR failed"
 
-${MINIMAP2} -t16 --eqx -cx asm5 $REF $ASM > ${PREFIX}.paf || die "minimap2 failed"
+${MINIMAP2} -t16 --eqx -cx asm5 -I8G $REF $ASM > ${PREFIX}.paf || die "minimap2 failed"
 
 ${CORNETTO} fixasm ${ASM} ${PREFIX}.paf --report ${PREFIX}.report.tsv -w $TEMPDIR/${PREFIX}.fix.paf > $TEMPDIR/${PREFIX}.fix.fasta || die "cornetto failed"
 
