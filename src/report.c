@@ -41,22 +41,23 @@ KSEQ_INIT(gzFile, gzread)
 // KSORT_INIT_GENERIC(uint64_t)
 
 static struct option long_options[] = {
-    {"genome-size", required_argument, 0, 'g'},     //0 genome size
-    {"verbose", required_argument, 0, 'v'},        //3 verbosity level [1]
-    {"help", no_argument, 0, 'h'},                 //4
+    {"verbose", required_argument, 0, 'v'},        //0 verbosity level [1]
+    {"help", no_argument, 0, 'h'},                 //1
     {0, 0, 0, 0}};
 
 static inline void print_help_msg(FILE *fp_help){
-    fprintf(fp_help,"Usage: cornetto nx <assembly.fasta> \n");
+    fprintf(fp_help,"Usage: cornetto report <assembly.fasta> ... \n");
     //fprintf(fp_help,"   -v INT                     verbosity level [%d]\n",(int)get_log_level());
-    fprintf(fp_help,"   -g STR                     genome size (e.g. 3.1G). if unspecified, will use total contig length\n");
     fprintf(fp_help,"   -h                         help\n");
 
 }
 
+//in nx.c
+void sort_contigs(uint64_t *length, uint64_t n);
+
 int report_main(int argc, char* argv[]) {
 
-    const char* optstring = "g:h";
+    const char* optstring = "h";
 
     int longindex = 0;
     int32_t c = -1;
@@ -64,7 +65,6 @@ int report_main(int argc, char* argv[]) {
     const char *fasta = NULL;
 
     FILE *fp_help = stderr;
-    int64_t genome_size = -1;
 
     //parse the user args
     while ((c = getopt_long(argc, argv, optstring, long_options, &longindex)) >= 0) {
@@ -72,27 +72,11 @@ int report_main(int argc, char* argv[]) {
         if (c=='h'){
             fp_help = stdout;
             fp_help = stdout;
-        } else if (c == 'g') {
-            genome_size=mm_parse_num(optarg);
-            if(genome_size<=0){
-                ERROR("%s","Genome size should be larger than 0.");
-                exit(EXIT_FAILURE);
-            }
         }
-
     }
 
     // No arguments given
-    if (argc - optind != 1 || fp_help == stdout) {
-        print_help_msg(fp_help);
-        if(fp_help == stdout){
-            exit(EXIT_SUCCESS);
-        }
-        exit(EXIT_FAILURE);
-    }
-    fasta = argv[optind];
-
-    if (fasta == NULL) {
+    if (argc - optind < 1 || fp_help == stdout) {
         print_help_msg(fp_help);
         if(fp_help == stdout){
             exit(EXIT_SUCCESS);
@@ -100,55 +84,81 @@ int report_main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    gzFile fp;
-    kseq_t *seq;
-    int l;
-    fp = gzopen(fasta, "r");
-    F_CHK(fp,fasta);
-    seq = kseq_init(fp);
-    MALLOC_CHK(seq);
+    fprintf(stdout, "#asm\tNcontigs\tLargestcontig(Mbase)\tN50(Mbase)\tN90(Mbase)\n");
 
-    uint64_t n = 0;
-    uint64_t cap = 100;
-    uint64_t *length = malloc(cap * sizeof(uint64_t));
-    MALLOC_CHK(length);
 
-    uint64_t sum = 0;
-
-    while ((l = kseq_read(seq)) >= 0) {
-        assert(l==(int)strlen(seq->seq.s));
-        if(n==cap){
-            cap*=2;
-            length = realloc(length, cap * sizeof(uint64_t));
-            MALLOC_CHK(length);
+    while(optind < argc){
+        fasta = argv[optind];
+        optind++;
+        if (fasta == NULL) {
+            print_help_msg(fp_help);
+            if(fp_help == stdout){
+                exit(EXIT_SUCCESS);
+            }
+            exit(EXIT_FAILURE);
         }
-        length[n++] = l;
-        sum += l;
+        fprintf(stdout, "%s\t", fasta);
+
+        gzFile fp;
+        kseq_t *seq;
+        int l;
+        fp = gzopen(fasta, "r");
+        F_CHK(fp,fasta);
+        seq = kseq_init(fp);
+        MALLOC_CHK(seq);
+
+        uint64_t n = 0;
+        uint64_t cap = 100;
+        uint64_t *length = malloc(cap * sizeof(uint64_t));
+        MALLOC_CHK(length);
+
+        uint64_t sum = 0;
+
+        while ((l = kseq_read(seq)) >= 0) {
+            assert(l==(int)strlen(seq->seq.s));
+            if(n==cap){
+                cap*=2;
+                length = realloc(length, cap * sizeof(uint64_t));
+                MALLOC_CHK(length);
+            }
+            length[n++] = l;
+            sum += l;
+        }
+
+
+        kseq_destroy(seq);
+        gzclose(fp);
+
+        sort_contigs(length, n);
+
+        uint64_t cumsum = 0;
+        uint64_t n50 = 0;
+        uint64_t n90 = 0;
+
+        for (uint64_t i = 0; i < n; ++i) {
+
+            uint64_t len = length[n-i-1];
+            cumsum += len;
+            if(cumsum >= sum * 0.5 && n50 == 0){
+                n50 = len;
+            }
+            if(cumsum >= sum * 0.9 && n90 == 0){
+                n90 = len;
+            }
+
+        }
+
+        fprintf(stdout, "%ld\t%.3f\t%.3f\t%.3f\n", n, length[n-1]/1e6, n50/1e6, n90/1e6);
+
+        free(length);
+
     }
 
-    kseq_destroy(seq);
-    gzclose(fp);
 
-    //ks_mergesort(uint64_t, n, length, 0);
 
-    fprintf(stdout, "#Ncontigs\tLargestcontig(Mbase)\tN50(Mbase)\tN90(Mbase)\n");
 
-    uint64_t cumsum = 0;
-    double percent = 0;
-    for (uint64_t i = 0; i < n; ++i) {
 
-        fprintf(stdout, "%f\t%lu\n", percent, length[n-i-1]);
-        cumsum += length[n-i-1];
-        if(genome_size>0){
-            percent = (double)cumsum/genome_size*100;
-        } else {
-            percent = (double)cumsum/sum*100;
-        }
-        fprintf(stdout, "%f\t%lu\n", percent, length[n-i-1]);
 
-    }
-
-    free(length);
 
     return 0;
 

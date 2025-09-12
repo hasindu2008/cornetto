@@ -54,6 +54,10 @@ static inline void print_help_msg(FILE *fp_help){
 
 }
 
+void sort_contigs(uint64_t *length, uint64_t n){
+    ks_mergesort(uint64_t, n, length, 0);
+}
+
 int nx_main(int argc, char* argv[]) {
 
     const char* optstring = "g:h";
@@ -129,7 +133,7 @@ int nx_main(int argc, char* argv[]) {
     kseq_destroy(seq);
     gzclose(fp);
 
-    ks_mergesort(uint64_t, n, length, 0);
+    sort_contigs(length, n);
 
     fprintf(stdout, "#x\tcontig_len\n");
 

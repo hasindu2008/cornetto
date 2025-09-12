@@ -55,7 +55,7 @@ Output:
 Examples:
 
 ```bash
-# dot plot of a hifiasm primary assembly against the chm13
+# dot plot of a hifiasm primary assembly against the chm13 haploid cell-line reference`
 awk '/^S/{print ">"$2;print $3}' asm.p_ctg.gfa > asm.fasta
 scripts/minidotplot.sh chm13.fa asm.fasta
 

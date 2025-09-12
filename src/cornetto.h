@@ -37,7 +37,7 @@ SOFTWARE.
 //#include <htslib/hts.h>
 //#include <htslib/sam.h>
 
-#define CORNETTO_VERSION "0.1.0"
+#define CORNETTO_VERSION "0.2.0"
 
 /*******************************************************
  * flags related to the user specified options (opt_t) *
