@@ -68,6 +68,8 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"   eval:\n");
     fprintf(fp_help,"       asmstats        calculate assembly statistics\n");
     fprintf(fp_help,"       nx              nx or ngx plot tables\n");
+    fprintf(fp_help,"       report          generate a report table for one or more assemblies\n");
+    fprintf(fp_help,"       telocontigs     prints contigs from largest to smallest with number of telomeres\n");
     fprintf(fp_help,"   telo:\n");
     fprintf(fp_help,"       telowin         analyse telomere windows in a fasta file\n");
     fprintf(fp_help,"       telobreaks      find telomere breaks in a fasta file\n");

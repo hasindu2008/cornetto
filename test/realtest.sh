@@ -69,4 +69,21 @@ rm -r hg002-cornetto-E_2.bp.p_ctg.lowQ.bed hg002-cornetto-E_2.boringbits.txt hg0
 
 # recreate hapnetto requires minimap2, so not tested here. Can be manually tested with what is under test/real/E_2/recreate/tmp_recreate_hapnetto/
 
+echo "nx test"
+ex ./cornetto nx test/real/E_2/hg002-cornetto-E_2.fasta > nx_len.txt || die "nx failed"
+diff -q nx_len.txt test/real/E_2/nx/nx_len.txt || die "nx output mismatch"
+rm nx_len.txt
+
+./cornetto nx test/real/E_2/hg002-cornetto-E_2.fasta -g 3.1G > nx_g.txt
+diff -q nx_g.txt test/real/E_2/nx/nx_g.txt || die "nx -g output mismatch"
+rm nx_g.txt
+
+ex ./cornetto telocontigs test/real/E_2/hg002-cornetto-E_2.fasta test/real/E_2/telostats/hg002-cornetto-E_2.windows.0.4.50kb.ends.bed > telocontigs.txt || die "telocontigs failed"
+diff -q telocontigs.txt test/real/E_2/telocontigs/telocontigs.txt || die "telocontigs output mismatch"
+rm telocontigs.txt
+
+ex ./cornetto report test/real/E_2/hg002-cornetto-E_2.fasta > report1.txt || die "report failed on single file"
+diff -q report1.txt test/real/E_2/report/report1.txt || die "report output mismatch on single file"
+rm report1.txt
+
 echo "Tests passed"

@@ -35,10 +35,11 @@ SOFTWARE.
 #include "error.h"
 #include "kseq.h"
 #include "ksort.h"
+#include "khash.h"
 #include "misc.h"
 
 KSEQ_INIT(gzFile, gzread)
-// KSORT_INIT_GENERIC(uint64_t)
+
 
 static struct option long_options[] = {
     {"verbose", required_argument, 0, 'v'},        //3 verbosity level [1]
@@ -58,73 +59,71 @@ typedef struct {
     uint32_t ntelo; //updated using telo.bed
 } telo_ctg_t;
 
-// static void load_telobed(khash_t(as_map_ctgs) *h, const char *bedfile){
+KHASH_MAP_INIT_STR(telo_map_ctgs, telo_ctg_t*)
 
-//     FILE *bedfp = fopen(bedfile,"r");
-//     F_CHK(bedfp,bedfile);
+static void load_telobed(telo_ctg_t *contigs, khash_t(telo_map_ctgs) *h, const char *bedfile){
 
-//     char* buffer = (char*)malloc(sizeof(char) * (100)); //READ+newline+nullcharacter
-//     MALLOC_CHK(buffer);
+    FILE *bedfp = fopen(bedfile,"r");
+    F_CHK(bedfp,bedfile);
 
-//     size_t bufferSize = 100;
-//     ssize_t readlinebytes = 0;
-//     int64_t line_no = 0;
+    char* buffer = (char*)malloc(sizeof(char) * (100)); //READ+newline+nullcharacter
+    MALLOC_CHK(buffer);
 
-//     int n_ctg = 0;
+    size_t bufferSize = 100;
+    ssize_t readlinebytes = 0;
+    int64_t line_no = 0;
 
-//     while ((readlinebytes = getline(&buffer, &bufferSize, bedfp)) != -1) {
+    while ((readlinebytes = getline(&buffer, &bufferSize, bedfp)) != -1) {
 
-//         char *ref = (char *)malloc(sizeof(char)*readlinebytes);
-//         MALLOC_CHK(ref);
-//         int64_t beg=-1;
-//         int64_t end=-1;
+        char *ref = (char *)malloc(sizeof(char)*readlinebytes);
+        MALLOC_CHK(ref);
+        int64_t beg=-1;
+        int64_t end=-1;
 
-//         int ret=sscanf(buffer,"%s\t%ld\t%ld",ref,&beg, &end);
-//         if(ret!=3 || end<beg){
-//             ERROR("Malformed bed entry at line %ld",line_no);
-//             exit(EXIT_FAILURE);
-//         }
+        int ret=sscanf(buffer,"%s\t%ld\t%ld",ref,&beg, &end);
+        if(ret!=3 || end<beg){
+            ERROR("Malformed bed entry at line %ld",line_no);
+            exit(EXIT_FAILURE);
+        }
 
-//         if(beg<0 || end<0){
-//             ERROR("Malformed bed entry at %s:%ld. Coordinates cannot be negative",bedfile,line_no);
-//             exit(EXIT_FAILURE);
-//         }
-//         if(beg>=end){
-//             ERROR("Malformed bed entry at %s:%ld. start must be smaller than end coordinate",bedfile,line_no);
-//             exit(EXIT_FAILURE);
-//         }
+        if(beg<0 || end<0){
+            ERROR("Malformed bed entry at %s:%ld. Coordinates cannot be negative",bedfile,line_no);
+            exit(EXIT_FAILURE);
+        }
+        if(beg>=end){
+            ERROR("Malformed bed entry at %s:%ld. start must be smaller than end coordinate",bedfile,line_no);
+            exit(EXIT_FAILURE);
+        }
 
-//         khiter_t k = kh_get(as_map_ctgs, h, ref);
-//         if (k == kh_end(h)){ //add
-//             int absent;
-//             khint_t k = kh_put(as_map_ctgs, h, ref, &absent);
-//             if(absent == 1){
-//                 kh_key(h, k) = strdup(ref);
-//                 as_ctg_t *ctg = init_as_ctg();
-//                 ctg->ntelo++;
-//                 kh_value(h, k) = ctg;
-//                 n_ctg++;
-//             }
-//             else{
-//                 ERROR("Contig '%s' insertion failed", ref);
-//                 exit(EXIT_FAILURE);
-//             }
-//         } else { //update
-//             as_ctg_t *ctg = kh_value(h, k);
-//             ctg->ntelo++;
-//         }
+        khiter_t k = kh_get(telo_map_ctgs, h, ref);
+        if (k == kh_end(h)){ //add
+            ERROR("Contig '%s' in bed file not found in fasta", ref);
+            exit(EXIT_FAILURE);
+        } else { //update
+            telo_ctg_t *ctg = kh_value(h, k);
+            ctg->ntelo++;
+        }
 
-//         free(ref);
-//         line_no++;
-//     }
+        free(ref);
+        line_no++;
+    }
 
-//     VERBOSE("%ld bed entries, %d unique assembly contigs loaded from %s", line_no, n_ctg, bedfile);
+    VERBOSE("%ld bed entries loaded from %s", line_no, bedfile);
 
-//     fclose(bedfp);
-//     free(buffer);
-//     //*count = reg_i;
-//     return;
-// }
+    fclose(bedfp);
+    free(buffer);
+    //*count = reg_i;
+    return;
+}
+
+int compare_ctg_len_desc(const void *a, const void *b){
+    const telo_ctg_t *ctg_a = (const telo_ctg_t *)a;
+    const telo_ctg_t *ctg_b = (const telo_ctg_t *)b;
+    if(ctg_a->len < ctg_b->len) return 1;
+    else if(ctg_a->len > ctg_b->len) return -1;
+    else return 0;
+}
+
 
 int telocontigs_main(int argc, char* argv[]) {
 
@@ -134,6 +133,7 @@ int telocontigs_main(int argc, char* argv[]) {
     int32_t c = -1;
 
     const char *fasta = NULL;
+    const char *bed = NULL;
 
     FILE *fp_help = stderr;
 
@@ -149,7 +149,7 @@ int telocontigs_main(int argc, char* argv[]) {
     }
 
     // No arguments given
-    if (argc - optind != 1 || fp_help == stdout) {
+    if (argc - optind != 2 || fp_help == stdout) {
         print_help_msg(fp_help);
         if(fp_help == stdout){
             exit(EXIT_SUCCESS);
@@ -165,6 +165,17 @@ int telocontigs_main(int argc, char* argv[]) {
         }
         exit(EXIT_FAILURE);
     }
+
+    bed = argv[optind+1];
+    if (bed == NULL) {
+        print_help_msg(fp_help);
+        if(fp_help == stdout){
+            exit(EXIT_SUCCESS);
+        }
+        exit(EXIT_FAILURE);
+    }
+
+    khash_t(telo_map_ctgs) *h = kh_init(telo_map_ctgs);
 
     gzFile fp;
     kseq_t *seq;
@@ -192,19 +203,43 @@ int telocontigs_main(int argc, char* argv[]) {
         tmp.name = strdup(seq->name.s);
         tmp.len = l;
         tmp.ntelo = 0;
-        contigs[n++] = tmp;
+        contigs[n] = tmp;
+
+        int absent;
+        khint_t k = kh_put(telo_map_ctgs, h, tmp.name, &absent);
+        if(absent == 1){
+            kh_key(h, k) = tmp.name;
+            kh_value(h, k) = &contigs[n];
+        }
+        else{
+            ERROR("Duplicate contig '%s' found in fasta", tmp.name);
+            exit(EXIT_FAILURE);
+        }
+        n++;
+
     }
 
     kseq_destroy(seq);
     gzclose(fp);
 
-    //ks_mergesort(uint64_t, n, length, 0);
+    //load the telobed
+    load_telobed(contigs, h, bed);
 
+    //sort by len
+    qsort(contigs, n, sizeof(telo_ctg_t), compare_ctg_len_desc);
+
+    //print the report
+    fprintf(stdout, "Contig\tLength\tNTelomeres\n");
+    for(uint64_t i=0; i<n; i++){
+        fprintf(stdout, "%s\t%lu\t%u\n", contigs[i].name, contigs[i].len, contigs[i].ntelo);
+    }
 
     for(int i=0; i<n; i++){
         free(contigs[i].name);
     }
     free(contigs);
+
+    kh_destroy(telo_map_ctgs, h);
 
     return 0;
 
