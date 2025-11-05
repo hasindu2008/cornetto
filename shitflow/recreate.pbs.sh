@@ -26,6 +26,7 @@ module load minimap2/2.24
 module load samtools/1.19
 
 #ONT_DATADIR=/g/data/ox63/hasindu/cornetto/shitflow/
+export CORNETTO=/g/data/ox63/hasindu/cornetto/cornetto/cornetto
 export SCRIPT_DIR=/g/data/ox63/hasindu/cornetto/cornetto/scripts
 
 #cd ${ONT_DATADIR}/${FISH_NOW}
