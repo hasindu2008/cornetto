@@ -25,3 +25,7 @@ The files in the table [here](https://github.com/hasindu2008/cornetto/blob/main/
 ### Animals
 
 The files in the table [here](https://github.com/hasindu2008/cornetto/blob/main/docs/data-asm-animals.tsv) are found inside the cornetto-animal-asm directory created when you download and extract the cornetto-animal-asm.tar.gz file from [https://doi.org/10.5061/dryad.kkwh70sfr](https://doi.org/10.5061/dryad.kkwh70sfr)
+
+### HG002-updates
+
+The files in the table [here](https://github.com/hasindu2008/cornetto/blob/main/docs/data-asm-hg002-updates.tsv) are found inside the cornetto-hg002-asm-updates directory created when you download and extract the cornetto-hg002-asm-updates.tar.gz file from [https://doi.org/10.5061/dryad.kkwh70sfr](https://doi.org/10.5061/dryad.kkwh70sfr).

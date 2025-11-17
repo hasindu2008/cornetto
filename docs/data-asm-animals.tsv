@@ -1,4 +1,4 @@
-Assembly Description	Assembly File	Assembly File
+Assembly name	Assembly Description	Assembly File
 Petrel-Base, primary	Petrel DNA; 1x HiFi SMRT cell; primary asm	Petrel-Base/Petrel-Base.fasta
 Petrel-Cornetto, primary	Petrel DNA; 1x HiFi SMRT cell + 2x ONT duplex FC (7x cycles); primary asm	Petrel-Cornetto/Petrel-Cornetto.fasta
 Cichlid-Base, primary	Cichlid DNA; 1x HiFi SMRT cell; primary asm	Cichlid-Base/Cichlid-Base.fasta

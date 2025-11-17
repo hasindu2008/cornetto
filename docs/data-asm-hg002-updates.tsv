@@ -1,0 +1,13 @@
+Assembly name	Assembly Description	Assembly File
+hg002-Cornetto-4.3, ctg, h1	partially phased asm; contigs; hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 3; LSK114, simplex reads, SUP); haplotype 1	hg002-Cornetto-4-contigs/hg002-Cornetto-4.3.hap1.fasta
+hg002-Cornetto-4.3, ctg, h2	partially phased asm; contigs; hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 3; LSK114, simplex reads, SUP); haplotype 2	hg002-Cornetto-4-contigs/hg002-Cornetto-4.3.hap2.fasta
+hg002-Cornetto-4.3, scaf, h1	partially phased asm; scaffolds; hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 3; LSK114, simplex reads, SUP); haplotype 1	hg002-Cornetto-4-scaffolds/hg002-Cornetto-4.3.hap1.fasta
+hg002-Cornetto-4.3, scaf, h2	partially phased asm; scaffolds; hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 3; LSK114, simplex reads, SUP); haplotype 2	hg002-Cornetto-4-scaffolds/hg002-Cornetto-4.3.hap2.fasta
+hg002-Cornetto-4.3-HiC, ctg, h1	fully phased asm; contigs; hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 3; LSK114, simplex reads, SUP) + HiC; haplotype 1	hg002-Cornetto-4-HiC-contigs/hg002-Cornetto-4.3.hap1.fasta
+hg002-Cornetto-4.3-HiC, ctg, h2	fully phased asm; contigs; hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 3; LSK114, simplex reads, SUP) + HiC; haplotype 2	hg002-Cornetto-4-HiC-contigs/hg002-Cornetto-4.3.hap2.fasta
+hg002-Cornetto-4.3-HiC, scaf, h1	fully phased asm; scaffolds; hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 3; LSK114, simplex reads, SUP) + HiC; haplotype 1	hg002-Cornetto-4-HiC-scaffolds/hg002-Cornetto-4.3.hap1.fasta
+hg002-Cornetto-4.3-HiC, scaf, h2	fully phased asm; scaffolds; hg002 DNA; 1x ONT FC (standard) + 1x ONT FC (cornetto; cycle 3; LSK114, simplex reads, SUP) + HiC; haplotype 2	hg002-Cornetto-4-HiC-scaffolds/hg002-Cornetto-4.3.hap2.fasta
+T2TC-ONT, ctg, h1	fully phased asm; contigs; Koren et al (Genome Research 2024); 50x duplex + 30x UL + PoreC; haplotype 1	T2TC-ONT-contigs/asm.hap1.fasta
+T2TC-ONT, ctg, h2	fully phased asm; contigs; Koren et al (Genome Research 2024); 50x duplex + 30x UL + PoreC; haplotype 2	T2TC-ONT-contigs/asm.hap2.fasta
+T2TC-ONT, scaf, h1	fully phased asm; scaffolds; Koren et al (Genome Research 2024); 50x duplex + 30x UL + PoreC; haplotype 1	T2TC-ONT-scaffolds/asm.hap1.fasta
+T2TC-ONT, scaf, h2	fully phased asm; scaffolds; Koren et al (Genome Research 2024); 50x duplex + 30x UL + PoreC; haplotype 2	T2TC-ONT-scaffolds/asm.hap2.fasta
