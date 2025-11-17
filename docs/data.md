@@ -20,7 +20,9 @@ The ENA project [PRJEB86853](https://www.ebi.ac.uk/ena/browser/view/PRJEB86853) 
 
 ### HG002
 
-The files in the table [here](https://github.com/hasindu2008/cornetto/blob/main/docs/data-asm-hg002.tsv) are found inside the cornetto-hg002-asm directory created when you download and extract the cornetto-hg002-asm.tar.gz file from [https://doi.org/10.5061/dryad.kkwh70sfr](https://doi.org/10.5061/dryad.kkwh70sfr)
+The files in the table [here](https://github.com/hasindu2008/cornetto/blob/main/docs/data-asm-hg002.tsv) are found inside the cornetto-hg002-asm directory created when you download and extract the cornetto-hg002-asm.tar.gz file from [https://doi.org/10.5061/dryad.kkwh70sfr](https://doi.org/10.5061/dryad.kkwh70sfr).
+
+Note: 'hg002-Cornetto-4.3 (final)' is only applicable for the first version of the manuscript preprint. For the updated assemblies used in the updated version of the manuscript preprint (and the published paper), please see the HG002-updates section below.
 
 ### Animals
 
@@ -29,3 +31,5 @@ The files in the table [here](https://github.com/hasindu2008/cornetto/blob/main/
 ### HG002-updates
 
 The files in the table [here](https://github.com/hasindu2008/cornetto/blob/main/docs/data-asm-hg002-updates.tsv) are found inside the cornetto-hg002-asm-updates directory created when you download and extract the cornetto-hg002-asm-updates.tar.gz file from [https://doi.org/10.5061/dryad.kkwh70sfr](https://doi.org/10.5061/dryad.kkwh70sfr).
+
+This contains the updated 'hg002-Cornetto-4.3' assemblies created during the manuscript revision. This also includes a copy of the 'T2TC-ONT' assemblies used for comparison.
