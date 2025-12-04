@@ -2,17 +2,32 @@
 
 Cornetto is a method for iterative genome assembly using nanopore sequencing from Oxford Nanopore Technologies (ONT). This repository documents the Cornetto bioinformatics protocol and the Cornetto toolkit (a programme written in C and a collection of shell scripts). Cornetto toolkit also features some useful commands for evaluating assemblies generated from any other method.
 
-**Cornetto is under development and there could be interface changes and changes to default parameters. Do not hesitate to open an issue if you found a bug, something is not clear or for any feature requests.**
-
 Documentation: https://hasindu2008.github.io/cornetto <br>
 
 [![CI](https://github.com/hasindu2008/cornetto/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/hasindu2008/cornetto/actions/workflows/c-cpp.yml)
 
 ## Publication and data
 
+- [Publication link](https://www.nature.com/articles/s41467-025-65410-x)
 - [Preprint link (bioxiv)](https://doi.org/10.1101/2025.03.31.646505)
 - [Talk video link (London Calling 2025)](https://youtu.be/ci0OoM6VbsA)
 - [Raw data and assemblies for the preprint](docs/data.md)
+
+Please cite the following when using cornetto in your publications:
+> Gamaarachchi, H., Stevanovski, I., Hammond, J.M. et al. Targeted sequencing and iterative assembly of near-complete genomes. Nature Communications 16, 10406 (2025). https://doi.org/10.1038/s41467-025-65410-x
+
+```
+@article{gamaarachchi2025targeted,
+  title={Targeted sequencing and iterative assembly of near-complete genomes},
+  author={Gamaarachchi, Hasindu and Stevanovski, Igor and Hammond, Jillian M and M. Reis, Andre L and Rapadas, Melissa and Jayasooriya, Kavindu and Russell, Tonia and Yeow, Dennis and Hort, Yvonne and Patel, Chirag and others},
+  journal={Nature Communications},
+  volume={16},
+  number={1},
+  pages={10406},
+  year={2025},
+  publisher={Nature Publishing Group UK London}
+}
+```
 
 ## Cornetto bioinformatics protocol
 
