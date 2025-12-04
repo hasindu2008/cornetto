@@ -66,8 +66,8 @@ CREATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/create-launc
 RECREATE_PANEL_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/recreate.pbs.sh
 QUAST_SCRIPT=/g/data/ox63/hasindu/cornetto/cornetto/shitflow/quast.pbs.sh
 
-HIFIASM=/g/data/ox63/install/hifiasm-0.22.0/hifiasm
-GFATOOLS=/g/data/ox63/ira/adaptive_assembly/gfatools/gfatools
+HIFIASM=/g/data/ox63/jilham/software/hifiasm/hifiasm
+GFATOOLS=/g/data/ox63/jilham/software/gfatools/gfatools
 
 THREADS=${PBS_NCPUS}
 
@@ -76,7 +76,7 @@ THREADS=${PBS_NCPUS}
 echo "Running hifiasm with ${THREADS} threads, outprefix ${ASM}, and input fastq list ${FASTQ_LIST}" > hifiasm.log
 
 ## generate assembly with hifiasm
-/usr/bin/time -v ${HIFIASM} --ont -t ${THREADS} --hg-size ${HG_SIZE} -o ${ASM} ${FASTQ_LIST} || die "hifiasm failed"
+/usr/bin/time -v ${HIFIASM} --ont -t ${THREADS} --telo-m CCCTAA --hg-size ${HG_SIZE} -o ${ASM} ${FASTQ_LIST} || die "hifiasm failed"
 echo "hifiasm completed" >> hifiasm.log
 
 ## convert assembly graph to FASTA format
