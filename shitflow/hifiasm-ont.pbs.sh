@@ -18,6 +18,8 @@ usage() {
 [ -z "${OUT_PREFIX}" ] && OUT_PREFIX=hg002-cornetto
 #size
 [ -z "${HG_SIZE}" ] && HG_SIZE=3g
+#telom
+[ -n "${TELOM}" ] && TELOM="--telo-m CCCTAA"
 
 #ont base fastq
 [ -z "${BASE_FASTQ}" ] && usage
@@ -76,7 +78,7 @@ THREADS=${PBS_NCPUS}
 echo "Running hifiasm with ${THREADS} threads, outprefix ${ASM}, and input fastq list ${FASTQ_LIST}" > hifiasm.log
 
 ## generate assembly with hifiasm
-/usr/bin/time -v ${HIFIASM} --ont -t ${THREADS} --telo-m CCCTAA --hg-size ${HG_SIZE} -o ${ASM} ${FASTQ_LIST} || die "hifiasm failed"
+/usr/bin/time -v ${HIFIASM} --ont -t ${THREADS} ${TELOM} --hg-size ${HG_SIZE} -o ${ASM} ${FASTQ_LIST} || die "hifiasm failed"
 echo "hifiasm completed" >> hifiasm.log
 
 ## convert assembly graph to FASTA format
