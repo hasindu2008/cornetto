@@ -13,6 +13,7 @@ die() {
 BASE_FASTQ=
 FISH_PREV=
 OUT_PREFIX=
+HG_SIZE=
 
 usage(){
     echo "Usage: $0 [-b /path/to/D_0.fastq -p D_1_QGXHXX240275:D_2_QGXHXX240279 -o hg002-cornetto-D_3] <D_3> <QGXHXX240283>"
@@ -20,13 +21,15 @@ usage(){
     echo "  -b  Base fastq file"
     echo "  -p  Previous fish data"
     echo "  -o  Output prefix"
+    echo "  -s  Genome size"
 }
 
-while getopts "o:b:p:h" option; do
+while getopts "o:b:p:s:h" option; do
    case $option in
         b) BASE_FASTQ=$OPTARG;;
         p) FISH_PREV=$OPTARG;;
         o) OUT_PREFIX=$OPTARG;;
+        s) HG_SIZE=$OPTARG;;
         h) usage; exit 0;;
         \?) echo "Invalid option: $OPTARG" >&2; exit 1;;
    esac
@@ -77,6 +80,9 @@ if [ -n "${GADI_PBS_ARGS}" ]; then
     GADI_PBS_ARGS=${GADI_PBS_ARGS}",FISH_NOW="${NAME}
     if [ -n "${OUT_PREFIX}" ]; then
         GADI_PBS_ARGS=${GADI_PBS_ARGS}",OUT_PREFIX="${OUT_PREFIX}
+    fi
+    if [ -n "${HG_SIZE}" ]; then
+        GADI_PBS_ARGS=${GADI_PBS_ARGS}",HG_SIZE="${HG_SIZE}
     fi
 fi
 
