@@ -98,7 +98,7 @@ samtools depth -@ 24 -aa asm-0.realigned.bam  | awk '{print $1"\t"$2-1"\t"$2"\t"
 samtools depth -@ 24 -Q 20 -aa asm-0.realigned.bam  | awk '{print $1"\t"$2-1"\t"$2"\t"$3}' > asm-0.cov-mq20.bg
 ```
 
-Now to create the initial Cornetto panel, you can launch the script at [scripts/create-cornetto.sh](scripts/create-cornetto.sh):
+Now to create the initial Cornetto panel, you can launch the script at [scripts/create-cornetto.sh](../scripts/create-cornetto.sh):
 
 ```bash
 scripts/create-cornetto.sh asm-0.fasta
