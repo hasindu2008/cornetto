@@ -98,13 +98,13 @@ samtools depth -@ 24 -aa asm-0.realigned.bam  | awk '{print $1"\t"$2-1"\t"$2"\t"
 samtools depth -@ 24 -Q 20 -aa asm-0.realigned.bam  | awk '{print $1"\t"$2-1"\t"$2"\t"$3}' > asm-0.cov-mq20.bg
 ```
 
-Now to create the initial Cornetto panel, you can launch the script at [scripts/create-cornetto.sh](../scripts/create-cornetto.sh):
+Now to create the initial Cornetto panel, you can launch the script at [scripts/create-cornetto.sh](../scripts/create-cornetto.sh) inside the [cornetto repository](https://github.com/hasindu2008/cornetto) that you cloned before:
 
 ```bash
 scripts/create-cornetto.sh asm-0.fasta
 ```
 
-See comments inside [scripts/create-cornetto.sh](scripts/create-cornetto.sh) to understand what the script does.
+See comments inside [scripts/create-cornetto.sh](../scripts/create-cornetto.sh) to understand what the script does.
 Running this script will generate two files `asm-0.boringbits.bed` and `asm-0.boringbits.txt`.
 
 
@@ -112,13 +112,13 @@ Running this script will generate two files `asm-0.boringbits.bed` and `asm-0.bo
 
 This step is only required for diploid assemblies using ONT simplex data (ONT simplex for both the base assembly and Cornetto iterations). Note that you should have already run step 2 above, before running this step. For primary assembly using PacBio data for the base assembly, followed by ONT duplex Cornetto iterations, this step can be skipped.
 
-Run the script at [scripts/create-hapnetto.sh](scripts/create-hapnetto.sh):
+Run the script at [scripts/create-hapnetto.sh](../scripts/create-hapnetto.sh):
 
 ```
 scripts/create-hapnetto.sh asm-0
 ```
 
-See comments inside [scripts/create-hapnetto.sh](scripts/create-hapnetto.sh) to understand what the script does. The final outputs we want are the two files `asm-0_dip.boringbits.bed` and `asm-0_dip.boringbits.txt`.
+See comments inside [scripts/create-hapnetto.sh](../scripts/create-hapnetto.sh) to understand what the script does. The final outputs we want are the two files `asm-0_dip.boringbits.bed` and `asm-0_dip.boringbits.txt`.
 
 ### Step 4: Only for human saliva samples
 
@@ -202,13 +202,13 @@ You may want to evaluate the quality of the assembly to see if it has improved. 
 
 ### Step 4: Create the Cornetto panel for the new Cornetto iteration
 
-Now to create the Cornetto panel for the next iteration, you can launch the script at [scripts/recreate-cornetto.sh](scripts/recreate-cornetto.sh):
+Now to create the Cornetto panel for the next iteration, you can launch the script at [scripts/recreate-cornetto.sh](../scripts/recreate-cornetto.sh):
 
 ```bash
 scripts/recreate-cornetto.sh asm-1.fasta
 ```
 
-See comments inside [scripts/recreate-cornetto.sh](scripts/create-cornetto.sh) to understand what the script is doing.
+See comments inside [scripts/recreate-cornetto.sh](../scripts/create-cornetto.sh) to understand what the script is doing.
 Running this script will generate two files `asm-1.boringbits.bed` and `asm-1.boringbits.txt`.
 
 
@@ -216,13 +216,13 @@ Running this script will generate two files `asm-1.boringbits.bed` and `asm-1.bo
 
 This step is only required for diploid assemblies using ONT simplex data (ONT simplex for both the base assembly and Cornetto iterations). Note that you should have already run step 4 above, before running this step. For primary assembly using PacBio data for the base assembly, followed by ONT duplex Cornetto iterations, this step can be skipped.
 
-Run the script at [scripts/recreate-hapnetto.sh](scripts/recreate-hapnetto.sh):
+Run the script at [scripts/recreate-hapnetto.sh](../scripts/recreate-hapnetto.sh):
 
 ```
 scripts/recreate-hapnetto.sh asm-1
 ```
 
-See comments inside [scripts/recreate-hapnetto.sh](scripts/recreate-hapnetto.sh) to understand what the script is doing. The final outputs we want are the two files `asm-1_dip.boringbits.bed`  and `asm-1_dip.boringbits.txt`.
+See comments inside [scripts/recreate-hapnetto.sh](../scripts/recreate-hapnetto.sh) to understand what the script is doing. The final outputs we want are the two files `asm-1_dip.boringbits.bed`  and `asm-1_dip.boringbits.txt`.
 
 ### Step 6: Only for human saliva samples
 
