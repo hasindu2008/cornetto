@@ -144,9 +144,9 @@ jobs:
     - name: test-gcc
       run: make test
 
-  os_x_13:
-    name: OSX 13
-    runs-on: macos-13
+  os_x_15:
+    name: OSX 15
+    runs-on: macos-15
     steps:
     - uses: actions/checkout@v2
     - name: build
