@@ -22,7 +22,7 @@ $MINIMAP2 --version > /dev/null 2>&1 || die "minimap2 not found!. Either put min
 
 
 PREFIX=$(basename $ASM .fa)
-PREFIX=$(basename $ASM .fasta)
+PREFIX=$(basename $PREFIX .fasta)
 TEMPDIR=tmp_${PREFIX}_minidot
 
 mkdir -p $TEMPDIR || die "mkdir $TEMPDIR failed"
